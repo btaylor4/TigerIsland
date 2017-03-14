@@ -6,7 +6,7 @@ public class Tile {
     private static final short DEGREES_OF_ROTATION = 60 ;
     private static final short DEGREE_THRESHHOLD = 300 ;
 
-    public int rotation = 0 ; // default position is volcano in bottom left corner
+    public int rotation ; // default position is volcano in bottom left corner
     public int tileNumber ;
 
     Hexagon volcano ;
@@ -14,6 +14,8 @@ public class Tile {
     Hexagon hexB ;
 
     public Tile(){
+        rotation = 0;
+
         volcano = new Hexagon();
         volcano.terrain = TerrainType.VOLCANO ;
 
@@ -55,6 +57,10 @@ public class Tile {
             rotation = 0 ;
         else
             rotation += DEGREES_OF_ROTATION ;
+    }
+
+    public void setRotation(int degree){
+        rotation = degree ;
     }
 
 }

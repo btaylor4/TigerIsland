@@ -30,9 +30,8 @@ public class ProjectionPack {
             case UP:
                 if(horizontal == Direction.NONE) {
                     hexPoint.row -= 1;
-                    return ;
                 }
-                else if(hexPoint.column % 2 == 0){
+                else if((hexPoint.column % 2) == 0){
                     hexPoint.row -= 1 ;
                 }
                 break;
@@ -40,9 +39,8 @@ public class ProjectionPack {
             case DOWN:
                 if(horizontal == Direction.NONE){
                     hexPoint.row += 1 ;
-                    return ;
                 }
-                else if(hexPoint.column % 2 != 0){
+                else if((hexPoint.column % 2) != 0){
                     hexPoint.row += 1 ;
                 }
                 break;
@@ -64,5 +62,6 @@ public class ProjectionPack {
                 break;
         }
 
+        System.out.println(hexPoint.row + " " + hexPoint.column);
     }
 }

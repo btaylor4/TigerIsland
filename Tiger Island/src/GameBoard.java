@@ -205,8 +205,6 @@ public class GameBoard {
     public void selectTilePlacement(Tile tileBeingPlaced, int row, int column){
         ProjectionPack projects = projectTilePlacement(tileBeingPlaced, row, column);
 
-        System.out.println(" im " + projects.projectedLevel);
-
         projects.projectedLevel = getProjectedHexLevel(projects);
 
         if (checkAdjacency(projects) && (projects.projectedLevel == 1)) {
@@ -227,8 +225,6 @@ public class GameBoard {
             }
             System.out.print('\n');
         }
-
-        System.out.println("\nThere are " + playableHexes.size() + " free adjacent hexes") ;
     }
 
 }
