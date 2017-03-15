@@ -35,7 +35,25 @@ public class Player
     public int getMeeples(){return meeples;}
     public int getTortoro(){return tortoro;}
 
-    void setCurrentPlayerState(PlayerState newPlayerState){
+    public PlayerState getBeginTurnState() {return beginTurn;}
+    public PlayerState getHasTileState(){return hasTile;}
+    public PlayerState getBuildPhaseState(){return buildPhase;}
+    public PlayerState getCurrentPlayerState(){return currentPlayerState;}
+
+    public void decrementMeeple(int meeplesPlayed){meeples -= meeplesPlayed;}
+    public void decrementTotoro(){--tortoro;}
+
+
+    public void placeMeeple()
+    {
+        //should decrease Meeple if player does it validly
+    }
+
+    public void placeTortoro() {
+        //should decrease Tortoro if player does it validly
+    }
+
+    public void setCurrentPlayerState(PlayerState newPlayerState){
         currentPlayerState = newPlayerState;
     }
 
@@ -49,18 +67,6 @@ public class Player
         currentPlayerState.placeTile();
     }
 
-    public void placeMeeple()
-    {
-        //should decrease Meeple if player does it validly
-        currentPlayerState.placeMeeple();
-    }
-
-    public void placeTortoro()
-    {
-        //should decrease Tortoro if player does it validly
-        currentPlayerState.placeTortoro();
-    }
-
     public void foundNewSettlement()
     {
         //should use place meeple method
@@ -71,5 +77,9 @@ public class Player
     {
         //should use place meeple method
         currentPlayerState.expandExistingSettlement();
+    }
+
+    public void buildTotoroSanctuary(){
+        currentPlayerState.buildTotoroSanctuary();
     }
 }

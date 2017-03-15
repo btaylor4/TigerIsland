@@ -7,11 +7,9 @@ public interface PlayerState {
 
     void placeTile();
 
-    void placeMeeple();
-
-    void placeTortoro();
-
     void foundNewSettlement();
 
     void expandExistingSettlement();
+
+    void buildTotoroSanctuary();
 }
