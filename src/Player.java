@@ -7,24 +7,30 @@ public class Player
     private int meeples;
     private int tortoro;
 
+    private GameBoard game;
+
     //possible states of player
     PlayerState beginTurn;
     PlayerState hasTile;
     PlayerState buildPhase;
-    //PlayerState endTurn;
+    PlayerState endTurn;
 
     //current state of player
     PlayerState currentPlayerState;
 
-    public Player()
+    public Player(GameBoard game)
     {
         score = 0;
         meeples = 20;
         tortoro = 3;
 
+        this.game = game;
+
         beginTurn = new BeginTurn(this);
         hasTile = new HasTile(this);
         buildPhase = new BuildPhase(this);
+        endTurn = new EndTurn(this);
+
 
         //initialize state
         currentPlayerState = beginTurn;
@@ -38,6 +44,7 @@ public class Player
     public PlayerState getBeginTurnState() {return beginTurn;}
     public PlayerState getHasTileState(){return hasTile;}
     public PlayerState getBuildPhaseState(){return buildPhase;}
+    public PlayerState getEndTurnState(){return endTurn;}
     public PlayerState getCurrentPlayerState(){return currentPlayerState;}
 
     public void decrementMeeple(int meeplesPlayed){meeples -= meeplesPlayed;}
