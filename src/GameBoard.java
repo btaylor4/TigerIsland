@@ -202,7 +202,7 @@ public class GameBoard {
         placeTile(tileStack[0], projectTilePlacement(tileStack[0], upperLimit, leftLimit));
     }
 
-    public void selectTilePlacement(Tile tileBeingPlaced, int row, int column){
+    public boolean selectTilePlacement(Tile tileBeingPlaced, int row, int column){
         ProjectionPack projects = projectTilePlacement(tileBeingPlaced, row, column);
 
         projects.projectedLevel = getProjectedHexLevel(projects);
@@ -210,9 +210,11 @@ public class GameBoard {
         if (checkAdjacency(projects) && (projects.projectedLevel == 1)) {
             placeTile(tileBeingPlaced, projects);
             System.out.println("Tile placement OK") ;
+            return true;
         }
         else{
             System.out.println("Invalid placement requested") ;
+            return false;
         }
     }
 
