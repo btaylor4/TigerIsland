@@ -2,6 +2,7 @@
  * Created by Adam_Soliman on 3/14/2017.
  *
  * Player has placed Tile and must now select a build action
+ * once build action is executed then player ends turn
  */
 public class BuildPhase implements PlayerState {
 
@@ -17,7 +18,7 @@ public class BuildPhase implements PlayerState {
     }
 
     @Override
-    public void placeTile() {
+    public void placeTile(Tile tileBeingPlaced, int row, int column) {
         System.err.println("Tile already placed");
     }
 
@@ -25,7 +26,7 @@ public class BuildPhase implements PlayerState {
     public void foundNewSettlement() {
         player.decrementMeeple(1);
         System.out.println("Settlement Founded");
-        player.setCurrentPlayerState(player.getBeginTurnState());
+        player.setCurrentPlayerState(player.getEndTurnState());
     }
 
     @Override
@@ -33,13 +34,13 @@ public class BuildPhase implements PlayerState {
         //method may change since <1 meeples can be placed at once
         player.decrementMeeple(1);
         System.out.println("Settlement Expanded");
-        player.setCurrentPlayerState(player.getBeginTurnState());
+        player.setCurrentPlayerState(player.getEndTurnState());
     }
 
     @Override
     public void buildTotoroSanctuary() {
         player.decrementTotoro();
         System.out.println("Totoro Placed");
-        player.setCurrentPlayerState(player.getBeginTurnState());
+        player.setCurrentPlayerState(player.getEndTurnState());
     }
 }

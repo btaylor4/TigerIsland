@@ -1,58 +1,66 @@
 /**
- * Created by Bryan on 3/8/17.
+ * Created by jdavi on 3/11/17.
  */
-import java.util.ArrayList;
-import java.util.List;
+public class Tile {
 
-public class Tile
-{
-    private int level;
-    private Hexagon topHex;
-    private Hexagon leftHex;
-    private Hexagon rightHex;
+    private static final short DEGREES_OF_ROTATION = 60 ;
+    private static final short DEGREE_THRESHHOLD = 300 ;
 
-    public Tile(Terrain topHex, Terrain leftHex, Terrain rightHex)
-    {
-        level = 1;
-        this.topHex = new Hexagon(topHex);
-        this.leftHex = new Hexagon(leftHex);
-        this.rightHex = new Hexagon(rightHex);
+    public int rotation ; // default position is volcano in bottom left corner
+    public int tileNumber ;
 
-        addLeftAndRightDependencies(this.leftHex, this.rightHex);
-        addTopAndRightDependencies(this.topHex, this.rightHex);
-        addTopAndLeftEdgeDependencies(this.topHex, this.leftHex);
+    Hexagon volcano ;
+    Hexagon hexA ;
+    Hexagon hexB ;
+
+    public Tile(){
+        rotation = 0;
+
+        volcano = new Hexagon();
+        volcano.terrain = TerrainType.VOLCANO ;
+
+        hexA = new Hexagon();
+        hexB = new Hexagon();
     }
 
-    public void addTopAndLeftEdgeDependencies(Hexagon topHex, Hexagon leftHex)
-    {
-        Terrain[] topEdges = topHex.getEdgeTypes();
-        Terrain[] leftEdges = leftHex.getEdgeTypes();
-
-        topEdges[4] = leftEdges[1];
-        leftEdges[1] = topEdges[4];
-        topHex.setEdgeTypes(topEdges);
-        leftHex.setEdgeTypes(leftEdges);
+    public void assignTerrain(TerrainType terrainA, TerrainType terrainB){
+        hexA.terrain = terrainA ;
+        hexB.terrain = terrainB ;
     }
 
-    public void addLeftAndRightDependencies(Hexagon leftHex, Hexagon rightHex)
-    {
-        Terrain[] rightEdges = rightHex.getEdgeTypes();
-        Terrain[] leftEdges = leftHex.getEdgeTypes();
-
-        rightEdges[4] = leftEdges[1];
-        leftEdges[1] = rightEdges[4];
-        rightHex.setEdgeTypes(rightEdges);
-        leftHex.setEdgeTypes(leftEdges);
+    public void setHexLevels(int level){
+        volcano.level = level ;
+        hexA.level = level ;
+        hexB.level = level ;
     }
 
-    public void addTopAndRightDependencies(Hexagon topHex, Hexagon rightHex)
-    {
-        Terrain[] topEdges = topHex.getEdgeTypes();
-        Terrain[] rightEdges = rightHex.getEdgeTypes();
-
-        topEdges[4] = rightEdges[1];
-        rightEdges[1] = topEdges[4];
-        topHex.setEdgeTypes(topEdges);
-        leftHex.setEdgeTypes(rightEdges);
+    private void setHexTileNumbers(int assignedNumber){
+        volcano.tileNumber = assignedNumber ;
+        hexA.tileNumber = assignedNumber ;
+        hexB.tileNumber = assignedNumber ;
     }
+
+    public void assignTileNumber(int assignedNumber){
+        this.tileNumber = assignedNumber ;
+        setHexTileNumbers(tileNumber);
+    }
+
+    public void rotateClockWise(){
+        if(rotation == 0)
+            rotation = DEGREE_THRESHHOLD ;
+        else
+            rotation -= DEGREES_OF_ROTATION ;
+    }
+
+    public void rotateCounterClockWise(){
+        if(rotation == DEGREE_THRESHHOLD)
+            rotation = 0 ;
+        else
+            rotation += DEGREES_OF_ROTATION ;
+    }
+
+    public void setRotation(int degree){
+        rotation = degree ;
+    }
+
 }
