@@ -14,13 +14,19 @@ public class HasTile implements PlayerState {
     @Override
     public Tile drawTile() {
         System.err.println("Already Drew Tile");
-        return null;
+        return player.getTileInHand();
     }
 
     @Override
     public void placeTile(Tile tileBeingPlaced, int row, int column) {
-        System.out.println("Tile Placed");
-        player.setCurrentPlayerState(player.getBuildPhaseState());
+
+        if(player.getGame().selectTilePlacement(tileBeingPlaced, row, column)){
+            System.out.println("Tile Successfully Placed");
+            player.setCurrentPlayerState(player.getBuildPhaseState());
+        }
+        else{
+            System.out.println("Tile Not Placed");
+        }
     }
 
     @Override
