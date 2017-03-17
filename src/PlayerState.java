@@ -5,7 +5,7 @@ public interface PlayerState {
 
     Tile drawTile();
 
-    void placeTile();
+    void placeTile(Tile tileBeingPlaced, int row, int column);
 
     void foundNewSettlement();
 

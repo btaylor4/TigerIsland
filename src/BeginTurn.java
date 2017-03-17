@@ -19,7 +19,7 @@ public class BeginTurn implements PlayerState{
     }
 
     @Override
-    public void placeTile() {
+    public void placeTile(Tile tileBeingPlaced, int row, int column) {
         System.err.println("No Tile to Place");
     }
 
