@@ -1,0 +1,27 @@
+<component name="libraryTable">
+  <library name="commons-logging-1.2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../Dependencies/commons-logging-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/cucumber-core-1.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/cucumber-java-1.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/cucumber-junit-1.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/cucumber-jvm-deps-1.0.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/cucumber-spring-1.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/gherkin-2.12.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/hamcrest-core-1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/junit-4.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/spring-beans-4.3.2.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/spring-context-4.3.2.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/spring-context-support-4.3.2.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/spring-core-4.3.2.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/spring-test-4.3.2.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/spring-tx-4.3.2.RELEASE.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../Dependencies/cucumber-java-1.2.5-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/cucumber-junit-1.2.5-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Dependencies/cucumber-spring-1.2.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

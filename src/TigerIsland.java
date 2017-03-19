@@ -5,10 +5,7 @@ import java.util.HashMap;
  */
 public class TigerIsland {
 
-    static HashMap testHash = new HashMap() ;
-
     public static void main(String [] args){
-        System.out.println("Well hello muthafucka");
 
         GameBoard game = new GameBoard();
 
