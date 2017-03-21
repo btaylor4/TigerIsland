@@ -235,4 +235,9 @@ public class GameBoard {
         tileChoice++;
         return tileStack[++tileChoice];
     }
+
+    public Tile[] getTileStack()
+    {
+        return tileStack;
+    }
 }
