@@ -34,7 +34,7 @@ public class Tile {
         hexB.level = level ;
     }
 
-    private void setHexTileNumbers(int assignedNumber){
+    public void setHexTileNumbers(int assignedNumber){
         volcano.tileNumber = assignedNumber ;
         hexA.tileNumber = assignedNumber ;
         hexB.tileNumber = assignedNumber ;
