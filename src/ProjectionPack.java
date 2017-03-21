@@ -6,7 +6,7 @@ public class ProjectionPack {
     public Point hex_a;
     public Point hex_b;
 
-    public int projectedLevel ;
+    public int projectedLevel;
 
     public ProjectionPack(int row, int column){
         volcano = new Point(row, column);

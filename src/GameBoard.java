@@ -24,11 +24,8 @@ public class GameBoard {
     public static Tile tileStack[] = new Tile[NUM_TILES];
     private HashMap playableHexes = new HashMap() ;
 
-
-
-
     public GameBoard(){
-        upperLimit = lowerLimit = leftLimit = rightLimit = ARRAY_DIMENSION/2 ;
+        upperLimit = lowerLimit = leftLimit = rightLimit = ARRAY_DIMENSION/2 - 1;
         createTiles();
         shuffleTiles();
     }
@@ -201,6 +198,7 @@ public class GameBoard {
 
     public void setFirstTile(){
         placeTile(tileStack[0], projectTilePlacement(tileStack[0], upperLimit, leftLimit));
+        tileChoice++;
     }
 
     public boolean selectTilePlacement(Tile tileBeingPlaced, int row, int column){
@@ -239,5 +237,10 @@ public class GameBoard {
     public Tile[] getTileStack()
     {
         return tileStack;
+    }
+
+    public Hexagon getHex(Point point)
+    {
+        return board[point.row][point.column];
     }
 }

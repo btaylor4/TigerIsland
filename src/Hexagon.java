@@ -10,4 +10,16 @@ public class Hexagon {
     public Hexagon(){
         level = 0;
     }
+
+    public void setOccupantOnHex(OccupantType occupant){this.occupant = occupant;}
+
+    public TerrainType getTerrain()
+    {
+        return terrain;
+    }
+
+    public int getLevel()
+    {
+        return level;
+    }
 }
