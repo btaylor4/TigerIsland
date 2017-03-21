@@ -76,9 +76,6 @@ public class B_Player
     public boolean foundNewSettlement()
     {
         //should use place meeple method
-
-        boolean isHexAVolcano = false;
-
         System.out.println("Row choice");
         rowChoice = chooseOption();
 
@@ -88,36 +85,71 @@ public class B_Player
         Point point = new Point(rowChoice, colChoice);
         Hexagon hex = game.getHex(point);
 
+
+        if(!checkIfHexIsVolcano(hex) && checkIfHexIsLevelOne(hex) && checkIfHexIsOpen(hex))
+        {
+            if (mySettlements.isEmpty())
+            {
+                Settlement settlement = new Settlement();
+                settlement.createNewSettlement(point);
+                mySettlements.put(settlement, 1);
+                game.setPieceOnHex(point, OccupantType.MEEPLE);
+                return true;
+            }
+
+            else
+            {
+                for (Settlement sets : mySettlements.keySet())
+                {
+                    if (sets.checkExistingSettlement(point))
+                        return false;
+                }
+
+                Settlement settlement = new Settlement();
+                settlement.createNewSettlement(point);
+                mySettlements.put(settlement, 1);
+                game.setPieceOnHex(point, OccupantType.MEEPLE);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean checkIfHexIsVolcano(Hexagon hex)
+    {
         if(hex.getTerrain() == TerrainType.VOLCANO)
         {
             System.out.println("Placing on Volcano");
-            return false;
+            return true;
         }
 
-        else if(hex.getLevel() != 1)
+        else
+            return false;
+    }
+
+    public boolean checkIfHexIsLevelOne(Hexagon hex)
+    {
+        if(hex.getLevel() != 1)
         {
             System.out.println("Placing on level not 1");
             return false;
         }
 
-        else if(mySettlements.isEmpty())
-        {
-            Settlement settlement = new Settlement();
-            settlement.createNewSettlement(point);
-            mySettlements.put(settlement, 1);
+        else
             return true;
+    }
+
+    public boolean checkIfHexIsOpen(Hexagon hex)
+    {
+        if(hex.getOccupant() != OccupantType.NONE)
+        {
+            System.out.println("Spot is already occupied");
+            return false;
         }
 
         else
-        {
-            for(Settlement sets: mySettlements.keySet())
-            {
-                if(sets.checkExistingSettlement(point))
-                    return false;
-            }
-        }
-
-        return true;
+            return true;
     }
 
     public void expandNewSettlement() {

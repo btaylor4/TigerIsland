@@ -9,6 +9,7 @@ public class Hexagon {
 
     public Hexagon(){
         level = 0;
+        occupant = OccupantType.NONE;
     }
 
     public void setOccupantOnHex(OccupantType occupant){this.occupant = occupant;}
@@ -21,5 +22,10 @@ public class Hexagon {
     public int getLevel()
     {
         return level;
+    }
+
+    public OccupantType getOccupant()
+    {
+        return occupant;
     }
 }
