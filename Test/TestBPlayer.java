@@ -1,9 +1,9 @@
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Created by Bryan on 3/20/17.
@@ -82,5 +82,41 @@ public class TestBPlayer
         Point point = new Point(103, 105);
         Hexagon hex = game.getHex(point);
         assertTrue(player.checkIfHexIsLevelOne(hex));
+    }
+
+    @Test
+    public void testInitialPlayerMeepleAmount()
+    {
+        assertEquals(20, player.getMeeples());
+    }
+
+    @Test
+    public void testInitialTotoroAmount()
+    {
+        assertEquals(3, player.getTortoro());
+    }
+
+    @Test
+    public void testInitialScore()
+    {
+        assertEquals(0, player.getScore());
+    }
+
+    @Test
+    public void testInvalidInitialPlayerMeepleAmount()
+    {
+        assertNotEquals(0, player.getMeeples());
+    }
+
+    @Test
+    public void testInvalidTotoroAmount()
+    {
+        assertNotEquals(0, player.getTortoro());
+    }
+
+    @Test
+    public void testInvalidInitialScore()
+    {
+        assertNotEquals(1, player.getScore());
     }
 }

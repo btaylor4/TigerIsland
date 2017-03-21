@@ -22,20 +22,12 @@ public class GameBoard {
 
     private static Hexagon[][] board = new Hexagon[ARRAY_DIMENSION][ARRAY_DIMENSION];
     public static Tile tileStack[] = new Tile[NUM_TILES];
-    private HashMap playableHexes = new HashMap() ;
+    private HashMap<Integer, Integer> playableHexes = new HashMap<>() ;
 
     public GameBoard(){
         upperLimit = lowerLimit = leftLimit = rightLimit = ARRAY_DIMENSION/2 - 1;
         createTiles();
         shuffleTiles();
-
-        for(int i = 0; i < 210; i++)
-        {
-            for(int j = 0; j < 210; j++)
-            {
-                board[i][j] = new Hexagon(); //this may screw with some check that you(JP) may have already implemented
-            }
-        }
     }
 
     public void createTiles(){
@@ -251,6 +243,8 @@ public class GameBoard {
     {
         return board[point.row][point.column];
     }
+
+    public Hexagon[][] getBoard() {return board;}
 
     public void setPieceOnHex(Point point, OccupantType occupant)
     {

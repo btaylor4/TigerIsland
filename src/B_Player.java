@@ -130,7 +130,7 @@ public class B_Player
 
     public boolean checkIfHexIsLevelOne(Hexagon hex)
     {
-        if(hex.getLevel() != 1)
+        if(hex == null || hex.getLevel() != 1)
         {
             System.out.println("Placing on level not 1");
             return false;

@@ -8,7 +8,7 @@ public class Hexagon {
     public OccupantType occupant ;
 
     public Hexagon(){
-        level = 0;
+        level = 1;
         occupant = OccupantType.NONE;
     }
 
