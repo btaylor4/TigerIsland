@@ -16,6 +16,7 @@ public class GameBoard {
     private static final int EVEN_COLUMN_ADDS[] = {-1, 0, 1, 1, 0, -1};
     private static final int ODD_ROW_ADDS[] = {0,-1,0,1,1,1};
     private static final int ODD_COLUMN_ADDS[] = {-1,0,1,1,0,-1};
+    private static int tileChoice = 0;
 
     private int upperLimit, lowerLimit, leftLimit, rightLimit ;
 
@@ -32,7 +33,7 @@ public class GameBoard {
         shuffleTiles();
     }
 
-    private void createTiles(){
+    public void createTiles(){
         // the tiles, are three copies of a full permutation of the terrains
         int tileCounter = 0;
 
@@ -52,7 +53,7 @@ public class GameBoard {
         }
     }
 
-    private void shuffleTiles(){
+    public void shuffleTiles(){
         Random r = new Random();
         int random_index ;
         Tile tileBeingSwapped ;
@@ -65,7 +66,7 @@ public class GameBoard {
         }
     }
 
-    private ProjectionPack projectTilePlacement(Tile tileBeingPlaced, int row, int column){
+    public ProjectionPack projectTilePlacement(Tile tileBeingPlaced, int row, int column){
         ProjectionPack projections = new ProjectionPack(row, column) ;
 
         switch(tileBeingPlaced.rotation){
@@ -107,11 +108,11 @@ public class GameBoard {
         return projections ;
     }
 
-    private int coordinatesToKey(int row, int column){
+    public int coordinatesToKey(int row, int column){
         return (row * ARRAY_DIMENSION) + column ;
     }
 
-    private boolean checkAdjacency(ProjectionPack projections){
+    public boolean checkAdjacency(ProjectionPack projections){
         boolean volcanoAdjacent, hex_aAdjacent, hex_bAdjacent, somethingAdjacent ;
 
         // if one of the hexes fall in the freePlay list and nothing is underneath the tiles return true
@@ -122,7 +123,7 @@ public class GameBoard {
         return (volcanoAdjacent || hex_aAdjacent || hex_bAdjacent) ;
     }
 
-    private int getProjectedHexLevel(ProjectionPack projections){
+    public int getProjectedHexLevel(ProjectionPack projections){
         int volcanoLevel, hex_aLevel, hex_bLevel ;
 
         if(board[projections.volcano.row][projections.volcano.column] != null)
@@ -149,7 +150,7 @@ public class GameBoard {
             return 0;
     }
 
-    private void addFreeAdjacencies(ProjectionPack.Point point){
+    public void addFreeAdjacencies(Point point){
         // up-left, up, up-right, down-right, down, down-left,
         int rowAddArray[], columnAddArray[] ;
         int row , column ;
@@ -173,11 +174,11 @@ public class GameBoard {
         }
     }
 
-    private void removeFreeAdjacency(ProjectionPack.Point point){
+    public void removeFreeAdjacency(Point point){
         playableHexes.remove(coordinatesToKey(point.row, point.column));
     }
 
-    private void placeTile(Tile tileBeingPlaced, ProjectionPack projections){
+    public void placeTile(Tile tileBeingPlaced, ProjectionPack projections){
         tileBeingPlaced.setHexLevels(projections.projectedLevel) ;
 
         board[projections.volcano.row][projections.volcano.column] = tileBeingPlaced.volcano ;
@@ -229,4 +230,9 @@ public class GameBoard {
         }
     }
 
+    public Tile generateTile()
+    {
+        tileChoice++;
+        return tileStack[++tileChoice];
+    }
 }
