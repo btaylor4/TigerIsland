@@ -79,7 +79,7 @@ public class TestBPlayer
     public void testPlayerCanPlaceOnLevelOne()
     {
         game.setFirstTile();
-        Point point = new Point(103, 105);
+        Point point = new Point(104, 105);
         Hexagon hex = game.getHex(point);
         assertTrue(player.checkIfHexIsLevelOne(hex));
     }

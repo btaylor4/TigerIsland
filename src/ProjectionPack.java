@@ -12,7 +12,7 @@ public class ProjectionPack {
         volcano = new Point(row, column);
         hex_a = new Point(row, column);
         hex_b = new Point(row, column);
-        projectedLevel = 1;
+        projectedLevel = 0;
     }
 
     public void projectPoint(Point hexPoint, Direction vertical, Direction horizontal){
