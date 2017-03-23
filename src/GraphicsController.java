@@ -1,14 +1,19 @@
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Created by Bryan on 3/22/17.
  */
 public class GraphicsController extends JFrame
 {
+    private GraphicsWindow window;
+    private JFrame frame;
+
     public GraphicsController(GameBoard game)
     {
-        GraphicsWindow window = new GraphicsWindow(game);
-        JFrame frame = new JFrame();
+        window = new GraphicsWindow(game);
+        frame = new JFrame();
+        frame.setPreferredSize(new Dimension(700, 700));
         JScrollPane scrollPane = new JScrollPane(window);
         frame.add(scrollPane);
         frame.pack();
@@ -17,4 +22,13 @@ public class GraphicsController extends JFrame
         frame.setLocationRelativeTo(null);
     }
 
+    public GraphicsWindow getWindow()
+    {
+        return window;
+    }
+
+    public JFrame getFrame()
+    {
+        return frame;
+    }
 }

@@ -85,6 +85,8 @@ public class GraphicsWindow extends JPanel
                     Polygon p = new Polygon(X, Y, 6);
                     g.drawPolygon(p);
                     color.fill(p);
+                    super.revalidate();
+                    super.repaint();
                 }
             }
         }

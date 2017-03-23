@@ -71,6 +71,7 @@ public class B_Player
     public void placeTortoro()
     {
         //should decrease Tortoro if player does it validly
+        tortoro--;
     }
 
     public boolean foundNewSettlement()

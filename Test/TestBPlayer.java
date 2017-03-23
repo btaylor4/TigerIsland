@@ -119,4 +119,32 @@ public class TestBPlayer
     {
         assertNotEquals(1, player.getScore());
     }
+
+    @Test
+    public void testMeeplesDecreaseAfterPlacing()
+    {
+        player.placeMeeple();
+        assertEquals(19, player.getMeeples());
+    }
+
+    @Test
+    public void testInvalidMeepleAmountAfterPlacing()
+    {
+        player.placeMeeple();
+        assertNotEquals(20, player.getMeeples());
+    }
+
+    @Test
+    public void testTortoroDecreaseAfterPlacing()
+    {
+        player.placeTortoro();
+        assertEquals(2, player.getTortoro());
+    }
+
+    @Test
+    public void testInvalidTortoroAmountAfterPlacing()
+    {
+        player.placeTortoro();
+        assertNotEquals(3, player.getTortoro());
+    }
 }
