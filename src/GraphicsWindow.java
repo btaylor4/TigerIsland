@@ -6,11 +6,18 @@ import java.awt.*;
  */
 public class GraphicsWindow extends JPanel
 {
-    private int[][] board = new int[210][210];
+    private Hexagon[][] board;
+    GameBoard game;
+
+    public GraphicsWindow(GameBoard game)
+    {
+        board = game.getBoard();
+        this.game = game;
+    }
 
     public void paintComponent(Graphics g)
     {
-        initBoard();
+        board = game.getBoard();
         super.paintComponent(g);
         drawBoard(g);
     }
@@ -18,28 +25,6 @@ public class GraphicsWindow extends JPanel
     public Dimension getPreferredSize() {
         return new Dimension(3000, 3000);
     }
-
-    public void initBoard()
-    {
-        for(int i = 0; i < 210; i++)
-        {
-            for(int j = 0; j < 210; j++)
-            {
-                board[i][j] = 0;
-            }
-        }
-
-        board[0][0] = 1;
-
-        board[104][104] = 1;
-        board[104][105] = 2;
-        board[103][105] = 3;
-
-        board[104][106] = 1;
-        board[103][107] = 2;
-        board[104][107] = 3;
-    }
-
 
     public void drawBoard(Graphics g)
     {
@@ -60,23 +45,34 @@ public class GraphicsWindow extends JPanel
         {
             for (int j = 0; j < 210; j++)
             {
-                if (board[i][j] != 0)
+                if (board[i][j] != null)
                 {
                     Graphics2D color = (Graphics2D) g;
 
-                    switch(board[i][j])
+                    switch(board[i][j].terrain)
                     {
-                        case 1:
-                            color.setColor(Color.red);
+                        case GRASS:
+                            color.setColor(Color.GREEN);
                             break;
 
-                        case 2:
+                        case ROCKY:
+                            color.setColor(Color.GRAY);
+                            break;
+
+                        case WATER:
                             color.setColor(Color.BLUE);
                             break;
 
-                        case 3:
-                            color.setColor(Color.GRAY);
+                        case FOREST:
+                            color.setColor(Color.ORANGE);
                             break;
+
+                        case VOLCANO:
+                            color.setColor(Color.red);
+                            break;
+
+                        default:
+                            color.setColor(Color.WHITE);
                     }
 
                     int[] X = { Xcenters[i][j]+(int)(sideLength/2), Xcenters[i][j]+(int)sideLength,

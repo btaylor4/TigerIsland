@@ -5,11 +5,11 @@ import javax.swing.*;
  */
 public class GraphicsController extends JFrame
 {
-    public GraphicsController()
+    public GraphicsController(GameBoard game)
     {
-        GraphicsWindow game = new GraphicsWindow();
+        GraphicsWindow window = new GraphicsWindow(game);
         JFrame frame = new JFrame();
-        JScrollPane scrollPane = new JScrollPane(game);
+        JScrollPane scrollPane = new JScrollPane(window);
         frame.add(scrollPane);
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
