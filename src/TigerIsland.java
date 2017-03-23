@@ -1,4 +1,3 @@
-import java.util.HashMap;
 
 /**
  * Created by jdavi on 3/12/17.
@@ -9,6 +8,7 @@ public class TigerIsland
     {
         GameBoard game = new GameBoard();
         GraphicsController window = new GraphicsController(game);
+
         B_Player player1 = new B_Player(game);
         B_Player player2 = new B_Player(game);
         game.setFirstTile();

@@ -5,10 +5,13 @@ import javax.swing.*;
  */
 public class GraphicsController extends JFrame
 {
+    private GraphicsWindow window;
+    private JFrame frame;
+
     public GraphicsController(GameBoard game)
     {
-        GraphicsWindow window = new GraphicsWindow(game);
-        JFrame frame = new JFrame();
+        window = new GraphicsWindow(game);
+        frame = new JFrame();
         JScrollPane scrollPane = new JScrollPane(window);
         frame.add(scrollPane);
         frame.pack();
@@ -17,4 +20,13 @@ public class GraphicsController extends JFrame
         frame.setLocationRelativeTo(null);
     }
 
+    public GraphicsWindow getWindow()
+    {
+        return window;
+    }
+
+    public JFrame getFrame()
+    {
+        return frame;
+    }
 }
