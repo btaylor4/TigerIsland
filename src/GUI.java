@@ -10,17 +10,8 @@ public class GUI extends JPanel
 {
     private static final int ARRAY_DIMENSION = 210;
     int [][] board = new int[ARRAY_DIMENSION][ARRAY_DIMENSION];
-
-    public static void main(String [] args)
-    {
-        JFrame frame = new JFrame();
-        frame.setTitle("Fucked Up shit");
-        frame.setSize(500,500);
-        JScrollPane scroll = new JScrollPane(new GUI(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.add(scroll);
-        frame.setVisible(true);
-    }
+    
+    public GUI(){}
 
     @Override
     public Dimension getPreferredSize() {
@@ -32,20 +23,6 @@ public class GUI extends JPanel
         board();
         super.paintComponent(g);
         drawBoard(g);
-        /*Graphics2D g2d = (Graphics2D) g;
-        Polygon hexagon = new Polygon();
-        int x = 104;
-        int y = 104;
-        int h = 60;
-
-        for(int i = 0; i < 7; i++)
-        {
-            double a = Math.PI / 3.0 * i;
-            hexagon.addPoint((int)(Math.round(x + Math.sin(a) * h)), (int)(Math.round(y + Math.cos(a) * h)));
-        }
-        g2d.setColor(Color.red);
-        g2d.drawPolygon(hexagon);
-        g2d.fill(hexagon);*/
     }
 
     public void board()
