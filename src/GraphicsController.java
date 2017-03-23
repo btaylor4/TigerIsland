@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Created by Bryan on 3/22/17.
@@ -12,6 +13,7 @@ public class GraphicsController extends JFrame
     {
         window = new GraphicsWindow(game);
         frame = new JFrame();
+        frame.setPreferredSize(new Dimension(700, 700));
         JScrollPane scrollPane = new JScrollPane(window);
         frame.add(scrollPane);
         frame.pack();
