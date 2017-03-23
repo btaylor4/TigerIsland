@@ -9,7 +9,6 @@ public class TigerIsland
     {
         GameBoard game = new GameBoard();
         GraphicsController window = new GraphicsController(game);
-        game.setFirstTile();
         B_Player player1 = new B_Player(game);
         B_Player player2 = new B_Player(game);
         game.setFirstTile();
