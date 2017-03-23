@@ -47,11 +47,19 @@ public class B_Player
 
         tile.setRotation(rotationChoice);
 
-        ProjectionPack tileProjection = new ProjectionPack(rowChoice, colChoice);
 
         while(!game.selectTilePlacement(tile, rowChoice, colChoice))
         {
-            game.placeTile(tile, tileProjection);
+            System.out.println("Row choice");
+            rowChoice = chooseOption();
+
+            System.out.println("Col choice");
+            colChoice = chooseOption();
+
+            System.out.println("Rotation choice");
+            rotationChoice = chooseOption();
+
+            tile.setRotation(rotationChoice);
         }
 
         return isFinished;
@@ -189,5 +197,20 @@ public class B_Player
             default:
                 System.out.println("Invalid choice");
         }
+    }
+
+    public boolean hasWon()
+    {
+        if(meeples == 0 && tortoro == 0)
+        {
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public boolean hasLost() throws Exception
+    {
+        return false;
     }
 }
