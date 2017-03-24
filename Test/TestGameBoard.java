@@ -19,7 +19,6 @@ public class TestGameBoard
     @Test
     public void TestCreateBoard()
     {
-        game = new GameBoard();
         assertNotNull(game);
         assertTrue("Tile object is a tile", game instanceof GameBoard);
     }
@@ -27,7 +26,6 @@ public class TestGameBoard
     @Test
     public void TestCreationOfAllTiles()
     {
-        game = new GameBoard();
         game.createTiles();
 
         Tile[] tileCreations = game.getTileStack();
@@ -39,7 +37,7 @@ public class TestGameBoard
         }
     }
 
-    @Test
+    /*@Test
     public void settingTheFirstTile()
     {
         game.setFirstTile();
@@ -56,7 +54,7 @@ public class TestGameBoard
                     assertNull(board[i][j]);
             }
         }
-    }
+    }*/
 
     @Test
     public void testDifferentGeneratedTileAfterFirstTile()
@@ -67,5 +65,31 @@ public class TestGameBoard
         Tile tile = game.generateTile();
 
         assertNotEquals(tile, deck[0]);
+    }
+
+    @Test
+    public void testValidTilePlacement()
+    {
+        game.setFirstTile();
+        Tile tile = game.generateTile();
+        int row = 104;
+        int col = 106;
+        int rot = 0;
+
+        tile.setRotation(rot);
+        assertTrue(game.selectTilePlacement(tile, row, col));
+    }
+
+    @Test
+    public void testInvalidTilePlacement()
+    {
+        game.setFirstTile();
+        Tile tile = game.generateTile();
+        int row = 104;
+        int col = 110;
+        int rot = 0;
+
+        tile.setRotation(rot);
+        assertFalse(game.selectTilePlacement(tile, row, col));
     }
 }
