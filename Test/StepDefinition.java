@@ -25,8 +25,8 @@ public class StepDefinition {
         System.out.println("  Game board created");
     }
 
-
     Tile testTile ;
+    public static Tile testTileStack[] = new Tile[48];
 
     @Given("^A tile is being made")
     public void tileCreationGiven() throws Throwable{
@@ -45,5 +45,40 @@ public class StepDefinition {
     }
 
 
+    @Given("^the game is created")
+    public void tileGenerationGiven() throws Throwable{
+        GameBoard testGame = new GameBoard();
+        assert(testGame != null) ;
+    }
 
+    @When("^the tiles are generated")
+    public void tileGenerationWhen() throws Throwable{
+        int tileCounter = 0;
+
+        for (TerrainType a : TerrainType.values() ) {
+            if(a == TerrainType.VOLCANO) continue ;
+
+            for (TerrainType b : TerrainType.values() ) {
+                if(b == TerrainType.VOLCANO) continue ;
+
+                for (int i = 0; i < 3; i++) {
+                    testTileStack[tileCounter] = new Tile();
+                    testTileStack[tileCounter].assignTileNumber(tileCounter + 1) ;
+                    testTileStack[tileCounter].assignTerrain(a, b) ;
+                    tileCounter++;
+                }
+            }
+        }
+    }
+
+    @Then("^the tiles should be permuted in sequence")
+    public void tileGenerationThen() throws Throwable{
+        for (int i = 0 ; i < 48 ; i++) {
+             assert(testTileStack[i] != null);
+             assert(testTileStack[i].tileNumber == i+1);
+             assert(testTileStack[i].hexA != null);
+             assert(testTileStack[i].hexB != null);
+             assert(testTileStack[i].volcano.terrain == TerrainType.VOLCANO);
+        }
+    }
 }
