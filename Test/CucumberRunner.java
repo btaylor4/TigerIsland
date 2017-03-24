@@ -7,9 +7,8 @@ import org.junit.runner.RunWith;
  */
 
 @RunWith(Cucumber.class)
-@CucumberOptions(format = {"pretty","html:reports/test-report"},
-        tags = "@CreationTest"
-)
+@CucumberOptions(format = {"pretty","html:reports/test-report"}
+                )
 
 public class CucumberRunner {
 }
