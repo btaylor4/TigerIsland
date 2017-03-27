@@ -150,6 +150,7 @@ public class Player {
         settlement.createNewSettlement(selectedPoint) ;
         settlement.owner = this ;
         settlement.size += 1 ;
+        settlement.checkForAdjacencies(selectedPoint, game.getBoard());
 
         playerSettlements.put(game.coordinatesToKey(selectedPoint.row, selectedPoint.column), 1);
         game.setPiece(selectedPoint, OccupantType.MEEPLE, settlement);

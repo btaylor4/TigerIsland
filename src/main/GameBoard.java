@@ -246,4 +246,6 @@ public class GameBoard {
         }
     }
 
+    public Hexagon[][] getBoard(){return board;}
+
 }
