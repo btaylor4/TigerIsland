@@ -110,6 +110,33 @@ public class GameBoard {
             return 0;
     }
 
+    public void updatePlayerTerrainAdjacencies(ProjectionPack projection){
+
+        int row, column ;
+
+        row = projection.volcano.row ;
+        column = projection.volcano.column ;
+
+        if(board[row][column] != null){
+            board[row][column].settlementPointer.addTerrainAdjacencies(board[row][column].terrain, new Point(row, column));
+        }
+
+        row = projection.hex_a.row ;
+        column = projection.hex_a.column ;
+
+        if(board[row][column] != null){
+            board[row][column].settlementPointer.addTerrainAdjacencies(board[row][column].terrain, new Point(row, column));
+        }
+
+        row = projection.hex_b.row ;
+        column = projection.hex_b.column ;
+
+        if(board[row][column] != null){
+            board[row][column].settlementPointer.addTerrainAdjacencies(board[row][column].terrain, new Point(row, column));
+        }
+    }
+
+
     public void addFreeAdjacencies(Point point){
         // up-left, up, up-right, down-right, down, down-left,
         int rowAddArray[], columnAddArray[] ;
@@ -215,6 +242,8 @@ public class GameBoard {
         board[projections.volcano.row][projections.volcano.column] = tileBeingPlaced.volcano ;
         board[projections.hex_a.row][projections.hex_a.column] = tileBeingPlaced.hexA ;
         board[projections.hex_b.row][projections.hex_b.column] = tileBeingPlaced.hexB ;
+
+        updatePlayerTerrainAdjacencies(projections);
 
         addFreeAdjacencies(projections.volcano);
         addFreeAdjacencies(projections.hex_a);

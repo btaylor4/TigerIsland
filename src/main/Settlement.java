@@ -6,21 +6,34 @@ import java.util.HashMap;
 
 public class Settlement
 {
+    private static final int EVEN_ROW_ADDS[] = {-1, -1, -1, 0, 1, 0};
+    private static final int EVEN_COLUMN_ADDS[] = {-1, 0, 1, 1, 0, -1};
+    private static final int ODD_ROW_ADDS[] = {0,-1,0,1,1,1};
+    private static final int ODD_COLUMN_ADDS[] = {-1,0,1,1,0,-1};
+    private static final int SIDES_IN_HEX = 6 ;
+
     public int size ;
     public Player owner ;
 
     private HashMap<Point, Integer> collectionOfPoints;
     private HashMap<TerrainType, Point> grasslands;
-    private HashMap<TerrainType, Point> volcanos;
     private HashMap<TerrainType, Point> lakes;
     private HashMap<TerrainType, Point> forests;
     private HashMap<TerrainType, Point> rocky;
     private HashMap<TerrainType, Point> deserts;
+    private HashMap<TerrainType, Point> volcanos;
 
     public Settlement() {
         size = 0 ;
         owner = null ;
+
         collectionOfPoints = new HashMap<>();
+        grasslands = new HashMap<>();
+        lakes = new HashMap<>();
+        forests = new HashMap<>();
+        rocky = new HashMap<>();
+        deserts = new HashMap<>();
+        volcanos = new HashMap<>();
     }
 
     public void createNewSettlement(Point point)
@@ -35,82 +48,56 @@ public class Settlement
             return true;
     }
 
-    public void checkForAdjacencies(Point piecePlacementPoint, Hexagon[][] board)
-    {
-        int i = piecePlacementPoint.row;
-        int j = piecePlacementPoint.column;
+    public void addAdjacentTerrains(Point point, Hexagon[][] board) {
+        int row, column ;
+        int rowAddArray[], columnAddArray[] ;
 
-        Point point = null;
-
-        if(i != 0 && board[i-1][j] != null)
-        {
-            point = new Point(i-1, j);
-            addTerrainAdjacencies(board[i-1][j].terrain, point);
+        if(point.column % 2 == 0){
+            rowAddArray = EVEN_ROW_ADDS;
+            columnAddArray = EVEN_COLUMN_ADDS;
+        }
+        else{
+            rowAddArray = ODD_ROW_ADDS;
+            columnAddArray = ODD_COLUMN_ADDS;
         }
 
-        if(i != 209 && board[i+1][j] != null)
-        {
-            point = new Point(i+1, j);
-            addTerrainAdjacencies(board[i+1][j].terrain, point);
-        }
+        for (int i = 0; i < SIDES_IN_HEX; i++) {
+            row = point.row + rowAddArray[i];
+            column = point.column + columnAddArray[i];
 
-        if(j != 0 && board[i][j-1] != null)
-        {
-            point = new Point(i, j-1);
-            addTerrainAdjacencies(board[i][j-1].terrain, point);
-        }
-
-        if(j != 209 && board[i][j+1] != null)
-        {
-            point = new Point(i, j+1);
-            addTerrainAdjacencies(board[i][j+1].terrain, point);
-        }
-
-        if(i != 0 && board[j][i] != null)
-        {
-            point = new Point(j, i);
-            addTerrainAdjacencies(board[j][i].terrain, point);
-        }
-
-        if(i != 209 && board[j][i+1] != null)
-        {
-            point = new Point(j, i+1);
-            addTerrainAdjacencies(board[j][i+1].terrain, point);
+            if (board[row][column] == null) {
+                addTerrainAdjacencies(board[row][column].terrain, new Point(row, column));
+            }
         }
     }
 
-    public void addTerrainAdjacencies(TerrainType terrain, Point point)
-    {
-        switch(terrain)
-        {
+    public void addTerrainAdjacencies(TerrainType terrain, Point point){
+        switch(terrain) {
             case FOREST:
-                if(!forests.containsValue(point))
-                    forests.put(terrain, point);
+                forests.put(terrain, point);
                 break;
 
             case GRASS:
-                if(!grasslands.containsValue(point))
-                    grasslands.put(terrain, point);
+                grasslands.put(terrain, point);
                 break;
 
             case VOLCANO:
-                if(!volcanos.containsKey(point))
-                    volcanos.put(terrain, point);
+                volcanos.put(terrain, point);
                 break;
 
             case ROCKY:
-                if(!rocky.containsValue(point))
-                    rocky.put(terrain, point);
+                rocky.put(terrain, point);
                 break;
 
             case WATER:
-                if(!lakes.containsValue(point))
-                    lakes.put(terrain, point);
+                lakes.put(terrain, point);
                 break;
 
             case DESERT:
-                if(!deserts.containsKey(point))
-                    deserts.put(terrain, point);
+                deserts.put(terrain, point);
+                break;
+            default:
+                System.out.println("Error: Could not resolve adjacent terrain");
                 break;
         }
     }
