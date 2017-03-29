@@ -14,7 +14,7 @@ public class Settlement {
     public int size ;
     public Player owner ;
 
-    private HashMap<Point, Integer> occupantPositions;
+    private HashMap<Integer, Point> occupantPositions;
 
     private HashMap<Integer, Point> grasslands;
     private HashMap<Integer, Point> lakes;
@@ -39,7 +39,7 @@ public class Settlement {
     }
 
     public void beginNewSettlement(Point point) {
-        occupantPositions.put(point, 1);
+        occupantPositions.put(coordinatesToKey(point.row, point.column), point);
     }
 
     public void addAdjacentTerrains(Point point, Hexagon[][] board) {
@@ -125,6 +125,7 @@ public class Settlement {
             owner.placeMeeple(point, this);
             addAdjacentSettlementsForMerge(point, board);
         }
+        expansions.clear();
     }
 
     public void addAdjacentSettlementsForMerge(Point point, Hexagon[][] board) {
@@ -145,21 +146,46 @@ public class Settlement {
             column = point.column + columnAddArray[i];
 
             if (board[row][column] != null) {
-                if(board[row][column].occupant != OccupantType.NONE && !occupantPositions.containsKey(point)) {
+                if(board[row][column].occupant != OccupantType.NONE && board[row][column].settlementPointer != this) {
                     mergingSettlements.add(new Point(row, column));
                 }
             }
         }
     }
 
-    public void mergeSettlements() {
-        // iterate through mergingSettlements list
-        // for each point in the list, grab its settlement pointer
-        // from that settlement pointer, grab the things in those hashmaps (all of em)
+    public void mergeSettlements(Hexagon[][] board) {
+        int row, column ;
 
+        for(Point settlementPoint : mergingSettlements){
+            row = settlementPoint.row ;
+            column = settlementPoint.column ;
 
-        /* IMPORTANT: remove occupant positions from all adjacent terrain hash maps
-           there will be at least one conflict to resolve */
+            if(board[row][column].settlementPointer != this) {
+                occupantPositions.putAll(board[row][column].settlementPointer.occupantPositions);
+                forests.putAll(board[row][column].settlementPointer.forests);
+                grasslands.putAll(board[row][column].settlementPointer.grasslands);
+                lakes.putAll(board[row][column].settlementPointer.lakes);
+                rocky.putAll(board[row][column].settlementPointer.rocky);
+                volcanoes.putAll(board[row][column].settlementPointer.volcanoes);
 
+                size += board[row][column].settlementPointer.size ;
+                board[row][column].settlementPointer = this ;
+            }
+        }
+
+        cleanTerrainLists();    /* IMPORTANT: remove occupant positions from all adjacent terrain hash maps
+                                there will be at least one conflict to resolve */
+    }
+
+    private void cleanTerrainLists(){
+        int hashKey ;
+        for(Point point : occupantPositions.values()){
+            hashKey = coordinatesToKey(point.row, point.column);
+            forests.remove(hashKey);
+            grasslands.remove(hashKey);
+            lakes.remove(hashKey);
+            rocky.remove(hashKey);
+            volcanoes.remove(hashKey);
+        }
     }
 }

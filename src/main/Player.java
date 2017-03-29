@@ -169,7 +169,7 @@ public class Player {
         TerrainType terrainChoice = determineTerrainByHuman();
 
         settlementChoice.addMeeplesForExpansion(terrainChoice, game.getBoard());
-        settlementChoice.mergeSettlements();
+        settlementChoice.mergeSettlements(game.getBoard());
     }
 
     private TerrainType determineTerrainByHuman() {
