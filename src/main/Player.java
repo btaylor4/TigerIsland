@@ -8,6 +8,8 @@ import main.enums.Direction;
 import main.enums.OccupantType ;
 import main.enums.TerrainType;
 
+import static main.utils.formulas.coordinatesToKey;
+
 public class Player {
 
     public int designator ;
@@ -149,24 +151,25 @@ public class Player {
         } while(!game.isValidSettlementPosition(selectedPoint)) ;
         // TODO: The board currently does not/cannot check if it is an underhanded expansion
 
-        Settlement settlement = new Settlement();
-        settlement.createNewSettlement(selectedPoint) ;
-        settlement.owner = this ;
-        settlement.size += 1 ;
-        settlement.addAdjacentTerrains(selectedPoint, game.getBoard());
+        Settlement freshSettlement = new Settlement();
+        freshSettlement.owner = this ;
+        freshSettlement.size += 1 ;
+        freshSettlement.beginNewSettlement(selectedPoint);
 
-        playerSettlements.put(game.coordinatesToKey(selectedPoint.row, selectedPoint.column), 1);
-        mySettlements.add(settlement);
-        //game.setPiece(selectedPoint, OccupantType.MEEPLE, settlement);
-        placeMeeple(selectedPoint, settlement);
+        game.setSettlement(selectedPoint, freshSettlement);
+
+        playerSettlements.put(coordinatesToKey(selectedPoint.row, selectedPoint.column), 1);
+        mySettlements.add(freshSettlement); // redundant (hashmap and arraylist exist)
+        placeMeeple(selectedPoint, freshSettlement);
     }
 
     public void expandSettlementMeeple() {
         //should use place meeple method
         Settlement settlementChoice = determineSettlementByHuman();
         TerrainType terrainChoice = determineTerrainByHuman();
-        settlementChoice.addMeeplesToSettlement(terrainChoice, game.getBoard());
-        settlementChoice.mergeSettlements(mySettlements);
+
+        settlementChoice.addMeeplesForExpansion(terrainChoice, game.getBoard());
+        settlementChoice.mergeSettlements();
     }
 
     private TerrainType determineTerrainByHuman() {
@@ -227,11 +230,6 @@ public class Player {
 
     public boolean hasLost() throws Exception {
         return false;
-    }
-
-    public int getHexLevel(Point point) {
-        Hexagon[][] board = game.getBoard();
-        return board[point.row][point.column].level;
     }
 
     public void placeMeeple(Point selectedPoint, Settlement settlement) {

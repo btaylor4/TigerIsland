@@ -1,9 +1,11 @@
 package main;
 
+import java.util.ArrayList;
+
 public class TigerIsland {
 
     public static void main(String [] args) {
-        boolean game_on = true;
+        boolean game_on = false;
 
         GameBoard game = new GameBoard();
         Player player1 = new Player(game, 1);
@@ -14,6 +16,21 @@ public class TigerIsland {
         game.printBoard();
 
         currentPlayer = player2 ;
+
+        ArrayList<Integer> myList = new ArrayList<>();
+
+        System.out.println("Im so big" + myList.size());
+
+        myList.add(22);
+
+        System.out.println("Im so big" + myList.size());
+
+        myList.add(33);
+
+        myList.remove(0);
+
+        System.out.println(myList.get(0));
+
 
         while (game_on) {
             System.out.println("Player" + currentPlayer.designator + "'s turn");

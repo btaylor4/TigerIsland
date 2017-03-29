@@ -1,11 +1,12 @@
 package main;
 
-import main.enums.Direction;
 import main.enums.OccupantType;
 import main.enums.TerrainType;
 
 import java.util.HashMap;
 import java.util.Random;
+
+import static main.utils.formulas.coordinatesToKey;
 
 
 public class GameBoard {
@@ -68,10 +69,6 @@ public class GameBoard {
         }
     }
 
-    public int coordinatesToKey(int row, int column){
-        return (row * ARRAY_DIMENSION) + column ;
-    }
-
     public boolean checkAdjacency(ProjectionPack projections){
         boolean volcanoAdjacent, hex_aAdjacent, hex_bAdjacent ;
 
@@ -110,33 +107,6 @@ public class GameBoard {
             return 0;
     }
 
-    public void updatePlayerTerrainAdjacencies(ProjectionPack projection){
-
-        int row, column ;
-
-        row = projection.volcano.row ;
-        column = projection.volcano.column ;
-
-        if(board[row][column] != null && board[row][column].settlementPointer != null){
-            board[row][column].settlementPointer.addTerrainAdjacencies(board[row][column].terrain, new Point(row, column));
-        }
-
-        row = projection.hex_a.row ;
-        column = projection.hex_a.column ;
-
-        if(board[row][column] != null && board[row][column].settlementPointer != null){
-            board[row][column].settlementPointer.addTerrainAdjacencies(board[row][column].terrain, new Point(row, column));
-        }
-
-        row = projection.hex_b.row ;
-        column = projection.hex_b.column ;
-
-        if(board[row][column] != null && board[row][column].settlementPointer != null){
-            board[row][column].settlementPointer.addTerrainAdjacencies(board[row][column].terrain, new Point(row, column));
-        }
-    }
-
-
     public void addFreeAdjacencies(Point point){
         // up-left, up, up-right, down-right, down, down-left,
         int rowAddArray[], columnAddArray[] ;
@@ -157,6 +127,9 @@ public class GameBoard {
 
             if (board[row][column] == null) {
                 playableHexes.put(coordinatesToKey(row, column), 1);
+            }
+            else if(board[row][column].settlementPointer != null){
+                board[row][column].settlementPointer.hashAdjacentTerrain(board[point.row][point.column].terrain, point);
             }
         }
     }
@@ -243,8 +216,6 @@ public class GameBoard {
         board[projections.hex_a.row][projections.hex_a.column] = tileBeingPlaced.hexA ;
         board[projections.hex_b.row][projections.hex_b.column] = tileBeingPlaced.hexB ;
 
-        updatePlayerTerrainAdjacencies(projections);
-
         addFreeAdjacencies(projections.volcano);
         addFreeAdjacencies(projections.hex_a);
         addFreeAdjacencies(projections.hex_b);
@@ -262,6 +233,11 @@ public class GameBoard {
     public void setPiece(Point desiredPosition, OccupantType piece, Settlement settlementPointer){
         board[desiredPosition.row][desiredPosition.column].occupant = piece ;
         board[desiredPosition.row][desiredPosition.column].settlementPointer = settlementPointer ;
+    }
+
+    public void setSettlement(Point desiredPosition, Settlement newSettlement){
+        newSettlement.addAdjacentTerrains(desiredPosition, board);
+        board[desiredPosition.row][desiredPosition.column].settlementPointer = newSettlement ;
     }
 
     public void printBoard(){
