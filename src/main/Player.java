@@ -1,10 +1,12 @@
 package main;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
 import main.enums.Direction;
 import main.enums.OccupantType ;
+import main.enums.TerrainType;
 
 public class Player {
 
@@ -18,6 +20,7 @@ public class Player {
     private GameBoard game;
     private Tile tileHeld ;
     private HashMap<Integer, Integer> playerSettlements;
+    private ArrayList<Settlement> mySettlements;
 
     public Player(GameBoard game, int designator) {
         this.designator = designator ;
@@ -153,11 +156,42 @@ public class Player {
         settlement.addAdjacentTerrains(selectedPoint, game.getBoard());
 
         playerSettlements.put(game.coordinatesToKey(selectedPoint.row, selectedPoint.column), 1);
-        game.setPiece(selectedPoint, OccupantType.MEEPLE, settlement);
+        mySettlements.add(settlement);
+        //game.setPiece(selectedPoint, OccupantType.MEEPLE, settlement);
+        placeMeeple(selectedPoint, settlement);
     }
 
     public void expandSettlementMeeple() {
         //should use place meeple method
+        Settlement settlementChoice = determineSettlementByHuman();
+        TerrainType terrainChoice = determineTerrainByHuman();
+        settlementChoice.addMeeplesToSettlement(terrainChoice, game.getBoard());
+        settlementChoice.mergeSettlements(mySettlements);
+    }
+
+    private TerrainType determineTerrainByHuman() {
+        int terrainChoice = chooseOption();
+        switch(terrainChoice){
+            case 1:
+                return TerrainType.FOREST;
+
+            case 2:
+                return  TerrainType.GRASS;
+
+            case 3:
+                return TerrainType.ROCKY;
+
+            case 4:
+                return TerrainType.WATER;
+        }
+
+        return TerrainType.GRASS;
+    }
+
+    private Settlement determineSettlementByHuman() {
+        int settlementChoice = chooseOption();
+        Object test = playerSettlements.keySet().toArray()[settlementChoice];
+        return (Settlement)test;
     }
 
     public void expandSettlementTotoro() {
@@ -193,5 +227,15 @@ public class Player {
 
     public boolean hasLost() throws Exception {
         return false;
+    }
+
+    public int getHexLevel(Point point) {
+        Hexagon[][] board = game.getBoard();
+        return board[point.row][point.column].level;
+    }
+
+    public void placeMeeple(Point selectedPoint, Settlement settlement) {
+        game.setPiece(selectedPoint, OccupantType.MEEPLE, settlement);
+        meeples--;
     }
 }

@@ -117,21 +117,21 @@ public class GameBoard {
         row = projection.volcano.row ;
         column = projection.volcano.column ;
 
-        if(board[row][column] != null){
+        if(board[row][column] != null && board[row][column].settlementPointer != null){
             board[row][column].settlementPointer.addTerrainAdjacencies(board[row][column].terrain, new Point(row, column));
         }
 
         row = projection.hex_a.row ;
         column = projection.hex_a.column ;
 
-        if(board[row][column] != null){
+        if(board[row][column] != null && board[row][column].settlementPointer != null){
             board[row][column].settlementPointer.addTerrainAdjacencies(board[row][column].terrain, new Point(row, column));
         }
 
         row = projection.hex_b.row ;
         column = projection.hex_b.column ;
 
-        if(board[row][column] != null){
+        if(board[row][column] != null && board[row][column].settlementPointer != null){
             board[row][column].settlementPointer.addTerrainAdjacencies(board[row][column].terrain, new Point(row, column));
         }
     }
