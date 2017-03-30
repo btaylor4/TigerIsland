@@ -14,7 +14,7 @@ public class Settlement {
     public int size ;
     public Player owner ;
 
-    private HashMap<Integer, Point> occupantPositions;
+    public HashMap<Integer, Point> occupantPositions;
 
     private HashMap<Integer, Point> grasslands;
     private HashMap<Integer, Point> lakes;
@@ -23,6 +23,7 @@ public class Settlement {
     private HashMap<Integer, Point> volcanoes;
 
     private ArrayList<Point> mergingSettlements;
+    public ArrayList<Point> markedForRemoval ;
 
     public Settlement() {
         size = 0 ;
@@ -36,6 +37,7 @@ public class Settlement {
         volcanoes = new HashMap<>();
 
         mergingSettlements = new ArrayList<>();
+        markedForRemoval = new ArrayList<>();
     }
 
     public void beginNewSettlement(Point point) {
@@ -123,6 +125,7 @@ public class Settlement {
     private void iterateThroughExpansions(HashMap<Integer, Point> expansions, Hexagon[][] board) {
         for(Point point : expansions.values()){
             owner.placeMeeple(point, this);
+            occupantPositions.put(coordinatesToKey(point.row, point.column), point) ;
             addAdjacentSettlementsForMerge(point, board);
         }
         expansions.clear();
@@ -173,6 +176,7 @@ public class Settlement {
             }
         }
 
+        mergingSettlements.clear();
         cleanTerrainLists();    /* IMPORTANT: remove occupant positions from all adjacent terrain hash maps
                                 there will be at least one conflict to resolve */
     }

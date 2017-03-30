@@ -1,6 +1,5 @@
 package main;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -11,7 +10,6 @@ import main.enums.TerrainType;
 import static main.utils.formulas.coordinatesToKey;
 
 public class Player {
-
     public int designator ;
 
     public int score;
@@ -21,8 +19,7 @@ public class Player {
 
     private GameBoard game;
     private Tile tileHeld ;
-    private HashMap<Integer, Integer> playerSettlements;
-    private ArrayList<Settlement> mySettlements;
+    public HashMap<Integer, Settlement> playerSettlements;
 
     public Player(GameBoard game, int designator) {
         this.designator = designator ;
@@ -158,8 +155,7 @@ public class Player {
 
         game.setSettlement(selectedPoint, freshSettlement);
 
-        playerSettlements.put(coordinatesToKey(selectedPoint.row, selectedPoint.column), 1);
-        mySettlements.add(freshSettlement); // redundant (hashmap and arraylist exist)
+        playerSettlements.put(coordinatesToKey(selectedPoint.row, selectedPoint.column), freshSettlement);
         placeMeeple(selectedPoint, freshSettlement);
     }
 

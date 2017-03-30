@@ -4,6 +4,7 @@ import main.enums.OccupantType;
 import main.enums.TerrainType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class Hexagon {
@@ -13,7 +14,7 @@ public class Hexagon {
     public OccupantType occupant ;
 
     public Settlement settlementPointer ;
-    public ArrayList<Hexagon> adjacencyList ;
+    public HashMap<Integer, Hexagon> adjacencyList ;
 
     public Hexagon(){
         level = 0;

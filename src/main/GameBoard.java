@@ -212,6 +212,9 @@ public class GameBoard {
         tileBeingPlaced.assignTileNumber(tilePlayIndex);
         tilePlayIndex++ ;
 
+        if(projections.projectedLevel > 1) processVolcanicDestruction(projections);
+        // make sure destruction happens before placement
+
         board[projections.volcano.row][projections.volcano.column] = tileBeingPlaced.volcano ;
         board[projections.hex_a.row][projections.hex_a.column] = tileBeingPlaced.hexA ;
         board[projections.hex_b.row][projections.hex_b.column] = tileBeingPlaced.hexB ;
@@ -237,7 +240,55 @@ public class GameBoard {
 
     public void setSettlement(Point desiredPosition, Settlement newSettlement){
         newSettlement.addAdjacentTerrains(desiredPosition, board);
+
         board[desiredPosition.row][desiredPosition.column].settlementPointer = newSettlement ;
+        board[desiredPosition.row][desiredPosition.column].adjacencyList = new HashMap<>();
+    }
+
+    public void processVolcanicDestruction(ProjectionPack projection){
+        Settlement settlementA, settlementB;
+
+        settlementA = board[projection.hex_a.row][projection.hex_a.column].settlementPointer ;
+        settlementB = board[projection.hex_b.row][projection.hex_b.column].settlementPointer ;
+
+        if(settlementA != null) markForRemoval(projection.hex_a);
+        if(settlementB != null) markForRemoval(projection.hex_b);
+
+        if(settlementA != null) partialSettlementDestruction(settlementA);
+        if((settlementB != null) && (settlementA != settlementB)){ partialSettlementDestruction(settlementB); }
+
+        // now some reconstruction stuff goes....
+        if(settlementA != null) settlementReconstruction(settlementA);
+        if((settlementB != null) && (settlementA != settlementB)){ settlementReconstruction(settlementB); }
+    }
+
+    private void markForRemoval(Point target){
+        board[target.row][target.column].settlementPointer.markedForRemoval.add(target);
+    }
+
+    private void partialSettlementDestruction(Settlement settlement){
+        int key;
+
+        for(Point remove : settlement.markedForRemoval){
+            key = coordinatesToKey(remove.row, remove.column) ;
+            settlement.occupantPositions.remove(key);
+            board[remove.row][remove.column].occupant = OccupantType.NONE ;
+            board[remove.row][remove.column].settlementPointer = null ;
+        }
+    }
+
+    private void settlementReconstruction(Settlement settlement){
+        Settlement partialSettlement = new Settlement();
+
+        for(Point point : settlement.occupantPositions.values()){
+            board[point.row][point.column].settlementPointer = partialSettlement ;
+            partialSettlement.owner = settlement.owner ;
+            partialSettlement.beginNewSettlement(point);
+            partialSettlement.addAdjacentTerrains(point, board);
+            partialSettlement.addAdjacentSettlementsForMerge(point, board);
+            partialSettlement.mergeSettlements(board);
+            partialSettlement.owner.playerSettlements.put(coordinatesToKey(point.row, point.column), partialSettlement);
+        }
     }
 
     public void printBoard(){
