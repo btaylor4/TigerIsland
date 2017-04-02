@@ -5,6 +5,17 @@ import java.util.ArrayList;
 public class TigerIsland {
 
     public static void main(String [] args) {
+
+        GameBoard game1 = new GameBoard();
+        GameBoard game2 = new GameBoard();
+
+        Thread Game1player = new Thread(new Player(game1,1));
+        Thread Game1opponent = new Thread(new Player(game1,2));
+
+        Thread Game2player = new Thread(new Player(game2,1));
+        Thread Game2opponent = new Thread(new Player(game2,2));
+
+        /*
         boolean game_on = false;
 
         GameBoard game = new GameBoard();
@@ -42,6 +53,6 @@ public class TigerIsland {
                 currentPlayer = player2 ;
             else
                 currentPlayer = player1 ;
-        }
+        }*/
     }
 }

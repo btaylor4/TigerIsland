@@ -9,7 +9,7 @@ import main.enums.TerrainType;
 
 import static main.utils.formulas.coordinatesToKey;
 
-public class Player {
+public class Player implements Runnable{
     public int designator ;
 
     public int score;
@@ -231,5 +231,10 @@ public class Player {
     public void placeMeeple(Point selectedPoint, Settlement settlement) {
         game.setPiece(selectedPoint, OccupantType.MEEPLE, settlement);
         meeples--;
+    }
+
+    @Override
+    public void run() {
+
     }
 }
