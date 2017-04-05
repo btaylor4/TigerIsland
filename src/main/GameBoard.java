@@ -7,26 +7,18 @@ import java.util.HashMap;
 import java.util.Random;
 
 import static main.utils.formulas.coordinatesToKey;
-
+import static main.utils.constants.* ;
 
 public class GameBoard {
 
-    private static final int ARRAY_DIMENSION = 210;
-    private static final int NUM_TILE_COPIES = 3;
-    private static final int NUM_TILES = 48;
-    private static final int SIDES_IN_HEX = 6;
-
-    private static final int EVEN_ROW_ADDS[] = {-1, -1, -1, 0, 1, 0};
-    private static final int EVEN_COLUMN_ADDS[] = {-1, 0, 1, 1, 0, -1};
-    private static final int ODD_ROW_ADDS[] = {0,-1,0,1,1,1};
-    private static final int ODD_COLUMN_ADDS[] = {-1,0,1,1,0,-1};
-
     public static final int BOARD_CENTER = ARRAY_DIMENSION/2 ;
+
     private int upperLimit, lowerLimit, leftLimit, rightLimit ;
 
-    private static Hexagon[][] board = new Hexagon[ARRAY_DIMENSION][ARRAY_DIMENSION];
+    public static Hexagon[][] board = new Hexagon[ARRAY_DIMENSION][ARRAY_DIMENSION];
     private HashMap<Integer,Integer> playableHexes = new HashMap<>() ;
     public static Tile tileStack[] = new Tile[NUM_TILES];
+
     private int tilePlayIndex;
 
     public GameBoard(){
@@ -108,22 +100,13 @@ public class GameBoard {
     }
 
     public void addFreeAdjacencies(Point point){
-        // up-left, up, up-right, down-right, down, down-left,
-        int rowAddArray[], columnAddArray[] ;
+        // left, up-left, up-right, right, down-right, down-left
+
         int row , column ;
 
-        if(point.column % 2 == 0){
-            rowAddArray = EVEN_ROW_ADDS;
-            columnAddArray = EVEN_COLUMN_ADDS;
-        }
-        else{
-            rowAddArray = ODD_ROW_ADDS;
-            columnAddArray = ODD_COLUMN_ADDS;
-        }
-
         for (int i = 0; i < SIDES_IN_HEX; i++) {
-            row = point.row + rowAddArray[i];
-            column = point.column + columnAddArray[i];
+            row = point.row + ROW_ADDS[i];
+            column = point.column + COLUMN_ADDS[i];
 
             if (board[row][column] == null) {
                 playableHexes.put(coordinatesToKey(row, column), 1);
@@ -187,6 +170,7 @@ public class GameBoard {
         }
     }
 
+
     public boolean isValidSettlementPosition(Point desiredPosition){
         if(board[desiredPosition.row][desiredPosition.column] == null)
             return false;
@@ -239,11 +223,10 @@ public class GameBoard {
     }
 
     public void setSettlement(Point desiredPosition, Settlement newSettlement){
-        newSettlement.addAdjacentTerrains(desiredPosition, board);
-
+        newSettlement.addAdjacentTerrains(desiredPosition);
         board[desiredPosition.row][desiredPosition.column].settlementPointer = newSettlement ;
-        board[desiredPosition.row][desiredPosition.column].adjacencyList = new HashMap<>();
     }
+
 
     public void processVolcanicDestruction(ProjectionPack projection){
         Settlement settlementA, settlementB;
@@ -269,24 +252,25 @@ public class GameBoard {
     private void partialSettlementDestruction(Settlement settlement){
         int key;
 
-        for(Point remove : settlement.markedForRemoval){
-            key = coordinatesToKey(remove.row, remove.column) ;
+        for(Point removal : settlement.markedForRemoval){
+            key = coordinatesToKey(removal.row, removal.column) ;
             settlement.occupantPositions.remove(key);
-            board[remove.row][remove.column].occupant = OccupantType.NONE ;
-            board[remove.row][remove.column].settlementPointer = null ;
+            settlement.owner.playerSettlements.remove(key);
+            board[removal.row][removal.column].occupant = OccupantType.NONE ;
+            board[removal.row][removal.column].settlementPointer = null ;
         }
     }
 
     private void settlementReconstruction(Settlement settlement){
-        Settlement partialSettlement = new Settlement();
+        Settlement partialSettlement = new Settlement(this);
 
         for(Point point : settlement.occupantPositions.values()){
             board[point.row][point.column].settlementPointer = partialSettlement ;
             partialSettlement.owner = settlement.owner ;
             partialSettlement.beginNewSettlement(point);
-            partialSettlement.addAdjacentTerrains(point, board);
-            partialSettlement.addAdjacentSettlementsForMerge(point, board);
-            partialSettlement.mergeSettlements(board);
+            partialSettlement.addAdjacentTerrains(point);
+            partialSettlement.addAdjacentSettlementsForMerge(point);
+            partialSettlement.mergeSettlements();
             partialSettlement.owner.playerSettlements.put(coordinatesToKey(point.row, point.column), partialSettlement);
         }
     }
@@ -301,7 +285,5 @@ public class GameBoard {
             System.out.print('\n');
         }
     }
-
-    public Hexagon[][] getBoard(){return board;}
 
 }

@@ -2,9 +2,9 @@ package main;
 
 import main.enums.OccupantType;
 import main.enums.TerrainType;
-import main.utils.constants;
 
 import static main.utils.formulas.coordinatesToKey;
+import static main.utils.constants.* ;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +12,10 @@ import java.util.HashMap;
 public class Settlement {
 
     public int size ;
+    public int ownerNumber ;
     public Player owner ;
+    private GameBoard game ;
+
 
     public HashMap<Integer, Point> occupantPositions;
 
@@ -25,9 +28,11 @@ public class Settlement {
     private ArrayList<Point> mergingSettlements;
     public ArrayList<Point> markedForRemoval ;
 
-    public Settlement() {
+    public Settlement(GameBoard gamePointer) {
         size = 0 ;
+        ownerNumber = 0 ;
         owner = null ;
+        game = gamePointer ;
 
         occupantPositions = new HashMap<>();
         grasslands = new HashMap<>();
@@ -44,25 +49,36 @@ public class Settlement {
         occupantPositions.put(coordinatesToKey(point.row, point.column), point);
     }
 
-    public void addAdjacentTerrains(Point point, Hexagon[][] board) {
+    public void addAdjacentTerrains(Point point) {
         int row, column ;
-        int rowAddArray[], columnAddArray[] ;
 
-        if(point.column % 2 == 0){
-            rowAddArray = constants.EVEN_ROW_ADDS;
-            columnAddArray = constants.EVEN_COLUMN_ADDS;
+        for (int i = 0; i < SIDES_IN_HEX; i++) {
+            row = point.row + ROW_ADDS[i];
+            column = point.column + COLUMN_ADDS[i];
+
+            if (game.board[row][column] != null){
+                if(game.board[row][column].occupant == OccupantType.NONE) {
+                    hashAdjacentTerrain(game.board[row][column].terrain, new Point(row, column));
+                }
+            }
         }
-        else{
-            rowAddArray = constants.ODD_ROW_ADDS;
-            columnAddArray = constants.ODD_COLUMN_ADDS;
-        }
+    }
 
-        for (int i = 0; i < constants.SIDES_IN_HEX; i++) {
-            row = point.row + rowAddArray[i];
-            column = point.column + columnAddArray[i];
+    private void recursivelyAddMatchingTerrain(Point origin){
+        int row, column ;
+        boolean matching, notPresent ;
 
-            if (board[row][column] != null) {
-                hashAdjacentTerrain(board[row][column].terrain, new Point(row, column));
+        for (int i = 0; i < SIDES_IN_HEX; i++) {
+            row = origin.row + ROW_ADDS[i];
+            column = origin.column + COLUMN_ADDS[i];
+
+            if (game.board[row][column] != null) {
+                matching = game.board[row][column].terrain == game.board[origin.row][origin.column].terrain ;
+                notPresent = isFreeTerrainPresent(game.board[row][column].terrain, new Point(row, column)) ;
+
+                if(matching && notPresent && (game.board[row][column].occupant == OccupantType.NONE)){
+                    hashAdjacentTerrain(game.board[row][column].terrain, new Point(row, column));
+                }
             }
         }
     }
@@ -96,83 +112,101 @@ public class Settlement {
                 System.out.println("Error: Could not resolve adjacent terrain");
                 break;
         }
+
+        recursivelyAddMatchingTerrain(point);
     }
 
-    public void addMeeplesForExpansion(TerrainType terrain, Hexagon[][] board){
+    private boolean isFreeTerrainPresent(TerrainType terrain, Point point){
+        int hashKey = coordinatesToKey(point.row, point.column);
+
+        switch(terrain) {
+            case FOREST:
+                return forests.containsKey(hashKey);
+
+            case GRASS:
+                return grasslands.containsKey(hashKey);
+
+            case VOLCANO:
+                return volcanoes.containsKey(hashKey);
+
+            case ROCKY:
+                return rocky.containsKey(hashKey);
+
+            case WATER:
+                return lakes.containsKey(hashKey);
+
+            default:
+                System.out.println("Error: Could not resolve adjacent terrain");
+                break;
+        }
+        return false;
+    }
+
+    public void expand(TerrainType terrain){
         switch(terrain){
             case GRASS:
-                iterateThroughExpansions(grasslands, board);
+                expandThroughTerrain(grasslands);
                 break;
 
             case ROCKY:
-                iterateThroughExpansions(rocky, board);
+                expandThroughTerrain(rocky);
                 break;
 
             case WATER:
-                iterateThroughExpansions(lakes, board);
+                expandThroughTerrain(lakes);
                 break;
 
             case FOREST:
-                iterateThroughExpansions(forests, board);
+                expandThroughTerrain(forests);
                 break;
 
             case VOLCANO:  // be warned you cannot expand on volcanoes
-                iterateThroughExpansions(volcanoes, board);
+                expandThroughTerrain(volcanoes);
                 break;
         }
     }
 
-    private void iterateThroughExpansions(HashMap<Integer, Point> expansions, Hexagon[][] board) {
+    private void expandThroughTerrain(HashMap<Integer,Point> expansions ){
         for(Point point : expansions.values()){
             owner.placeMeeple(point, this);
             occupantPositions.put(coordinatesToKey(point.row, point.column), point) ;
-            addAdjacentSettlementsForMerge(point, board);
+            addAdjacentSettlementsForMerge(point);
         }
         expansions.clear();
     }
 
-    public void addAdjacentSettlementsForMerge(Point point, Hexagon[][] board) {
+    public void addAdjacentSettlementsForMerge(Point point) {
         int row, column ;
-        int rowAddArray[], columnAddArray[] ;
 
-        if(point.column % 2 == 0){
-            rowAddArray = constants.EVEN_ROW_ADDS;
-            columnAddArray = constants.EVEN_COLUMN_ADDS;
-        }
-        else{
-            rowAddArray = constants.ODD_ROW_ADDS;
-            columnAddArray = constants.ODD_COLUMN_ADDS;
-        }
+        for (int i = 0; i < SIDES_IN_HEX; i++) {
+            row = point.row + ROW_ADDS[i];
+            column = point.column + COLUMN_ADDS[i];
 
-        for (int i = 0; i < constants.SIDES_IN_HEX; i++) {
-            row = point.row + rowAddArray[i];
-            column = point.column + columnAddArray[i];
-
-            if (board[row][column] != null) {
-                if(board[row][column].occupant != OccupantType.NONE && board[row][column].settlementPointer != this) {
+            if(game.board[row][column] != null){
+                if(game.board[row][column].occupant != OccupantType.NONE && game.board[row][column].settlementPointer != this) {
                     mergingSettlements.add(new Point(row, column));
                 }
             }
         }
     }
 
-    public void mergeSettlements(Hexagon[][] board) {
+    public void mergeSettlements() {
         int row, column ;
 
         for(Point settlementPoint : mergingSettlements){
             row = settlementPoint.row ;
             column = settlementPoint.column ;
 
-            if(board[row][column].settlementPointer != this) {
-                occupantPositions.putAll(board[row][column].settlementPointer.occupantPositions);
-                forests.putAll(board[row][column].settlementPointer.forests);
-                grasslands.putAll(board[row][column].settlementPointer.grasslands);
-                lakes.putAll(board[row][column].settlementPointer.lakes);
-                rocky.putAll(board[row][column].settlementPointer.rocky);
-                volcanoes.putAll(board[row][column].settlementPointer.volcanoes);
+            if(game.board[row][column].settlementPointer != this) {
+                occupantPositions.putAll(game.board[row][column].settlementPointer.occupantPositions);
+                forests.putAll(game.board[row][column].settlementPointer.forests);
+                grasslands.putAll(game.board[row][column].settlementPointer.grasslands);
+                lakes.putAll(game.board[row][column].settlementPointer.lakes);
+                rocky.putAll(game.board[row][column].settlementPointer.rocky);
+                volcanoes.putAll(game.board[row][column].settlementPointer.volcanoes);
 
-                size += board[row][column].settlementPointer.size ;
-                board[row][column].settlementPointer = this ;
+                size += game.board[row][column].settlementPointer.size ;
+                game.board[row][column].settlementPointer = this ;
             }
         }
 

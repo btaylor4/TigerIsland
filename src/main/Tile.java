@@ -5,10 +5,9 @@ import main.enums.TerrainType;
 
 public class Tile {
 
-    private static final short DEGREES_OF_ROTATION = 60 ;
-    private static final short DEGREE_THRESHHOLD = 300 ;
+    private static final short ROTATION_POSITIONS = 6 ;
 
-    public int rotation ; // default position is volcano in bottom left corner
+    public int rotation ; // default position is volcano in bottom with A up-left, and B up-right
     public int tileNumber ;
 
     public Hexagon volcano ;
@@ -16,7 +15,7 @@ public class Tile {
     public Hexagon hexB ;
 
     public Tile(){
-        rotation = 0;
+        rotation = 1;
 
         volcano = new Hexagon();
         volcano.terrain = TerrainType.VOLCANO ;
@@ -48,21 +47,21 @@ public class Tile {
     }
 
     public void rotateClockWise(){
-        if(rotation == 0)
-            rotation = DEGREE_THRESHHOLD ;
+        if(rotation == ROTATION_POSITIONS)
+            rotation = 1 ;
         else
-            rotation -= DEGREES_OF_ROTATION ;
+            rotation += 1 ;
     }
 
     public void rotateCounterClockWise(){
-        if(rotation == DEGREE_THRESHHOLD)
-            rotation = 0 ;
+        if(rotation == 1)
+            rotation = ROTATION_POSITIONS ;
         else
-            rotation += DEGREES_OF_ROTATION ;
+            rotation -= 1 ;
     }
 
-    public void setRotation(int degree){
-        rotation = degree ;
+    public void setRotation(int rotation){
+        this.rotation = rotation ;
     }
 
 }

@@ -41,34 +41,34 @@ public class Player {
         ProjectionPack projections = new ProjectionPack(desiredPoint) ;
 
         switch(tileBeingPlaced.rotation){
-            case 0:
+            case 1:
+                projections.projectPoint(projections.hex_a, Direction.UP, Direction.LEFT);
+                projections.projectPoint(projections.hex_b, Direction.UP, Direction.RIGHT);
+                break;
+
+            case 2:
                 projections.projectPoint(projections.hex_a, Direction.UP, Direction.RIGHT);
+                projections.projectPoint(projections.hex_b, Direction.NONE, Direction.RIGHT);
+                break;
+
+            case 3:
+                projections.projectPoint(projections.hex_a, Direction.NONE, Direction.RIGHT);
                 projections.projectPoint(projections.hex_b, Direction.DOWN, Direction.RIGHT);
                 break;
 
-            case 60:
+            case 4:
                 projections.projectPoint(projections.hex_a, Direction.DOWN, Direction.RIGHT);
-                projections.projectPoint(projections.hex_b, Direction.DOWN, Direction.NONE);
-                break;
-
-            case 120:
-                projections.projectPoint(projections.hex_a, Direction.DOWN, Direction.NONE);
                 projections.projectPoint(projections.hex_b, Direction.DOWN, Direction.LEFT);
                 break;
 
-            case 180:
+            case 5:
                 projections.projectPoint(projections.hex_a, Direction.DOWN, Direction.LEFT);
+                projections.projectPoint(projections.hex_b, Direction.NONE, Direction.LEFT);
+                break;
+
+            case 6:
+                projections.projectPoint(projections.hex_a, Direction.NONE, Direction.LEFT);
                 projections.projectPoint(projections.hex_b, Direction.UP, Direction.LEFT);
-                break;
-
-            case 240:
-                projections.projectPoint(projections.hex_a, Direction.UP, Direction.LEFT);
-                projections.projectPoint(projections.hex_b, Direction.UP, Direction.NONE);
-                break;
-
-            case 300:
-                projections.projectPoint(projections.hex_a, Direction.UP, Direction.NONE);
-                projections.projectPoint(projections.hex_b, Direction.UP, Direction.RIGHT);
                 break;
 
             default:
@@ -148,15 +148,16 @@ public class Player {
         } while(!game.isValidSettlementPosition(selectedPoint)) ;
         // TODO: The board currently does not/cannot check if it is an underhanded expansion
 
-        Settlement freshSettlement = new Settlement();
+        Settlement freshSettlement = new Settlement(game);
         freshSettlement.owner = this ;
-        freshSettlement.size += 1 ;
+        freshSettlement.ownerNumber = designator ;
+        freshSettlement.size = 1 ;
         freshSettlement.beginNewSettlement(selectedPoint);
 
         game.setSettlement(selectedPoint, freshSettlement);
+        placeMeeple(selectedPoint, freshSettlement);
 
         playerSettlements.put(coordinatesToKey(selectedPoint.row, selectedPoint.column), freshSettlement);
-        placeMeeple(selectedPoint, freshSettlement);
     }
 
     public void expandSettlementMeeple() {
@@ -164,8 +165,8 @@ public class Player {
         Settlement settlementChoice = determineSettlementByHuman();
         TerrainType terrainChoice = determineTerrainByHuman();
 
-        settlementChoice.addMeeplesForExpansion(terrainChoice, game.getBoard());
-        settlementChoice.mergeSettlements(game.getBoard());
+        settlementChoice.expand(terrainChoice);
+        settlementChoice.mergeSettlements();
     }
 
     private TerrainType determineTerrainByHuman() {
@@ -222,10 +223,6 @@ public class Player {
 
     public boolean isOutOfPieces(){
         return (meeples == 0 && totoro == 0) ;
-    }
-
-    public boolean hasLost() throws Exception {
-        return false;
     }
 
     public void placeMeeple(Point selectedPoint, Settlement settlement) {

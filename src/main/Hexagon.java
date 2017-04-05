@@ -12,14 +12,11 @@ public class Hexagon {
     public int tileNumber ;
     public TerrainType terrain ;
     public OccupantType occupant ;
-
     public Settlement settlementPointer ;
-    public HashMap<Integer, Hexagon> adjacencyList ;
 
     public Hexagon(){
         level = 0;
         occupant = OccupantType.NONE ;
         settlementPointer = null ;
-        adjacencyList = null ;
     }
 }

@@ -20,40 +20,30 @@ public class ProjectionPack {
     public void projectPoint(Point hexPoint, Direction vertical, Direction horizontal){
         switch(vertical){
             case UP:
-                if(horizontal == Direction.NONE) {
-                    hexPoint.row -= 1;
-                }
-                else if((hexPoint.column % 2) == 0){
-                    hexPoint.row -= 1 ;
+                hexPoint.row -= 1;
+                if(horizontal == Direction.RIGHT){
+                    hexPoint.column += 1 ;
                 }
                 break;
 
             case DOWN:
-                if(horizontal == Direction.NONE){
-                    hexPoint.row += 1 ;
-                }
-                else if((hexPoint.column % 2) != 0){
-                    hexPoint.row += 1 ;
+                hexPoint.row += 1;
+                if(horizontal == Direction.LEFT){
+                    hexPoint.column -= 1 ;
                 }
                 break;
+
+            case NONE:
+                if(horizontal == Direction.LEFT){
+                    hexPoint.column -= 1;
+                }
+                else if(horizontal == Direction.RIGHT){
+                    hexPoint.column += 1;
+                }
 
             default:
                 break;
         }
-
-        switch(horizontal) {
-            case LEFT:
-                hexPoint.column -= 1;
-                break;
-
-            case RIGHT:
-                hexPoint.column += 1;
-                break;
-
-            default:
-                break;
-        }
-
         System.out.println(hexPoint.row + " " + hexPoint.column);
     }
 }
