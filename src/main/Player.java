@@ -229,4 +229,5 @@ public class Player {
         game.setPiece(selectedPoint, OccupantType.MEEPLE, settlement);
         meeples--;
     }
+
 }
