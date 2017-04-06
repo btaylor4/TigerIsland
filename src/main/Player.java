@@ -9,7 +9,7 @@ import main.enums.TerrainType;
 
 import static main.utils.formulas.coordinatesToKey;
 
-public class Player implements Runnable{
+public class Player {
     public int designator ;
 
     public int score;
@@ -233,8 +233,4 @@ public class Player implements Runnable{
         meeples--;
     }
 
-    @Override
-    public void run() {
-
-    }
 }
