@@ -137,10 +137,7 @@ public class Player {
     }
 
     public void playFirstTile(){
-        drawTile();
-        ProjectionPack projection = projectTilePlacement(tileHeld, new Point(game.BOARD_CENTER, game.BOARD_CENTER));
-        projection.projectedLevel = game.getProjectedHexLevel(projection) ;
-        game.setTile(tileHeld, projection);
+        game.setFirstTile();
         tileHeld = null ;
     }
 

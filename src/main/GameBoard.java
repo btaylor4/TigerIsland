@@ -190,6 +190,43 @@ public class GameBoard {
         return tileStack[tilePlayIndex] ;
     }
 
+    public void setFirstTile(){
+        StartingTile starter = new StartingTile() ;
+        starter.assignTerrain();
+        starter.setHexLevels(1);
+        starter.setHexTileNumbers(tilePlayIndex);
+        tilePlayIndex++;
+
+        starter.projects.volcano = new Point(BOARD_CENTER, BOARD_CENTER) ;
+        starter.projects.upLeft = new Point(BOARD_CENTER-1, BOARD_CENTER );
+        starter.projects.upRight = new Point(BOARD_CENTER-1, BOARD_CENTER+1);
+        starter.projects.downLeft = new Point(BOARD_CENTER+1, BOARD_CENTER-1);
+        starter.projects.downRight = new Point(BOARD_CENTER+1, BOARD_CENTER);
+
+        board[starter.projects.volcano.row][starter.projects.volcano.column] = starter.volcano ;
+        board[starter.projects.upLeft.row][starter.projects.upLeft.column] = starter.hexUpLeft ;
+        board[starter.projects.upRight.row][starter.projects.upRight.column] = starter.hexUpRight ;
+        board[starter.projects.downLeft.row][starter.projects.downLeft.column] = starter.hexDownLeft ;
+        board[starter.projects.downRight.row][starter.projects.downRight.column] = starter.hexDownRight ;
+
+        addFreeAdjacencies(starter.projects.volcano);
+        addFreeAdjacencies(starter.projects.upLeft);
+        addFreeAdjacencies(starter.projects.upRight);
+        addFreeAdjacencies(starter.projects.downLeft);
+        addFreeAdjacencies(starter.projects.downRight);
+
+        removeFreeAdjacency(starter.projects.volcano);
+        removeFreeAdjacency(starter.projects.upLeft);
+        removeFreeAdjacency(starter.projects.upRight);
+        removeFreeAdjacency(starter.projects.downLeft);
+        removeFreeAdjacency(starter.projects.downRight);
+
+        leftLimit += 2 ;
+        rightLimit += 2 ;
+        upperLimit += 2 ;
+        lowerLimit += 2 ;
+    }
+
     public void setTile(Tile tileBeingPlaced, ProjectionPack projections){
         tileBeingPlaced.setHexLevels(projections.projectedLevel) ;
         tileBeingPlaced.assignTileNumber(tilePlayIndex);
