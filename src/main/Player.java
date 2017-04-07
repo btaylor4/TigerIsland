@@ -256,16 +256,20 @@ public class Player {
         return TerrainType.VOLCANO;
     }
 
-    public void expandSettlementTotoro(Point selectedPoint, Settlement settlement) {
-        //game.isValidTotoroPosition(selectedPoint, settlement);
-        score += 200;
-        totoro--;
+    public void placeTotoro(Point selectedPoint, Settlement settlement) {
+        if(game.isValidTotoroPosition(selectedPoint, settlement))
+        {
+            game.setPiece(selectedPoint, OccupantType.TOTORO, settlement);
+            placeTotoro();
+        }
     }
 
-    public void expandSettlementPlayground(Point selectedPoint, Settlement settlement) {
-        //game.isValidPlaygroundPosition(selectedPoint, settlement);
-        score += 75;
-        tigers--;
+    public void placeTiger(Point selectedPoint, Settlement settlement) {
+        if(game.isValidTigerPosition(selectedPoint, settlement))
+        {
+            game.setPiece(selectedPoint, OccupantType.TIGERPLAYGROUND, settlement);
+            placeTiger();
+        }
     }
 
     private void determineBuildOptionByHuman() {
@@ -283,7 +287,7 @@ public class Player {
                 break;
 
             case 3:
-                //expandSettlementTotoro();
+                //placeTotoro();
                 break;
 
             default:
@@ -495,5 +499,18 @@ public class Player {
 
     public int getTigerPlayground() {
         return tigers;
+    }
+
+    public void placeTotoro()
+    {
+        //mainly for testing purposes
+        totoro--;
+        score += 200;
+    }
+
+    public void placeTiger()
+    {
+        tigers--;
+        score += 75;
     }
 }

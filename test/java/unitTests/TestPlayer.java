@@ -3,6 +3,7 @@ package unitTests;
 import main.*;
 
 import main.Settlement;
+import main.enums.TerrainType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -174,6 +175,9 @@ public class TestPlayer
     {
         game.setFirstTile();
         Point point = new Point(104, 105);
+        Tile tile = new Tile();
+        tile.assignTerrain(TerrainType.GRASSLANDS, TerrainType.GRASSLANDS);
+
         game.board[104][105].level = 2;
         player1.placeMeeple(point, new Settlement(game));
         assertNotEquals(0, player1.getScore());
@@ -184,7 +188,7 @@ public class TestPlayer
     {
         game.setFirstTile();
         Point point = new Point(104, 105);
-        player1.expandSettlementTotoro(point, new Settlement(game));
+        player1.placeTotoro();
         assertEquals(2, player1.getTotoro());
     }
 
@@ -193,7 +197,7 @@ public class TestPlayer
     {
         game.setFirstTile();
         Point point = new Point(104, 105);
-        player1.expandSettlementPlayground(point, new Settlement(game));
+        player1.placeTiger();
         assertEquals(1, player1.getTigerPlayground());
     }
 
@@ -202,7 +206,7 @@ public class TestPlayer
     {
         game.setFirstTile();
         Point point = new Point(104, 105);
-        player1.expandSettlementTotoro(point, new Settlement(game));
+        player1.placeTotoro();
         assertNotEquals(3, player1.getTotoro());
     }
 
@@ -211,7 +215,7 @@ public class TestPlayer
     {
         game.setFirstTile();
         Point point = new Point(104, 105);
-        player1.expandSettlementPlayground(point, new Settlement(game));
+        player1.placeTiger();
         assertNotEquals(2, player1.getTigerPlayground());
     }
 
@@ -220,7 +224,7 @@ public class TestPlayer
     {
         game.setFirstTile();
         Point point = new Point(104, 105);
-        player1.expandSettlementTotoro(point, new Settlement(game));
+        player1.placeTotoro();
         assertEquals(200, player1.getScore());
     }
 
@@ -229,7 +233,7 @@ public class TestPlayer
     {
         game.setFirstTile();
         Point point = new Point(104, 105);
-        player1.expandSettlementPlayground(point, new Settlement(game));
+        player1.placeTiger();
         assertEquals(75, player1.getScore());
     }
 
@@ -238,7 +242,7 @@ public class TestPlayer
     {
         game.setFirstTile();
         Point point = new Point(104, 105);
-        player1.expandSettlementTotoro(point, new Settlement(game));
+        player1.placeTotoro();
         assertNotEquals(0, player1.getScore());
     }
 
@@ -247,7 +251,7 @@ public class TestPlayer
     {
         game.setFirstTile();
         Point point = new Point(104, 105);
-        player1.expandSettlementPlayground(point, new Settlement(game));
+        player1.placeTiger();
         assertNotEquals(0, player1.getScore());
     }
 
