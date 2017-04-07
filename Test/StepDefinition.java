@@ -47,6 +47,22 @@ public class StepDefinition {
         assert (testP1 != null);
     }
 
+    @Given("^the game is created")
+    public void gameCreationGiven() throws Throwable{
+        CreateGame();
+        assert (testGame != null);
+    }
+
+    @When("^the tiles are generated")
+    public void gammeCreationWhen() throws Throwable{
+        assert (testGame.tileStack != null);
+
+    }
+
+    @Then("^the tiles should be permuted in sequence")
+    public void gameCreationThen() throws Throwable{
+        assert (testGame.TilesShuffled());
+    }
 
     Tile testTile ;
 
