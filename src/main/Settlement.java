@@ -13,17 +13,19 @@ public class Settlement {
 
     public int size ;
     public int ownerNumber ;
+    public boolean hasTotoro;
+    public boolean hasTiger;
     public Player owner ;
     private GameBoard game ;
 
 
     public HashMap<Integer, Point> occupantPositions;
 
-    private HashMap<Integer, Point> grasslands;
-    private HashMap<Integer, Point> lakes;
-    private HashMap<Integer, Point> forests;
-    private HashMap<Integer, Point> rocky;
-    private HashMap<Integer, Point> volcanoes;
+    public HashMap<Integer, Point> grasslands;
+    public  HashMap<Integer, Point> lakes;
+    public HashMap<Integer, Point> forests;
+    public HashMap<Integer, Point> rocky;
+    public HashMap<Integer, Point> volcanoes;
 
     private ArrayList<Point> mergingSettlements;
     public ArrayList<Point> markedForRemoval ;
@@ -33,6 +35,8 @@ public class Settlement {
         ownerNumber = 0 ;
         owner = null ;
         game = gamePointer ;
+        hasTotoro = false;
+        hasTiger = false;
 
         occupantPositions = new HashMap<>();
         grasslands = new HashMap<>();

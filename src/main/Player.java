@@ -15,7 +15,9 @@ public class Player {
     public int score;
     private int meeples;
     private int totoro;
+    private int tigerPlayground;
     private boolean isFinished;
+    private boolean firstPlay;
 
     private GameBoard game;
     private Tile tileHeld ;
@@ -26,7 +28,9 @@ public class Player {
         score = 0;
         meeples = 20;
         totoro = 3;
+        tigerPlayground = 2;
         isFinished = false;
+        firstPlay = false;
 
         this.game = game;
         this.tileHeld = null ;
@@ -293,6 +297,155 @@ public class Player {
         int level = game.board[selectedPoint.row][selectedPoint.column].level ;
         score += (level * level) ;
         meeples -= level ;
+    }
+
+    public void determineBuildByAI() {
+        //Priority list
+        for (Settlement mySets : playerSettlements.values()) {
+            //check if I can place a totoro
+            if (!mySets.hasTotoro) {
+                //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
+                //placeTotoro();
+            }
+
+            //check if I can place a tiger
+            else if (!mySets.hasTiger) {
+                //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
+                //placeTiger();
+            }
+
+            //not sure to check if I can expand a settlement that won't be able to nuke?
+            //next 4 if statements check if I can expand a settlement giving me a a totoro placement on next turn
+            else if (mySets.size + mySets.grasslands.size() >= 5) {
+                expandSettlementMeeple();
+            } else if (mySets.size + mySets.lakes.size() >= 5) {
+                expandSettlementMeeple();
+            } else if (mySets.size + mySets.forests.size() >= 5) {
+                expandSettlementMeeple();
+            } else if (mySets.size + mySets.rocky.size() >= 5) {
+                expandSettlementMeeple();
+            }
+
+            //found new settlement 1 or 2 away from a pre existing settlement
+            foundNewSettlement();
+        }
+    }
+
+    public void determineTilePlacementByAI()
+    {
+        Point selectedPoint;
+        ProjectionPack projection;
+        drawTile(); //draw tile
+
+        if (designator == 1)
+        {
+            if (firstPlay == false)
+            {
+                if (tileHeld.hexA.terrain == tileHeld.hexB.terrain)//check if terrains are equal
+                {
+                    switch (tileHeld.hexA.terrain) {
+                        case ROCKY:
+
+                        case GRASSLANDS:
+                            //set orientation to 2
+                            selectedPoint = new Point(107, 102);
+                            tileHeld.setRotation(2);
+                            projection = projectTilePlacement(tileHeld, selectedPoint);
+                            projection.projectedLevel = game.getProjectedHexLevel(projection);
+                            game.setTile(tileHeld, projection);
+                            break;
+
+                        case LAKE:
+
+                        case JUNGLE:
+                            //set orientation to 5
+                            selectedPoint = new Point(101, 106);
+                            tileHeld.setRotation(5);
+                            projection = projectTilePlacement(tileHeld, selectedPoint);
+                            projection.projectedLevel = game.getProjectedHexLevel(projection);
+                            game.setTile(tileHeld, projection);
+                            break;
+                    }
+                }
+
+                else
+                {
+                    switch (tileHeld.hexA.terrain)
+                    {
+                        case ROCKY:
+
+                        case GRASSLANDS:
+                            selectedPoint = new Point(107, 102);
+                            tileHeld.setRotation(2);
+                            projection = projectTilePlacement(tileHeld, selectedPoint);
+                            projection.projectedLevel = game.getProjectedHexLevel(projection);
+                            game.setTile(tileHeld, projection);
+                            break;
+
+                        case LAKE:
+
+                        case JUNGLE:
+                            //set orientation to 5
+                            selectedPoint = new Point(101, 106);
+                            tileHeld.setRotation(5);
+                            projection = projectTilePlacement(tileHeld, selectedPoint);
+                            projection.projectedLevel = game.getProjectedHexLevel(projection);
+                            game.setTile(tileHeld, projection);
+                            break;
+                    }
+                }
+
+                firstPlay = true;
+            }
+
+            else
+            {
+                //priority list
+                // check if I can nuke in such a way to make different settlements
+
+                for(Settlement mySet : playerSettlements.values())
+                {
+                    /*
+                       if I have a settlement that has a totoro,
+                       see if I can nuke it in such a way to only lose pieces in a way to have a totoro
+                       option in one or two more turns:
+                       (settlement size >= 5 or expansion options gives me >= 5)
+                    */
+
+                    if(mySet.hasTotoro)
+                    {
+
+                    }
+
+                    else if(mySet.hasTiger)
+                    {
+
+                    }
+                }
+                //place tile in such a way that I can expand away from volcanos
+                //build one settlement at a time
+            }
+        }
+    }
+
+    public void setMeeples(int meeples)
+    {
+        this.meeples = meeples;
+    }
+
+    public void setTotoro(int totoro)
+    {
+        this.totoro = totoro;
+    }
+
+    public void setTigerPlayground(int tigerPlayground)
+    {
+        this.tigerPlayground = tigerPlayground;
+    }
+
+    public void calculateScore(int score)
+    {
+        this.score += score;
     }
 
 }
