@@ -128,6 +128,44 @@ public class TestGameBoard
     }
 
 
+    @Test
+    public void testValidTotoroPlacement()
+    {
+        Settlement settlement = new Settlement(game);
+        game.setFirstTile();
+        Player player1 = new Player(game, 1);
+        settlement.owner = player1;
+
+        player1.placeMeeple(new Point(104, 105), settlement);
+        game.board[104][105].settlementPointer.size = 5;
+        assertTrue(game.isValidTotoroPosition(new Point(104, 106), settlement));
+    }
+
+    @Test
+    public void testTotoroNotAdjacentToSettlement()
+    {
+        Settlement settlement = new Settlement(game);
+        game.setFirstTile();
+        Player player1 = new Player(game, 1);
+        settlement.owner = player1;
+
+        player1.placeMeeple(new Point(104, 105), settlement);
+        game.board[104][105].settlementPointer.size = 5;
+        assertFalse(game.isValidTotoroPosition(new Point(104, 107), settlement));
+    }
+
+    @Test
+    public void testTotoroNotPlacedAtSettlementSizeLessThanFive()
+    {
+        Settlement settlement = new Settlement(game);
+        game.setFirstTile();
+        Player player1 = new Player(game, 1);
+        settlement.owner = player1;
+
+        player1.placeMeeple(new Point(104, 105), settlement);
+        game.board[104][105].settlementPointer.size = 4;
+        assertFalse(game.isValidTotoroPosition(new Point(104, 106), settlement));
+    }
 
     /*
     @Test
