@@ -303,4 +303,11 @@ public class GameBoard {
         }
     }
 
+    public static Tile[] getTileStack() {
+        return tileStack;
+    }
+
+    public static Hexagon[][] getBoard() {
+        return board;
+    }
 }
