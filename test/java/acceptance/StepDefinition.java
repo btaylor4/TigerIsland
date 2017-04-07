@@ -7,9 +7,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import main.enums.TerrainType;
 
-/**
- * Created by jdavi on 3/17/17.
- */
 public class StepDefinition {
 
     GameBoard testGame ;

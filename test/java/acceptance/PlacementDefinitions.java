@@ -1,15 +1,11 @@
 package acceptance;
 
-import main.* ;
-
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.api.java.en.And;
 
-/**
- * Created by jdavi on 3/24/17.
- */
+
 public class PlacementDefinitions {
 
     @Given("^a player’s turn$")
