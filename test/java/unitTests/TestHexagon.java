@@ -1,9 +1,14 @@
 package unitTests;
 import main.Hexagon;
 import main.GameBoard;
+import main.Point;
+import main.Settlement;
+import main.enums.OccupantType;
 import org.junit.Before;
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -28,14 +33,21 @@ public class TestHexagon
     }
 
     @Test
-    public void TestOccupantGetsSet()
+    public void TestOccupantGetsSettlement()
     {
-
+        Point point = new Point(106,105);
+        Settlement settle = new Settlement(game);
+        game.setFirstTile();
+        game.setPiece(point, OccupantType.MEEPLE, settle);
+        assertTrue(game.isValidSettlementPosition(point));
     }
 
     @Test
-    public void TestInvalidOccupant()
-    {
-
+    public void TestInvalidOccupantSettlement() {
+        Point point = new Point(105, 105);
+        Settlement settle = new Settlement(game);
+        game.setFirstTile();
+        game.setPiece(point, OccupantType.MEEPLE, settle);
+        assertFalse(game.isValidSettlementPosition(point));
     }
 }
