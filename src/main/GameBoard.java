@@ -221,9 +221,9 @@ public class GameBoard {
         removeFreeAdjacency(starter.projects.downLeft);
         removeFreeAdjacency(starter.projects.downRight);
 
-        leftLimit += 2 ;
+        leftLimit -= 2 ;
         rightLimit += 2 ;
-        upperLimit += 2 ;
+        upperLimit -= 2 ;
         lowerLimit += 2 ;
     }
 
