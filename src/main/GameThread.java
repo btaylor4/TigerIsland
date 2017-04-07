@@ -22,11 +22,18 @@ public class GameThread implements Runnable{
     @Override
     public void run() {
 
+        player1.playFirstTile();
+        player1.playBuildPhase();
+        game.printBoard();
+
+        currentPlayer = player2 ;
+
         //server will tell us when game is over
         while (true) {
             System.out.println("Player" + currentPlayer.designator + "'s turn");
             currentPlayer.playTilePhase();
-            currentPlayer.build();
+            currentPlayer.playBuildPhase();
+            game.printBoard();
 
             if(currentPlayer.designator == 1)
                 currentPlayer = player2 ;
