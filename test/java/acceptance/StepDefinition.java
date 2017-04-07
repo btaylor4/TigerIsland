@@ -1,14 +1,16 @@
 package acceptance;
 
 import main.* ;
-
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import main.enums.TerrainType;
 
+
 public class StepDefinition {
 
+    Player testP1;
+    Player testP2;
     GameBoard testGame ;
 
     @Given("^There is no game")
@@ -83,4 +85,10 @@ public class StepDefinition {
              assert(testTileStack[i].volcano.terrain == TerrainType.VOLCANO);
         }
     }
+
+
+
+
+
+
 }
