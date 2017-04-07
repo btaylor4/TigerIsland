@@ -256,8 +256,16 @@ public class Player {
         return TerrainType.VOLCANO;
     }
 
-    private void expandSettlementTotoro() {
+    public void expandSettlementTotoro(Point selectedPoint, Settlement settlement) {
+        //game.isValidTotoroPosition(selectedPoint, settlement);
+        score += 200;
+        totoro--;
+    }
 
+    public void expandSettlementPlayground(Point selectedPoint, Settlement settlement) {
+        //game.isValidPlaygroundPosition(selectedPoint, settlement);
+        score += 75;
+        tigerPlayground--;
     }
 
     private void determineBuildOptionByHuman() {
@@ -275,7 +283,7 @@ public class Player {
                 break;
 
             case 3:
-                expandSettlementTotoro();
+                //expandSettlementTotoro();
                 break;
 
             default:
@@ -352,8 +360,13 @@ public class Player {
             }
 
             //found new settlement 1 or 2 away from a pre existing settlement
-            foundNewSettlement();
+            foundNewAISettlement();
         }
+    }
+
+    public void foundNewAISettlement()
+    {
+        //check best place to place meeple
     }
 
     public void determineTilePlacementByAI()
@@ -468,16 +481,19 @@ public class Player {
         this.tigerPlayground = tigerPlayground;
     }
 
-    public void calculateScore(int score)
-    {
-        this.score += score;
-    }
-
     public int getMeeples() {
         return meeples;
     }
 
     public int getScore() {
         return score;
+    }
+
+    public int getTotoro() {
+        return totoro;
+    }
+
+    public int getTigerPlayground() {
+        return tigerPlayground;
     }
 }

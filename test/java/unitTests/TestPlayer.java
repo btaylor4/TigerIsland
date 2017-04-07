@@ -133,7 +133,7 @@ public class TestPlayer
     }
 
     @Test
-    public void TestInvalidScoreIncreasesAfterMeeplePlacementOnLevelHigherThanOne()
+    public void TestScoreIncreasesAfterMeeplePlacementOnLevelHigherThanOne()
     {
         game.setFirstTile();
         Point point = new Point(104, 105);
@@ -171,7 +171,7 @@ public class TestPlayer
     }
 
     @Test
-    public void TestScoreIncreasesAfterMeeplePlacementOnLevelHigherThanOne()
+    public void TestInvalidScoreIncreasesAfterMeeplePlacementOnLevelHigherThanOne()
     {
         game.setFirstTile();
         Point point = new Point(104, 105);
@@ -179,6 +179,79 @@ public class TestPlayer
         player1.placeMeeple(point, new Settlement(game));
         assertNotEquals(0, player1.getScore());
     }
+
+    @Test
+    public void TestTotoroDecreaseAfterPlacement()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        player1.expandSettlementTotoro(point, new Settlement(game));
+        assertEquals(2, player1.getTotoro());
+    }
+
+    @Test
+    public void TestPlaygroundDecreaseAfterPlacement()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        player1.expandSettlementPlayground(point, new Settlement(game));
+        assertEquals(1, player1.getTigerPlayground());
+    }
+
+    @Test
+    public void TestInvalidTotoroDecreaseAfterPlacement()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        player1.expandSettlementTotoro(point, new Settlement(game));
+        assertNotEquals(3, player1.getTotoro());
+    }
+
+    @Test
+    public void TestInvalidPlaygroundDecreaseAfterPlacement()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        player1.expandSettlementPlayground(point, new Settlement(game));
+        assertNotEquals(2, player1.getTigerPlayground());
+    }
+
+    @Test
+    public void TestIncreasedScoreAfterTotoroPlacement()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        player1.expandSettlementTotoro(point, new Settlement(game));
+        assertEquals(200, player1.getScore());
+    }
+
+    @Test
+    public void TestIncreasedScoreAfterPlaygroundPlacement()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        player1.expandSettlementPlayground(point, new Settlement(game));
+        assertEquals(75, player1.getScore());
+    }
+
+    @Test
+    public void TestInvalidIncreasedScoreAfterTotoroPlacement()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        player1.expandSettlementTotoro(point, new Settlement(game));
+        assertNotEquals(0, player1.getScore());
+    }
+
+    @Test
+    public void TestInvalidIncreasedScoreAfterPlaygroundPlacement()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        player1.expandSettlementPlayground(point, new Settlement(game));
+        assertNotEquals(0, player1.getScore());
+    }
+
     /*
     Test overlapping tiles correctly
     Test not placing on volcano
