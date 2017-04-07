@@ -8,6 +8,7 @@ import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 
 /**
@@ -15,112 +16,127 @@ import static org.junit.Assert.assertNotEquals;
  */
 public class TestProjectionPack
 {
-    ProjectionPack projections;
-    Point point;
+    ProjectionPack testProjection;
+    Point testPoint ;
 
     @Before
-    public void initializeProjections()
-    {
-        projections = new ProjectionPack(new Point(0,0));
-        point = new Point(0, 0);
+    public void initializeProjections(){
+        testProjection = new ProjectionPack(new Point(0,0));
     }
 
     @Test
-    public void testCreationOfProjectionPack()
-    {
-        assertNotNull(projections);
-        assertTrue("Projections are projections", projections instanceof ProjectionPack);
+    public void testCreationOfProjectionPack(){
+        assertNotNull(testProjection);
+        assertTrue("Projections are projections", testProjection instanceof ProjectionPack);
     }
-
-    /*@Test
-    public void testValidProjectionPoint()
-    {
-        int row = point.row;
-        int column = point.column;
-
-        for(Direction vertical : Direction.values())
-        {
-            for(Direction horizontal: Direction.values())
-            {
-                projections.projectPoint(point, vertical, horizontal);
-                switch(vertical)
-                {
-                    case UP:
-                        if(horizontal == Direction.NONE || point.column == 0)
-                        {
-                            assertEquals(point.row, row - 1);
-                            row -= 1;
-                        }
-                        break;
-
-                    case DOWN:
-                        if(horizontal == Direction.NONE || point.column != 0)
-                        {
-                            assertEquals(point.row, row + 1);
-                            row += 1;
-                        }
-                        break;
-                }
-
-                switch(horizontal)
-                {
-                    case LEFT:
-                        assertEquals(point.column, column - 1);
-                        column -= 1;
-                        break;
-
-                    case RIGHT:
-                        assertEquals(point.column, column + 1);
-                        column += 1;
-                        break;
-                }
-            }
-        }
-    }*/
 
     @Test
-    public void testInvalidPorjectionPoint()
-    {
-        int row = point.row;
-        int column = point.column;
-
-        for(Direction vertical : Direction.values())
-        {
-            for(Direction horizontal: Direction.values())
-            {
-                projections.projectPoint(point, vertical, horizontal);
-                switch(vertical)
-                {
-                    case UP:
-                        if(horizontal == Direction.NONE || point.column == 0)
-                        {
-                            assertNotEquals(point.row, row + 1);
-                            row -= 1;
-                        }
-                        break;
-
-                    case DOWN:
-                        if(horizontal == Direction.NONE || point.column != 0)
-                        {
-                            assertNotEquals(point.row, row - 1);
-                            row += 1;
-                        }
-                        break;
-                }
-
-                switch(horizontal)
-                {
-                    case LEFT:
-                        assertNotEquals(point.column, column + 1);
-                        column -= 1;
-                        break;
-
-                    case RIGHT:
-                        assertNotEquals(point.column, column - 1);
-                        column += 1;
-                        break;
-                }
-            }
-        }
+    public void testCreationOfPoint(){
+        testPoint = new Point(2, 2) ;
+        assertNotNull(testPoint);
+        assertTrue(testPoint.row == 2);
+        assertTrue(testPoint.column == 2);
     }
+
+    @Test
+    public void testUpperRightProjection() {
+        testPoint = new Point(10, 10);
+        testProjection = new ProjectionPack(testPoint) ;
+        testProjection.projectPoint(testPoint, Direction.UP, Direction.RIGHT);
+
+        assertTrue(testPoint.row == 9);
+        assertTrue(testPoint.column == 11);
+    }
+
+    @Test
+    public void testInvalidUpperRightProjection() {
+        testPoint = new Point(10, 10);
+        testProjection = new ProjectionPack(testPoint) ;
+        testProjection.projectPoint(testPoint, Direction.UP, Direction.RIGHT);
+
+        assertFalse(testPoint.row != 9);
+        assertFalse(testPoint.column != 11);
+    }
+
+    @Test
+    public void testRightProjection() {
+        testPoint = new Point(10, 10);
+        testProjection = new ProjectionPack(testPoint) ;
+        testProjection.projectPoint(testPoint, Direction.NONE, Direction.RIGHT);
+
+        assertTrue(testPoint.row == 10);
+        assertTrue(testPoint.column == 11);
+    }
+
+    @Test
+    public void testInvalidRightProjection() {
+        testPoint = new Point(10, 10);
+        testProjection = new ProjectionPack(testPoint) ;
+        testProjection.projectPoint(testPoint, Direction.NONE, Direction.RIGHT);
+
+        assertFalse(testPoint.row != 10);
+        assertFalse(testPoint.column != 11);
+    }
+
+
+    @Test
+    public void testDownRightProjection() {
+        testPoint = new Point(10, 10);
+        testProjection = new ProjectionPack(testPoint) ;
+        testProjection.projectPoint(testPoint, Direction.UP, Direction.LEFT);
+
+        assertTrue(testPoint.row == 9);
+        assertTrue(testPoint.column == 10);
+    }
+
+    @Test
+    public void testInvalidDownRightProjection() {
+        testPoint = new Point(10, 10);
+        testProjection = new ProjectionPack(testPoint) ;
+        testProjection.projectPoint(testPoint, Direction.UP, Direction.LEFT);
+
+        assertFalse(testPoint.row != 9);
+        assertFalse(testPoint.column != 10);
+    }
+    @Test
+    public void testDownLeftProjection() {
+        testPoint = new Point(10, 10);
+        testProjection = new ProjectionPack(testPoint) ;
+        testProjection.projectPoint(testPoint, Direction.UP, Direction.LEFT);
+
+        assertTrue(testPoint.row == 9);
+        assertTrue(testPoint.column == 10);
+    }
+
+    @Test
+    public void testInvalidDownLeftProjection() {
+        testPoint = new Point(10, 10);
+        testProjection = new ProjectionPack(testPoint) ;
+        testProjection.projectPoint(testPoint, Direction.UP, Direction.LEFT);
+
+        assertFalse(testPoint.row != 9);
+        assertFalse(testPoint.column != 10);
+    }
+    @Test
+    public void testLeftProjection() {
+        testPoint = new Point(10, 10);
+        testProjection = new ProjectionPack(testPoint) ;
+        testProjection.projectPoint(testPoint, Direction.UP, Direction.LEFT);
+
+        assertTrue(testPoint.row == 9);
+        assertTrue(testPoint.column == 10);
+    }
+
+    @Test
+    public void testInvalidLeftProjection() {
+        testPoint = new Point(10, 10);
+        testProjection = new ProjectionPack(testPoint) ;
+        testProjection.projectPoint(testPoint, Direction.UP, Direction.LEFT);
+
+        assertFalse(testPoint.row != 9);
+        assertFalse(testPoint.column != 10);
+    }
+
+
+
 }

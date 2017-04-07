@@ -22,7 +22,7 @@ public class Settlement {
     public HashMap<Integer, Point> occupantPositions;
 
     public HashMap<Integer, Point> grasslands;
-    public  HashMap<Integer, Point> lakes;
+    public HashMap<Integer, Point> lakes;
     public HashMap<Integer, Point> forests;
     public HashMap<Integer, Point> rocky;
     public HashMap<Integer, Point> volcanoes;
