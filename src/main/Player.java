@@ -288,8 +288,34 @@ public class Player {
         determineBuildOptionByHuman();
     }
 
-    public boolean isOutOfPieces(){
-        return (meeples == 0 && totoro == 0) ;
+    public boolean isOutOfPieces()
+    {
+        return (meeples == 0 && totoro == 0) || (meeples == 0 && tigerPlayground == 0) || (tigerPlayground == 0 && totoro == 0);
+    }
+
+    public boolean hasPlayerLost() {
+        if (meeples != 0)
+            return false;
+
+        else
+        {
+            for(Settlement mySets : playerSettlements.values())
+            {
+                if(mySets.hasTotoro)
+                    continue;
+
+                else if(mySets.size >= 5) //do we also have to check if there's a hex that we can put on?
+                    return false;
+            }
+
+            for(Settlement mySets : playerSettlements.values())
+            {
+                if(mySets.hasTiger)
+                    continue;
+            }
+        }
+
+        return true;
     }
 
     public void placeMeeple(Point selectedPoint, Settlement settlement) {
