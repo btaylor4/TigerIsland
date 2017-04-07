@@ -13,8 +13,8 @@ public class Settlement {
 
     public int size ;
     public int ownerNumber ;
-    public boolean hasTotoro;
-    public boolean hasTiger;
+    public int hasTotoro;
+    public int hasTiger;
     public Player owner ;
     private GameBoard game ;
 
@@ -35,8 +35,8 @@ public class Settlement {
         ownerNumber = 0 ;
         owner = null ;
         game = gamePointer ;
-        hasTotoro = false;
-        hasTiger = false;
+        hasTotoro = 0;
+        hasTiger = 0;
 
         occupantPositions = new HashMap<>();
         grasslands = new HashMap<>();
