@@ -1,11 +1,5 @@
 package main;
 
-import java.util.ArrayList;
-
-/**
- * Created by Adam_Soliman on 4/6/2017.
- * Will allow multiple games to run concurrently
- */
 public class GameThread implements Runnable{
 
     GameBoard game;
