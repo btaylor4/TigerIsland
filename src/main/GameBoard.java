@@ -10,18 +10,19 @@ import static main.utils.formulas.coordinatesToKey;
 import static main.utils.constants.* ;
 
 public class GameBoard {
-
     public static final int BOARD_CENTER = ARRAY_DIMENSION/2 ;
 
     private int upperLimit, lowerLimit, leftLimit, rightLimit ;
 
-    public static Hexagon[][] board = new Hexagon[ARRAY_DIMENSION][ARRAY_DIMENSION];
-    private HashMap<Integer,Integer> playableHexes = new HashMap<>() ;
+    public static Hexagon[][] board;
+    private HashMap<Integer, Point> playableHexes;
     public static Tile tileStack[] = new Tile[NUM_TILES];
 
     private int tilePlayIndex;
 
     public GameBoard(){
+        board = new Hexagon[ARRAY_DIMENSION][ARRAY_DIMENSION];
+        playableHexes = new HashMap<>() ;
         upperLimit = lowerLimit = leftLimit = rightLimit = BOARD_CENTER ;
         createTiles();
         shuffleTiles();
@@ -66,7 +67,7 @@ public class GameBoard {
 
         // if one of the hexes fall in the freePlay list and nothing is underneath the tiles return true
         volcanoAdjacent = playableHexes.containsKey(coordinatesToKey(projections.volcano.row, projections.volcano.column));
-        hex_aAdjacent = playableHexes.containsKey(coordinatesToKey(projections.hex_a.row, projections.hex_b.column));
+        hex_aAdjacent = playableHexes.containsKey(coordinatesToKey(projections.hex_a.row, projections.hex_a.column));
         hex_bAdjacent = playableHexes.containsKey(coordinatesToKey(projections.hex_b.row, projections.hex_b.column));
 
         return (volcanoAdjacent || hex_aAdjacent || hex_bAdjacent) ;
@@ -84,7 +85,7 @@ public class GameBoard {
         if(board[projections.hex_a.row][projections.hex_a.column] == null)
             hex_aLevel = 1 ;
         else{
-            hex_aLevel = board[projections.hex_a.row][projections.hex_b.column].level + 1 ;
+            hex_aLevel = board[projections.hex_a.row][projections.hex_a.column].level + 1 ;
         }
 
         if(board[projections.hex_b.row][projections.hex_b.column] == null)
@@ -100,8 +101,6 @@ public class GameBoard {
     }
 
     public void addFreeAdjacencies(Point point){
-        // left, up-left, up-right, right, down-right, down-left
-
         int row , column ;
 
         for (int i = 0; i < SIDES_IN_HEX; i++) {
@@ -109,7 +108,7 @@ public class GameBoard {
             column = point.column + COLUMN_ADDS[i];
 
             if (board[row][column] == null) {
-                playableHexes.put(coordinatesToKey(row, column), 1);
+                playableHexes.put(coordinatesToKey(row, column), new Point(row, column));
             }
             else if(board[row][column].settlementPointer != null){
                 board[row][column].settlementPointer.hashAdjacentTerrain(board[point.row][point.column].terrain, point);
@@ -156,6 +155,7 @@ public class GameBoard {
     }
 
     public boolean isValidTilePlacement(ProjectionPack projection){
+        System.out.println("level is :" + projection.projectedLevel);
         if (checkAdjacency(projection) && (projection.projectedLevel == 1)) {
             System.out.println("Tile placement OK") ;
             return true ;
@@ -169,7 +169,6 @@ public class GameBoard {
             return false ;
         }
     }
-
 
     public boolean isValidSettlementPosition(Point desiredPosition){
         if(board[desiredPosition.row][desiredPosition.column] == null)
@@ -188,7 +187,7 @@ public class GameBoard {
     }
 
     public Tile releaseTopTile(){
-        return tileStack[tilePlayIndex++] ;
+        return tileStack[tilePlayIndex] ;
     }
 
     public void setTile(Tile tileBeingPlaced, ProjectionPack projections){
@@ -224,9 +223,10 @@ public class GameBoard {
 
     public void setSettlement(Point desiredPosition, Settlement newSettlement){
         newSettlement.addAdjacentTerrains(desiredPosition);
+        newSettlement.addAdjacentSettlementsForMerge(desiredPosition);
+        newSettlement.mergeSettlements();
         board[desiredPosition.row][desiredPosition.column].settlementPointer = newSettlement ;
     }
-
 
     public void processVolcanicDestruction(ProjectionPack projection){
         Settlement settlementA, settlementB;
@@ -259,19 +259,30 @@ public class GameBoard {
             board[removal.row][removal.column].occupant = OccupantType.NONE ;
             board[removal.row][removal.column].settlementPointer = null ;
         }
+
+        settlement.markedForRemoval.clear();
     }
 
-    private void settlementReconstruction(Settlement settlement){
-        Settlement partialSettlement = new Settlement(this);
+    private void settlementReconstruction(Settlement originalSettlement){
+        Settlement partialSettlement ;
 
-        for(Point point : settlement.occupantPositions.values()){
-            board[point.row][point.column].settlementPointer = partialSettlement ;
-            partialSettlement.owner = settlement.owner ;
-            partialSettlement.beginNewSettlement(point);
-            partialSettlement.addAdjacentTerrains(point);
-            partialSettlement.addAdjacentSettlementsForMerge(point);
+        for(Point origin : originalSettlement.occupantPositions.values()){
+            partialSettlement = new Settlement(this) ;
+            partialSettlement.owner = originalSettlement.owner ;
+            partialSettlement.beginNewSettlement(origin);
+            partialSettlement.addAdjacentTerrains(origin);
+            board[origin.row][origin.column].settlementPointer = partialSettlement ;
+        }
+
+        for(Point origin : originalSettlement.occupantPositions.values()) {
+            partialSettlement = board[origin.row][origin.column].settlementPointer ;
+            partialSettlement.addAdjacentSettlementsForMerge(origin);
             partialSettlement.mergeSettlements();
-            partialSettlement.owner.playerSettlements.put(coordinatesToKey(point.row, point.column), partialSettlement);
+        }
+
+        for(Point origin : originalSettlement.occupantPositions.values()) {
+            partialSettlement = board[origin.row][origin.column].settlementPointer ;
+            partialSettlement.owner.playerSettlements.put(coordinatesToKey(origin.row, origin.column), partialSettlement);
         }
     }
 
@@ -279,10 +290,16 @@ public class GameBoard {
         for(int i = upperLimit - 2 ; i < lowerLimit+2; i++){
             for(int j = leftLimit -2 ; j < rightLimit+2; j++){
                 if(board[i][j] != null) {
-                    System.out.print(board[i][j].terrain + "(" + i + "," + j +") ") ;
+                    System.out.print("[(" + i + "," + j +") " + board[i][j].terrain + " ") ;
+                    System.out.print("O: " + board[i][j].occupant + " ");
+                    System.out.print("S: " + board[i][j].settlementPointer);
+                    if(board[i][j].settlementPointer != null){
+                        System.out.print(" P: " + board[i][j].settlementPointer.owner);
+                        System.out.print(" S: " + board[i][j].settlementPointer.size);
+                    }
+                    System.out.print('\n');
                 }
             }
-            System.out.print('\n');
         }
     }
 

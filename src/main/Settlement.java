@@ -47,10 +47,12 @@ public class Settlement {
 
     public void beginNewSettlement(Point point) {
         occupantPositions.put(coordinatesToKey(point.row, point.column), point);
+        size = 1;
     }
 
     public void addAdjacentTerrains(Point point) {
         int row, column ;
+        boolean present ;
 
         for (int i = 0; i < SIDES_IN_HEX; i++) {
             row = point.row + ROW_ADDS[i];
@@ -58,7 +60,10 @@ public class Settlement {
 
             if (game.board[row][column] != null){
                 if(game.board[row][column].occupant == OccupantType.NONE) {
-                    hashAdjacentTerrain(game.board[row][column].terrain, new Point(row, column));
+                    present = isFreeTerrainPresent(game.board[row][column].terrain, new Point(row, column));
+                    if(!present) {
+                        hashAdjacentTerrain(game.board[row][column].terrain, new Point(row, column));
+                    }
                 }
             }
         }
@@ -66,17 +71,17 @@ public class Settlement {
 
     private void recursivelyAddMatchingTerrain(Point origin){
         int row, column ;
-        boolean matching, notPresent ;
+        boolean matching, present ;
 
         for (int i = 0; i < SIDES_IN_HEX; i++) {
             row = origin.row + ROW_ADDS[i];
             column = origin.column + COLUMN_ADDS[i];
 
             if (game.board[row][column] != null) {
-                matching = game.board[row][column].terrain == game.board[origin.row][origin.column].terrain ;
-                notPresent = isFreeTerrainPresent(game.board[row][column].terrain, new Point(row, column)) ;
+                matching = (game.board[row][column].terrain == game.board[origin.row][origin.column].terrain) ;
+                present = isFreeTerrainPresent(game.board[row][column].terrain, new Point(row, column)) ;
 
-                if(matching && notPresent && (game.board[row][column].occupant == OccupantType.NONE)){
+                if((matching && (!present)) && (game.board[row][column].occupant == OccupantType.NONE)){
                     hashAdjacentTerrain(game.board[row][column].terrain, new Point(row, column));
                 }
             }
@@ -88,11 +93,11 @@ public class Settlement {
         int hashKey = coordinatesToKey(point.row, point.column);
 
         switch(terrain) {
-            case FOREST:
+            case JUNGLE:
                 forests.put(hashKey, point);
                 break;
 
-            case GRASS:
+            case GRASSLANDS:
                 grasslands.put(hashKey, point);
                 break;
 
@@ -104,7 +109,7 @@ public class Settlement {
                 rocky.put(hashKey, point);
                 break;
 
-            case WATER:
+            case LAKE:
                 lakes.put(hashKey, point);
                 break;
 
@@ -120,10 +125,10 @@ public class Settlement {
         int hashKey = coordinatesToKey(point.row, point.column);
 
         switch(terrain) {
-            case FOREST:
+            case JUNGLE:
                 return forests.containsKey(hashKey);
 
-            case GRASS:
+            case GRASSLANDS:
                 return grasslands.containsKey(hashKey);
 
             case VOLCANO:
@@ -132,7 +137,7 @@ public class Settlement {
             case ROCKY:
                 return rocky.containsKey(hashKey);
 
-            case WATER:
+            case LAKE:
                 return lakes.containsKey(hashKey);
 
             default:
@@ -144,7 +149,7 @@ public class Settlement {
 
     public void expand(TerrainType terrain){
         switch(terrain){
-            case GRASS:
+            case GRASSLANDS:
                 expandThroughTerrain(grasslands);
                 break;
 
@@ -152,11 +157,11 @@ public class Settlement {
                 expandThroughTerrain(rocky);
                 break;
 
-            case WATER:
+            case LAKE:
                 expandThroughTerrain(lakes);
                 break;
 
-            case FOREST:
+            case JUNGLE:
                 expandThroughTerrain(forests);
                 break;
 
@@ -168,6 +173,8 @@ public class Settlement {
 
     private void expandThroughTerrain(HashMap<Integer,Point> expansions ){
         for(Point point : expansions.values()){
+            System.out.println("espanding " + point.row + " " + point.column);
+            size++ ;
             owner.placeMeeple(point, this);
             occupantPositions.put(coordinatesToKey(point.row, point.column), point) ;
             addAdjacentSettlementsForMerge(point);
@@ -177,13 +184,20 @@ public class Settlement {
 
     public void addAdjacentSettlementsForMerge(Point point) {
         int row, column ;
+        boolean occupied, differentSettlement, sameOwner = false ;
 
         for (int i = 0; i < SIDES_IN_HEX; i++) {
             row = point.row + ROW_ADDS[i];
             column = point.column + COLUMN_ADDS[i];
 
             if(game.board[row][column] != null){
-                if(game.board[row][column].occupant != OccupantType.NONE && game.board[row][column].settlementPointer != this) {
+                occupied = game.board[row][column].occupant != OccupantType.NONE ;
+                differentSettlement = game.board[row][column].settlementPointer != this ;
+                if(occupied){
+                    sameOwner = (game.board[row][column].settlementPointer.owner == this.owner) ;
+                }
+
+                if(occupied && differentSettlement && sameOwner) {
                     mergingSettlements.add(new Point(row, column));
                 }
             }
@@ -198,6 +212,8 @@ public class Settlement {
             column = settlementPoint.column ;
 
             if(game.board[row][column].settlementPointer != this) {
+                System.out.println("merging:" + game.board[row][column].settlementPointer + " with : " + this);
+
                 occupantPositions.putAll(game.board[row][column].settlementPointer.occupantPositions);
                 forests.putAll(game.board[row][column].settlementPointer.forests);
                 grasslands.putAll(game.board[row][column].settlementPointer.grasslands);
@@ -206,7 +222,11 @@ public class Settlement {
                 volcanoes.putAll(game.board[row][column].settlementPointer.volcanoes);
 
                 size += game.board[row][column].settlementPointer.size ;
-                game.board[row][column].settlementPointer = this ;
+
+                for(Point pt : occupantPositions.values()) {
+                    game.board[pt.row][pt.column].settlementPointer = this;
+                    owner.playerSettlements.put(coordinatesToKey(pt.row, pt.column), this);
+                }
             }
         }
 

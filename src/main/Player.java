@@ -34,7 +34,58 @@ public class Player {
     }
 
     public void drawTile() {
-        tileHeld = game.releaseTopTile() ;
+        // tileHeld = game.releaseTopTile() ;
+        getTileFromConsole();
+    }
+
+    public void getTileFromConsole(){
+        System.out.println("Enter two terrains");
+        Scanner input = new Scanner(System.in);
+        String terrains = input.next();
+        TerrainType hexAterrain, hexBterrain ;
+
+        switch (terrains.charAt(0)){
+            case 'g':
+                hexAterrain = TerrainType.GRASSLANDS;
+                break;
+            case 'r':
+                hexAterrain = TerrainType.ROCKY ;
+                break;
+            case 'l':
+            case 'w':
+                hexAterrain = TerrainType.LAKE;
+                break;
+            case 'f':
+            case 'j':
+                hexAterrain = TerrainType.JUNGLE;
+                break;
+            default:
+                hexAterrain = TerrainType.VOLCANO ;
+                break;
+        }
+
+        terrains = input.next();
+
+        switch (terrains.charAt(0)){
+            case 'g':
+                hexBterrain = TerrainType.GRASSLANDS;
+                break;
+            case 'r':
+                hexBterrain = TerrainType.ROCKY ;
+                break;
+            case 'w':
+                hexBterrain = TerrainType.LAKE;
+                break;
+            case 'f':
+                hexBterrain = TerrainType.JUNGLE;
+                break;
+            default:
+                hexBterrain = TerrainType.VOLCANO ;
+                break;
+        }
+
+        tileHeld = new Tile();
+        tileHeld.assignTerrain(hexAterrain, hexBterrain);
     }
 
     public ProjectionPack projectTilePlacement(Tile tileBeingPlaced, Point desiredPoint){
@@ -90,13 +141,13 @@ public class Player {
     public Point determineTilePositionByHuman(){
         int row, column, rotation ;
 
-        System.out.println("Row choice");
+        System.out.print("Volcano row choice: ");
         row = chooseOption();
 
-        System.out.println("Col choice");
+        System.out.print("Volcano column choice: ");
         column = chooseOption();
 
-        System.out.println("Rotation choice");
+        System.out.print("Rotation choice 1 - 6: ");
         rotation = chooseOption();
 
         tileHeld.setRotation(rotation);
@@ -107,10 +158,10 @@ public class Player {
     public Point determinePiecePositionByHuman(){
         int row, column ;
 
-        System.out.println("Row choice");
+        System.out.print("Piece row choice: ");
         row = chooseOption();
 
-        System.out.println("Col choice");
+        System.out.print("Piece col choice: ");
         column = chooseOption();
 
         return (new Point(row, column));
@@ -140,7 +191,7 @@ public class Player {
         return input.nextInt();
     }
 
-    public void foundNewSettlement() {
+    private void foundNewSettlement() {
         Point selectedPoint ;
 
         do{
@@ -151,7 +202,6 @@ public class Player {
         Settlement freshSettlement = new Settlement(game);
         freshSettlement.owner = this ;
         freshSettlement.ownerNumber = designator ;
-        freshSettlement.size = 1 ;
         freshSettlement.beginNewSettlement(selectedPoint);
 
         game.setSettlement(selectedPoint, freshSettlement);
@@ -160,46 +210,55 @@ public class Player {
         playerSettlements.put(coordinatesToKey(selectedPoint.row, selectedPoint.column), freshSettlement);
     }
 
-    public void expandSettlementMeeple() {
-        //should use place meeple method
+    private void expandSettlementMeeple() {
         Settlement settlementChoice = determineSettlementByHuman();
         TerrainType terrainChoice = determineTerrainByHuman();
 
+        System.out.println("terrain is: " + terrainChoice);
         settlementChoice.expand(terrainChoice);
         settlementChoice.mergeSettlements();
     }
 
+    private Settlement determineSettlementByHuman() {
+        System.out.print("Row of existing settlement: ");
+        int settlementRow = chooseOption();
+
+        System.out.print("Column of existing settlement: ");
+        int settlementColumn = chooseOption();
+
+        return playerSettlements.get(coordinatesToKey(settlementRow,settlementColumn));
+    }
+
     private TerrainType determineTerrainByHuman() {
-        int terrainChoice = chooseOption();
-        switch(terrainChoice){
-            case 1:
-                return TerrainType.FOREST;
+        System.out.println("What terrain type to expand on: j l g r");
+        Scanner input = new Scanner(System.in);
+        String terrains = input.next();
 
-            case 2:
-                return  TerrainType.GRASS;
+        switch (terrains.charAt(0)){
+            case 'g':
+                return TerrainType.GRASSLANDS;
 
-            case 3:
-                return TerrainType.ROCKY;
+            case 'r':
+                return  TerrainType.ROCKY;
 
-            case 4:
-                return TerrainType.WATER;
+            case 'l':
+            case 'w':
+                return TerrainType.LAKE;
+
+            case 'j':
+            case 'f':
+                return TerrainType.JUNGLE;
         }
 
-        return TerrainType.GRASS;
+        return TerrainType.VOLCANO;
     }
 
-    private Settlement determineSettlementByHuman() {
-        int settlementChoice = chooseOption();
-        Object test = playerSettlements.keySet().toArray()[settlementChoice];
-        return (Settlement)test;
-    }
-
-    public void expandSettlementTotoro() {
+    private void expandSettlementTotoro() {
 
     }
 
-    public void build() {
-        System.out.println("Build options 1-3");
+    private void determineBuildOptionByHuman() {
+        System.out.println("Build options 1: new settlement, 2: expand settlement");
         int buildOption = chooseOption();
 
         switch(buildOption) {
@@ -221,12 +280,18 @@ public class Player {
         }
     }
 
+    public void playBuildPhase(){
+        determineBuildOptionByHuman();
+    }
+
     public boolean isOutOfPieces(){
         return (meeples == 0 && totoro == 0) ;
     }
 
     public void placeMeeple(Point selectedPoint, Settlement settlement) {
         game.setPiece(selectedPoint, OccupantType.MEEPLE, settlement);
-        meeples--;
+        int level = game.board[selectedPoint.row][selectedPoint.column].level ;
+        score += (level * level) ;
+        meeples -= level ;
     }
 }

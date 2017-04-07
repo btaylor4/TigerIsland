@@ -54,7 +54,7 @@ public class GraphicsWindow extends JPanel
 
                     switch(board[i][j].terrain)
                     {
-                        case GRASS:
+                        case GRASSLANDS:
                             color.setColor(Color.GREEN);
                             break;
 
@@ -62,11 +62,11 @@ public class GraphicsWindow extends JPanel
                             color.setColor(Color.GRAY);
                             break;
 
-                        case WATER:
+                        case LAKE:
                             color.setColor(Color.BLUE);
                             break;
 
-                        case FOREST:
+                        case JUNGLE:
                             color.setColor(Color.ORANGE);
                             break;
 
