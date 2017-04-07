@@ -501,15 +501,13 @@ public class Player {
         return tigers;
     }
 
-    public void placeTotoro()
-    {
+    public void placeTotoro(){
         //mainly for testing purposes
         totoro--;
         score += 200;
     }
 
-    public void placeTiger()
-    {
+    public void placeTiger(){
         tigers--;
         score += 75;
     }
