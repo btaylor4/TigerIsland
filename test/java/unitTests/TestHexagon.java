@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -39,15 +41,76 @@ public class TestHexagon
         Settlement settle = new Settlement(game);
         game.setFirstTile();
         game.setPiece(point, OccupantType.MEEPLE, settle);
-        assertTrue(game.isValidSettlementPosition(point));
+        assertEquals(game.board[point.row][point.column].settlementPointer, settle);
     }
 
     @Test
-    public void TestInvalidOccupantSettlement() {
+    public void TestInvalidOccupantSettlement()
+    {
         Point point = new Point(105, 105);
         Settlement settle = new Settlement(game);
         game.setFirstTile();
         game.setPiece(point, OccupantType.MEEPLE, settle);
-        assertFalse(game.isValidSettlementPosition(point));
+        assertNotEquals(game.board[point.row][point.column].settlementPointer, new Settlement(game));
+    }
+
+    @Test
+    public void TestHexGetsMeeple()
+    {
+        Point point = new Point(106,105);
+        Settlement settle = new Settlement(game);
+        game.setFirstTile();
+        game.setPiece(point, OccupantType.MEEPLE, settle);
+        assertTrue(game.board[point.row][point.column].occupant == OccupantType.MEEPLE);
+    }
+
+    @Test
+    public void TestHexInvalidHexGetMeeple()
+    {
+        Point point = new Point(106,105);
+        Settlement settle = new Settlement(game);
+        game.setFirstTile();
+        game.setPiece(point, OccupantType.MEEPLE, settle);
+        assertFalse(game.board[point.row][point.column].occupant != OccupantType.MEEPLE);
+    }
+
+    @Test
+    public void TestHexGetsTotoro()
+    {
+        Point point = new Point(106, 105);
+        Settlement settle = new Settlement(game);
+        game.setFirstTile();
+        game.setPiece(point, OccupantType.TOTORO, settle);
+        assertTrue(game.board[point.row][point.column].occupant == OccupantType.TOTORO);
+    }
+
+    @Test
+    public void TestInvalidHexGetsTotoro()
+    {
+        Point point = new Point(106, 105);
+        Settlement settle = new Settlement(game);
+        game.setFirstTile();
+        game.setPiece(point, OccupantType.TOTORO, settle);
+        assertFalse(game.board[point.row][point.column].occupant != OccupantType.TOTORO);
+    }
+
+    @Test
+    public void TestHexGetsTiger()
+    {
+        Point point = new Point(106, 105);
+        Settlement settle = new Settlement(game);
+        game.setFirstTile();
+        game.setPiece(point, OccupantType.TIGERPLAYGROUND, settle);
+        assertTrue(game.board[point.row][point.column].occupant == OccupantType.TIGERPLAYGROUND);
+    }
+
+    @Test
+    public void TestInvalidHexGetsTiger()
+    {
+        Point point = new Point(106, 105);
+        Settlement settle = new Settlement(game);
+        game.setFirstTile();
+        game.setPiece(point, OccupantType.TIGERPLAYGROUND, settle);
+        assertFalse(game.board[point.row][point.column].occupant != OccupantType.TIGERPLAYGROUND);
     }
 }

@@ -336,6 +336,17 @@ public class Player {
         meeples -= level ;
     }
 
+    public void Place_Tile_By_AI()
+    {
+        drawTile();
+        Point place;
+        ProjectionPack rotationChoice;
+        while(designator == 1)
+        {
+
+        }
+    }
+
     public void determineBuildByAI() {
         //Priority list
         for (Settlement mySets : playerSettlements.values()) {
