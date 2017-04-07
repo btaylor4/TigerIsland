@@ -15,7 +15,7 @@ public class Player {
     public int score;
     private int meeples;
     private int totoro;
-    private int tigerPlayground;
+    private int tigers;
     private boolean isFinished;
     private boolean firstPlay;
 
@@ -28,7 +28,7 @@ public class Player {
         score = 0;
         meeples = 20;
         totoro = 3;
-        tigerPlayground = 2;
+        tigers = 2;
         isFinished = false;
         firstPlay = false;
 
@@ -265,7 +265,7 @@ public class Player {
     public void expandSettlementPlayground(Point selectedPoint, Settlement settlement) {
         //game.isValidPlaygroundPosition(selectedPoint, settlement);
         score += 75;
-        tigerPlayground--;
+        tigers--;
     }
 
     private void determineBuildOptionByHuman() {
@@ -297,7 +297,7 @@ public class Player {
 
     public boolean isOutOfPieces()
     {
-        return (meeples == 0 && totoro == 0) || (meeples == 0 && tigerPlayground == 0) || (tigerPlayground == 0 && totoro == 0);
+        return (meeples == 0 && totoro == 0) || (meeples == 0 && tigers == 0) || (tigers == 0 && totoro == 0);
     }
 
     public boolean hasPlayerLost() {
@@ -308,7 +308,7 @@ public class Player {
         {
             for(Settlement mySets : playerSettlements.values())
             {
-                if(mySets.hasTotoro != 0)
+                if(mySets.totoroSanctuaries != 0)
                     continue;
 
                 else if(mySets.size >= 5) //do we also have to check if there's a hex that we can put on?
@@ -317,7 +317,7 @@ public class Player {
 
             for(Settlement mySets : playerSettlements.values())
             {
-                if(mySets.hasTiger != 0)
+                if(mySets.tigerPlaygrounds != 0)
                     continue;
             }
         }
@@ -336,13 +336,13 @@ public class Player {
         //Priority list
         for (Settlement mySets : playerSettlements.values()) {
             //check if I can place a totoro
-            if (mySets.hasTotoro == 0) {
+            if (mySets.totoroSanctuaries == 0) {
                 //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
                 //placeTotoro();
             }
 
             //check if I can place a tiger
-            else if (mySets.hasTiger == 0) {
+            else if (mySets.tigerPlaygrounds == 0) {
                 //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
                 //placeTiger();
             }
@@ -450,12 +450,12 @@ public class Player {
                        (settlement size >= 5 or expansion options gives me >= 5)
                     */
 
-                    if(mySet.hasTotoro > 0)
+                    if(mySet.totoroSanctuaries > 0)
                     {
 
                     }
 
-                    else if(mySet.hasTiger > 0)
+                    else if(mySet.tigerPlaygrounds > 0)
                     {
 
                     }
@@ -476,9 +476,9 @@ public class Player {
         this.totoro = totoro;
     }
 
-    public void setTigerPlayground(int tigerPlayground)
+    public void setTigers(int tigers)
     {
-        this.tigerPlayground = tigerPlayground;
+        this.tigers = tigers;
     }
 
     public int getMeeples() {
@@ -494,6 +494,6 @@ public class Player {
     }
 
     public int getTigerPlayground() {
-        return tigerPlayground;
+        return tigers;
     }
 }

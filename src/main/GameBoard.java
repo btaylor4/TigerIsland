@@ -186,6 +186,83 @@ public class GameBoard {
         return true;
     }
 
+    public boolean isValidTotoroPosition(Point desiredPosition, Settlement settlement){
+        if(board[desiredPosition.row][desiredPosition.column] == null)
+            return false;
+
+        if(board[desiredPosition.row][desiredPosition.column].terrain == TerrainType.VOLCANO)
+            return false;
+
+        if(board[desiredPosition.row][desiredPosition.column].occupant != OccupantType.NONE)
+            return false;
+
+        if(settlement == null) return false ;
+
+        if(settlement.size < 5) return false ;
+
+        if(settlement.totoroSanctuaries != 0) return false ;
+
+        int row, column ;
+        boolean adjacent = false ;
+
+        for (int i = 0; i < SIDES_IN_HEX; i++) {
+            row = desiredPosition.row + ROW_ADDS[i];
+            column = desiredPosition.column + COLUMN_ADDS[i];
+
+            if (board[row][column] != null) {
+                if(board[row][column].settlementPointer != null) {
+                    if (board[row][column].settlementPointer == settlement) {
+                        adjacent = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(!adjacent) return false ;
+
+        return true;
+    }
+
+    public boolean isValidTigerPosition(Point desiredPosition, Settlement settlement){
+        if(board[desiredPosition.row][desiredPosition.column] == null)
+            return false;
+
+        if(board[desiredPosition.row][desiredPosition.column].terrain == TerrainType.VOLCANO)
+            return false;
+
+        if(board[desiredPosition.row][desiredPosition.column].occupant != OccupantType.NONE)
+            return false;
+
+        if(board[desiredPosition.row][desiredPosition.column].level < 3)
+            return false ;
+
+        if(settlement == null) return false ;
+
+        if(settlement.tigerPlaygrounds != 0) return false ;
+
+        int row, column ;
+        boolean adjacent = false ;
+
+        for (int i = 0; i < SIDES_IN_HEX; i++) {
+            row = desiredPosition.row + ROW_ADDS[i];
+            column = desiredPosition.column + COLUMN_ADDS[i];
+
+            if (board[row][column] != null) {
+                if(board[row][column].settlementPointer != null) {
+                    if (board[row][column].settlementPointer == settlement) {
+                        adjacent = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(!adjacent) return false ;
+
+        return true;
+    }
+
     public Tile releaseTopTile(){
         return tileStack[tilePlayIndex] ;
     }

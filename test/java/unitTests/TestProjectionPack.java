@@ -39,6 +39,26 @@ public class TestProjectionPack
     }
 
     @Test
+    public void testLeftProjection() {
+        testPoint = new Point(10, 10);
+        testProjection = new ProjectionPack(testPoint) ;
+        testProjection.projectPoint(testPoint, Direction.UP, Direction.LEFT);
+
+        assertTrue(testPoint.row == 9);
+        assertTrue(testPoint.column == 10);
+    }
+
+    @Test
+    public void testInvalidLeftProjection() {
+        testPoint = new Point(10, 10);
+        testProjection = new ProjectionPack(testPoint) ;
+        testProjection.projectPoint(testPoint, Direction.UP, Direction.LEFT);
+
+        assertFalse(testPoint.row != 9);
+        assertFalse(testPoint.column != 10);
+    }
+
+    @Test
     public void testUpperRightProjection() {
         testPoint = new Point(10, 10);
         testProjection = new ProjectionPack(testPoint) ;
@@ -117,26 +137,4 @@ public class TestProjectionPack
         assertFalse(testPoint.row != 9);
         assertFalse(testPoint.column != 10);
     }
-    @Test
-    public void testLeftProjection() {
-        testPoint = new Point(10, 10);
-        testProjection = new ProjectionPack(testPoint) ;
-        testProjection.projectPoint(testPoint, Direction.UP, Direction.LEFT);
-
-        assertTrue(testPoint.row == 9);
-        assertTrue(testPoint.column == 10);
-    }
-
-    @Test
-    public void testInvalidLeftProjection() {
-        testPoint = new Point(10, 10);
-        testProjection = new ProjectionPack(testPoint) ;
-        testProjection.projectPoint(testPoint, Direction.UP, Direction.LEFT);
-
-        assertFalse(testPoint.row != 9);
-        assertFalse(testPoint.column != 10);
-    }
-
-
-
 }

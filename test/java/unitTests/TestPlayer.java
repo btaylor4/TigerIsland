@@ -1,7 +1,6 @@
 package unitTests;
 
 import main.*;
-import main.enums.*;
 
 import main.Settlement;
 import org.junit.Before;
@@ -45,14 +44,14 @@ public class TestPlayer
     public void TestWinWhenIUsedUpAllMeeplesAndPlaygrounds()
     {
         player1.setMeeples(0);
-        player1.setTigerPlayground(0);
+        player1.setTigers(0);
         assertTrue(player1.isOutOfPieces());
     }
 
     @Test
     public void TestWinWhenIUsedUpAllPlaygroundsAndTotoro()
     {
-        player1.setTigerPlayground(0);
+        player1.setTigers(0);
         player1.setTotoro(0);
         assertTrue(player1.isOutOfPieces());
     }
@@ -69,14 +68,14 @@ public class TestPlayer
     public void TestNoWinWhenIUsedUpAllMeeplesAndPlaygrounds()
     {
         player1.setMeeples(1);
-        player1.setTigerPlayground(0);
+        player1.setTigers(0);
         assertFalse(player1.isOutOfPieces());
     }
 
     @Test
     public void TestNoWinWhenIUsedUpAllPlaygroundsAndTotoro()
     {
-        player1.setTigerPlayground(2);
+        player1.setTigers(2);
         player1.setTotoro(0);
         assertFalse(player1.isOutOfPieces());
     }
