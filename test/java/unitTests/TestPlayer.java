@@ -1,14 +1,13 @@
 package unitTests;
 
-import main.GameBoard;
-import main.Player;
+import main.*;
+import main.enums.*;
+
 import main.Settlement;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by Bryan on 4/6/17.
@@ -88,15 +87,15 @@ public class TestPlayer
         assertFalse(player1.hasPlayerLost());
     }
 
-    /*@Test
+    @Test
     public void TestNotLostIfPlayerCanPlaceTotoro()
     {
-        player1.playerSettlements.put(0, new Settlement());
+        player1.playerSettlements.put(0, new Settlement(game));
         Settlement set = player1.playerSettlements.get(0);
         set.size = 5;
 
         assertFalse(player1.hasPlayerLost());
-    }*/
+    }
 
     @Test
     public void TestLostIfNoValidPlacements()
@@ -105,6 +104,81 @@ public class TestPlayer
         assertTrue(player1.hasPlayerLost());
     }
 
+    @Test
+    public void TestMeepleDecreaseAfterPlace()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        player1.placeMeeple(point, new Settlement(game));
+        assertEquals(19, player1.getMeeples());
+    }
+
+    @Test
+    public void TestScoreIncreasesAfterMeeplePlacementOnLevelOne()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        player1.placeMeeple(point, new Settlement(game));
+        assertEquals(1, player1.getScore());
+    }
+
+    @Test
+    public void TestMeepleDecreaseAfterPlaceOnLevelHigherThanOne()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        game.board[104][105].level = 2;
+        player1.placeMeeple(point, new Settlement(game));
+        assertEquals(18, player1.getMeeples());
+    }
+
+    @Test
+    public void TestInvalidScoreIncreasesAfterMeeplePlacementOnLevelHigherThanOne()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        game.board[104][105].level = 2;
+        player1.placeMeeple(point, new Settlement(game));
+        assertEquals(4, player1.getScore());
+    }
+
+    @Test
+    public void TestInvalidMeepleDecreaseAfterPlace()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        player1.placeMeeple(point, new Settlement(game));
+        assertNotEquals(20, player1.getMeeples());
+    }
+
+    @Test
+    public void TestInvalidScoreIncreasesAfterMeeplePlacementOnLevelOne()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        player1.placeMeeple(point, new Settlement(game));
+        assertNotEquals(0, player1.getScore());
+    }
+
+    @Test
+    public void TestInvalidMeepleDecreaseAfterPlaceOnLevelHigherThanOne()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        game.board[104][105].level = 2;
+        player1.placeMeeple(point, new Settlement(game));
+        assertNotEquals(20, player1.getMeeples());
+    }
+
+    @Test
+    public void TestScoreIncreasesAfterMeeplePlacementOnLevelHigherThanOne()
+    {
+        game.setFirstTile();
+        Point point = new Point(104, 105);
+        game.board[104][105].level = 2;
+        player1.placeMeeple(point, new Settlement(game));
+        assertNotEquals(0, player1.getScore());
+    }
     /*
     Test overlapping tiles correctly
     Test not placing on volcano

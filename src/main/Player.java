@@ -300,7 +300,7 @@ public class Player {
         {
             for(Settlement mySets : playerSettlements.values())
             {
-                if(mySets.hasTotoro)
+                if(mySets.hasTotoro != 0)
                     continue;
 
                 else if(mySets.size >= 5) //do we also have to check if there's a hex that we can put on?
@@ -309,7 +309,7 @@ public class Player {
 
             for(Settlement mySets : playerSettlements.values())
             {
-                if(mySets.hasTiger)
+                if(mySets.hasTiger != 0)
                     continue;
             }
         }
@@ -328,13 +328,13 @@ public class Player {
         //Priority list
         for (Settlement mySets : playerSettlements.values()) {
             //check if I can place a totoro
-            if (!mySets.hasTotoro) {
+            if (mySets.hasTotoro == 0) {
                 //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
                 //placeTotoro();
             }
 
             //check if I can place a tiger
-            else if (!mySets.hasTiger) {
+            else if (mySets.hasTiger == 0) {
                 //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
                 //placeTiger();
             }
@@ -437,12 +437,12 @@ public class Player {
                        (settlement size >= 5 or expansion options gives me >= 5)
                     */
 
-                    if(mySet.hasTotoro)
+                    if(mySet.hasTotoro > 0)
                     {
 
                     }
 
-                    else if(mySet.hasTiger)
+                    else if(mySet.hasTiger > 0)
                     {
 
                     }
@@ -473,4 +473,11 @@ public class Player {
         this.score += score;
     }
 
+    public int getMeeples() {
+        return meeples;
+    }
+
+    public int getScore() {
+        return score;
+    }
 }
