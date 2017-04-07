@@ -77,10 +77,12 @@ public class Player {
             case 'r':
                 hexBterrain = TerrainType.ROCKY ;
                 break;
+            case 'l':
             case 'w':
                 hexBterrain = TerrainType.LAKE;
                 break;
             case 'f':
+            case 'j':
                 hexBterrain = TerrainType.JUNGLE;
                 break;
             default:

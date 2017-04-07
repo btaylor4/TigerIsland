@@ -88,7 +88,7 @@ public class TestPlayer
         assertFalse(player1.hasPlayerLost());
     }
 
-    @Test
+    /*@Test
     public void TestNotLostIfPlayerCanPlaceTotoro()
     {
         player1.playerSettlements.put(0, new Settlement());
@@ -96,7 +96,7 @@ public class TestPlayer
         set.size = 5;
 
         assertFalse(player1.hasPlayerLost());
-    }
+    }*/
 
     @Test
     public void TestLostIfNoValidPlacements()
