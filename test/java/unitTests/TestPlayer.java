@@ -3,6 +3,7 @@ package unitTests;
 import main.*;
 
 import main.Settlement;
+import main.enums.OccupantType;
 import main.enums.TerrainType;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +18,7 @@ public class TestPlayer
     Player player1;
     Player player2;
     GameBoard game;
+    Tile tile;
 
     @Before
     public void initializeVariables()
@@ -255,13 +257,161 @@ public class TestPlayer
         assertNotEquals(0, player1.getScore());
     }
 
-    /*
-    Test overlapping tiles correctly
-    Test not placing on volcano
-    Test not nuking only 1 piece or entire settlement
-    Test Valid tile placement
-    Test Settlement construction/deconstruction, merging
-    Test Scoring
+    @Test
+    public void TestValidTilePlacement()
+    {
+        game.setFirstTile();
+        tile = new Tile();
+        tile.assignTerrain(TerrainType.LAKE, TerrainType.LAKE);
+        tile.rotation = 2 ;
+        tile.setHexLevels(1);
+        ProjectionPack projections = player1.projectTilePlacement(tile, new Point(105, 106));
+        projections.projectedLevel = game.getProjectedHexLevel(projections);
+        assertTrue(game.isValidTilePlacement(projections));
+    }
 
+    @Test
+    public void TestNotAdjacentTilePlacement()
+    {
+        game.setFirstTile();
+        tile = new Tile();
+        tile.assignTerrain(TerrainType.LAKE, TerrainType.LAKE);
+        tile.rotation = 1 ;
+        tile.setHexLevels(1);
+        player1.projectTilePlacement(tile, new Point(104, 108));
+        ProjectionPack projections = player1.projectTilePlacement(tile, new Point(103, 108));
+        projections.projectedLevel = game.getProjectedHexLevel(projections);
+        assertFalse(game.isValidTilePlacement(projections));
+    }
+
+    @Test
+    public void TestValidTileOverlap()
+    {
+        game.setFirstTile();
+        tile = new Tile();
+        tile.assignTerrain(TerrainType.LAKE, TerrainType.LAKE);
+        tile.rotation = 2;
+        tile.setHexLevels(1);
+        ProjectionPack projections = player1.projectTilePlacement(tile, new Point(105, 106));
+        projections.projectedLevel = game.getProjectedHexLevel(projections);
+        game.setTile(tile, projections);
+
+        tile = new Tile();
+        tile.assignTerrain(TerrainType.LAKE, TerrainType.LAKE);
+        tile.rotation = 1;
+        tile.setHexLevels(1);
+        projections = player1.projectTilePlacement(tile, new Point(105, 106));
+        projections.projectedLevel = game.getProjectedHexLevel(projections);
+        assertTrue(game.isValidTilePlacement(projections));
+    }
+
+    @Test
+    public void TestInvalidTileOverlap()
+    {
+        game.setFirstTile();
+        tile = new Tile();
+        tile.assignTerrain(TerrainType.LAKE, TerrainType.LAKE);
+        tile.rotation = 1;
+        tile.setHexLevels(1);
+        ProjectionPack projections = player1.projectTilePlacement(tile, new Point(105, 105));
+        projections.projectedLevel = game.getProjectedHexLevel(projections);
+        game.setTile(tile, projections);
+        assertFalse(game.isValidTilePlacement(projections));
+    }
+
+    @Test
+    public void TestInvalidTileOverlapOnSettlementOfOne()
+    {
+        game.setFirstTile();
+        tile = new Tile();
+        tile.assignTerrain(TerrainType.LAKE, TerrainType.LAKE);
+        tile.rotation = 2;
+        tile.setHexLevels(1);
+        ProjectionPack projections = player1.projectTilePlacement(tile, new Point(105, 106));
+        projections.projectedLevel = game.getProjectedHexLevel(projections);
+        game.setPiece(new Point(104, 106), OccupantType.MEEPLE, new Settlement(game));
+
+        tile = new Tile();
+        tile.assignTerrain(TerrainType.LAKE, TerrainType.LAKE);
+        tile.rotation = 1;
+        tile.setHexLevels(1);
+        projections = player1.projectTilePlacement(tile, new Point(105, 106));
+        projections.projectedLevel = game.getProjectedHexLevel(projections);
+        assertFalse(game.isValidTilePlacement(projections));
+    }
+
+    /*@Test
+    public void TestInvalidTileOverlapNukingEntireSettlement() //not working when it should
+    {
+        Settlement settlement = new Settlement(game);
+        settlement.owner = player1;
+        game.setFirstTile();
+        tile = new Tile();
+        tile.assignTerrain(TerrainType.LAKE, TerrainType.LAKE);
+        tile.rotation = 2;
+        tile.setHexLevels(1);
+        ProjectionPack projections = player1.projectTilePlacement(tile, new Point(105, 106));
+        projections.projectedLevel = game.getProjectedHexLevel(projections);
+        game.setTile(tile, projections);
+
+        tile = new Tile();
+        tile.assignTerrain(TerrainType.LAKE, TerrainType.LAKE);
+        tile.rotation = 1;
+        tile.setHexLevels(1);
+        projections = player1.projectTilePlacement(tile, new Point(105, 106));
+        projections.projectedLevel = game.getProjectedHexLevel(projections);
+
+        player1.placeMeeple(new Point(104, 106), settlement);
+        player1.placeMeeple(new Point(104, 107), settlement);
+        assertFalse(game.isValidTilePlacement(projections));
+    }*/
+
+    @Test
+    public void TestCannotNukeTotoro()
+    {
+        game.setFirstTile();
+        game.setPiece(new Point(104, 106), OccupantType.TOTORO, new Settlement(game));
+        tile = new Tile();
+        tile.assignTerrain(TerrainType.LAKE, TerrainType.LAKE);
+        tile.rotation = 2;
+        tile.setHexLevels(1);
+        ProjectionPack projections = player1.projectTilePlacement(tile, new Point(105, 106));
+        projections.projectedLevel = game.getProjectedHexLevel(projections);
+        game.setTile(tile, projections);
+
+        tile = new Tile();
+        tile.assignTerrain(TerrainType.LAKE, TerrainType.LAKE);
+        tile.rotation = 1;
+        tile.setHexLevels(1);
+        projections = player1.projectTilePlacement(tile, new Point(105, 106));
+        projections.projectedLevel = game.getProjectedHexLevel(projections);
+        assertFalse(game.isValidTilePlacement(projections));
+    }
+
+    @Test
+    public void TestCannotNukePlayground()
+    {
+        game.setFirstTile();
+        game.setPiece(new Point(104, 106), OccupantType.TIGERPLAYGROUND, new Settlement(game));
+        tile = new Tile();
+        tile.assignTerrain(TerrainType.LAKE, TerrainType.LAKE);
+        tile.rotation = 2;
+        tile.setHexLevels(1);
+        ProjectionPack projections = player1.projectTilePlacement(tile, new Point(105, 106));
+        projections.projectedLevel = game.getProjectedHexLevel(projections);
+        game.setTile(tile, projections);
+
+        tile = new Tile();
+        tile.assignTerrain(TerrainType.LAKE, TerrainType.LAKE);
+        tile.rotation = 1;
+        tile.setHexLevels(1);
+        projections = player1.projectTilePlacement(tile, new Point(105, 106));
+        projections.projectedLevel = game.getProjectedHexLevel(projections);
+        assertFalse(game.isValidTilePlacement(projections));
+    }
+
+    /*
+    Test not nuking only 1 piece or entire settlement
+    Test Settlement construction/deconstruction, merging
      */
 }
