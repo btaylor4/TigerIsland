@@ -121,7 +121,7 @@ public class GameBoard {
     }
 
     public boolean isValidOverlap(ProjectionPack projection){
-        boolean volcanoAligned, totoroPresent ;
+        boolean volcanoAligned, totoroPresent, tigerPresent ;
         int tileUnderVolcano, tileUnderHexA, tileUnderHexB ;
 
 
@@ -133,6 +133,12 @@ public class GameBoard {
 
         totoroPresent = board[projection.hex_b.row][projection.hex_b.column].occupant == OccupantType.TOTORO ;
         if(totoroPresent) return false ;
+
+        tigerPresent = board[projection.hex_a.row][projection.hex_a.column].occupant == OccupantType.TIGERPLAYGROUND ;
+        if(tigerPresent ) return false ;
+
+        tigerPresent  = board[projection.hex_b.row][projection.hex_b.column].occupant == OccupantType.TIGERPLAYGROUND ;
+        if(tigerPresent ) return false ;
 
         tileUnderVolcano = board[projection.volcano.row][projection.volcano.column].tileNumber ;
         tileUnderHexA = board[projection.hex_a.row][projection.hex_a.column].tileNumber ;

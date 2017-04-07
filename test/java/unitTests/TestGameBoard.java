@@ -1,10 +1,8 @@
 package unitTests;
-import main.GameBoard;
-import main.Point;
-import main.Settlement;
-import main.Tile;
+import main.*;
 
 import main.enums.OccupantType;
+import main.enums.TerrainType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -95,6 +93,41 @@ public class TestGameBoard
         Point point = new Point(104, 105);
         assertTrue(game.isValidSettlementPosition(point));
     }
+
+    @Test
+    public void testValidTigerPlacement()
+    {
+        game.setFirstTile();
+        Point point= new Point(104, 105);
+        Player player1 = new Player(game, 1);
+        player1.placeMeeple(point, new Settlement(game));
+        game.board[104][106].level = 3;
+        assertTrue(game.isValidTigerPosition(new Point(104, 106), game.board[104][105].settlementPointer));
+    }
+
+    @Test
+    public void testInvalidTigerPlaygroundOnLevelLowerThanThree()
+    {
+        game.setFirstTile();
+        Point point= new Point(104, 105);
+        Player player1 = new Player(game, 1);
+        player1.placeMeeple(point, new Settlement(game));
+        game.board[104][106].level = 2;
+        assertFalse(game.isValidTigerPosition(new Point(104, 106), game.board[104][105].settlementPointer));
+    }
+
+    @Test
+    public void testInvalidTigerPlaygroundOnHexNotAdjacentToSettlement()
+    {
+        game.setFirstTile();
+        Point point= new Point(106, 105);
+        Player player1 = new Player(game, 1);
+        player1.placeMeeple(point, new Settlement(game));
+        game.board[104][106].level = 3;
+        assertFalse(game.isValidTigerPosition(new Point(104, 106), game.board[104][105].settlementPointer));
+    }
+
+
 
     /*
     @Test
