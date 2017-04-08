@@ -32,7 +32,8 @@ public class GameThread implements Runnable{
                 currentPlayer.determineBuildByAI();
             }
 
-            else {
+            else
+            {
                 currentPlayer.playTilePhase();
                 currentPlayer.playBuildPhase();
             }

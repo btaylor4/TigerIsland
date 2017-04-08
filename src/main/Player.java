@@ -392,7 +392,7 @@ public class Player {
             freshSettlement.ownerNumber = designator ;
             freshSettlement.beginNewSettlement(firstPoint);
             game.setSettlement(firstPoint, freshSettlement);
-            placeMeeple(new Point(104, 105), new Settlement(game));
+            placeMeeple(firstPoint, freshSettlement);
             playerSettlements.put(coordinatesToKey(firstPoint.row, firstPoint.column), freshSettlement);
             firstBuild = true;
             return;
@@ -574,7 +574,7 @@ public class Player {
                         case ROCKY:
 
                         case GRASSLANDS:
-                            selectedPoint = new Point(107, 102);
+                            selectedPoint = new Point(108, 103);
                             tileHeld.setRotation(2);
                             projection = projectTilePlacement(tileHeld, selectedPoint);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
@@ -585,8 +585,8 @@ public class Player {
 
                         case JUNGLE:
                             //set orientation to 5
-                            selectedPoint = new Point(101, 106);
-                            tileHeld.setRotation(5);
+                            selectedPoint = new Point(102, 106);
+                            tileHeld.setRotation(3);
                             projection = projectTilePlacement(tileHeld, selectedPoint);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
                             game.setTile(tileHeld, projection);
@@ -695,8 +695,8 @@ public class Player {
 
         for(int i = 0; i < SIDES_IN_HEX; i++)
         {
-            row += 2 * ROW_ADDS[i];
-            column += 2 * COLUMN_ADDS[i];
+            row += 3 * ROW_ADDS[i];
+            column += 3 * COLUMN_ADDS[i];
 
             if(game.board[row][column] != null && game.isValidSettlementPosition(new Point(row, column)))
             {
