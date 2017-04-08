@@ -18,6 +18,7 @@ public class Artificial_Intelligence extends Player
     private Point point;
     private Settlement settle;
     private int row, collumn, rotation;
+    //TESTING GIT ISH
 
 
     public void Place_Tile_By_AI()
