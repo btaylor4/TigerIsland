@@ -2,6 +2,7 @@ package main;
 
 import main.enums.OccupantType;
 import main.enums.TerrainType;
+import main.utils.HexPointPair;
 
 import static main.utils.formulas.coordinatesToKey;
 import static main.utils.constants.* ;
@@ -18,7 +19,6 @@ public class Settlement {
     public Player owner ;
     private GameBoard game ;
 
-
     public HashMap<Integer, Point> occupantPositions;
 
     public HashMap<Integer, Point> grasslands;
@@ -28,7 +28,8 @@ public class Settlement {
     public HashMap<Integer, Point> volcanoes;
 
     private ArrayList<Point> mergingSettlements;
-    public ArrayList<Point> markedForRemoval ;
+    public ArrayList<Point> markedForExpansion;
+    public ArrayList<Point> markedForRemoval;
 
     public Settlement(GameBoard gamePointer) {
         size = 0 ;
@@ -46,6 +47,7 @@ public class Settlement {
         volcanoes = new HashMap<>();
 
         mergingSettlements = new ArrayList<>();
+        markedForExpansion = new ArrayList<>();
         markedForRemoval = new ArrayList<>();
     }
 
@@ -64,29 +66,10 @@ public class Settlement {
 
             if (game.board[row][column] != null){
                 if(game.board[row][column].occupant == OccupantType.NONE) {
-                    present = isFreeTerrainPresent(game.board[row][column].terrain, new Point(row, column));
+                    present = isFreeTerrainPresent(game.board[row][column].terrain, game.board[row][column].key);
                     if(!present) {
                         hashAdjacentTerrain(game.board[row][column].terrain, new Point(row, column));
                     }
-                }
-            }
-        }
-    }
-
-    private void recursivelyAddMatchingTerrain(Point origin){
-        int row, column ;
-        boolean matching, present ;
-
-        for (int i = 0; i < SIDES_IN_HEX; i++) {
-            row = origin.row + ROW_ADDS[i];
-            column = origin.column + COLUMN_ADDS[i];
-
-            if (game.board[row][column] != null) {
-                matching = (game.board[row][column].terrain == game.board[origin.row][origin.column].terrain) ;
-                present = isFreeTerrainPresent(game.board[row][column].terrain, new Point(row, column)) ;
-
-                if((matching && (!present)) && (game.board[row][column].occupant == OccupantType.NONE)){
-                    hashAdjacentTerrain(game.board[row][column].terrain, new Point(row, column));
                 }
             }
         }
@@ -121,28 +104,24 @@ public class Settlement {
                 System.out.println("Error: Could not resolve adjacent terrain");
                 break;
         }
-
-        recursivelyAddMatchingTerrain(point);
     }
 
-    private boolean isFreeTerrainPresent(TerrainType terrain, Point point){
-        int hashKey = coordinatesToKey(point.row, point.column);
-
+    private boolean isFreeTerrainPresent(TerrainType terrain, int key){
         switch(terrain) {
             case JUNGLE:
-                return forests.containsKey(hashKey);
+                return forests.containsKey(key);
 
             case GRASSLANDS:
-                return grasslands.containsKey(hashKey);
+                return grasslands.containsKey(key);
 
             case VOLCANO:
-                return volcanoes.containsKey(hashKey);
+                return volcanoes.containsKey(key);
 
             case ROCKY:
-                return rocky.containsKey(hashKey);
+                return rocky.containsKey(key);
 
             case LAKE:
-                return lakes.containsKey(hashKey);
+                return lakes.containsKey(key);
 
             default:
                 System.out.println("Error: Could not resolve adjacent terrain");
@@ -177,13 +156,29 @@ public class Settlement {
 
     private void expandThroughTerrain(HashMap<Integer,Point> expansions ){
         for(Point point : expansions.values()){
-            System.out.println("espanding " + point.row + " " + point.column);
-            size++ ;
-            owner.placeMeeple(point, this);
-            occupantPositions.put(coordinatesToKey(point.row, point.column), point) ;
-            addAdjacentSettlementsForMerge(point);
+            expandPrep(point);
         }
+
+        for(Point target : markedForExpansion) {
+            System.out.println("expanding " + target.row + " " + target.column);
+            owner.placeMeeple(target, this);
+            size++;
+            addAdjacentSettlementsForMerge(target);
+        }
+
         expansions.clear();
+        markedForExpansion.clear();
+    }
+
+    private void expandPrep(Point target) {
+        occupantPositions.put(coordinatesToKey(target.row, target.column), target);
+        markedForExpansion.add(target);
+
+        for (HexPointPair adjacent : game.board[target.row][target.column].links.values()){
+            if (!occupantPositions.containsKey(adjacent.hex.key)) {
+                expandPrep(adjacent.point);
+            }
+        }
     }
 
     public void addAdjacentSettlementsForMerge(Point point) {
@@ -249,5 +244,13 @@ public class Settlement {
             rocky.remove(hashKey);
             volcanoes.remove(hashKey);
         }
+    }
+
+    public void removeFromExpansions(int key){
+        forests.remove(key);
+        grasslands.remove(key);
+        volcanoes.remove(key);
+        rocky.remove(key);
+        lakes.remove(key);
     }
 }

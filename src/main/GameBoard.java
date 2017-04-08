@@ -113,11 +113,14 @@ public class GameBoard {
             else if(board[row][column].settlementPointer != null){
                 board[row][column].settlementPointer.hashAdjacentTerrain(board[point.row][point.column].terrain, point);
             }
+            else if(board[row][column].terrain == board[point.row][point.column].terrain){
+                board[point.row][point.column].link(board[row][column], new Point(row, column), point);
+            }
         }
     }
 
     public void removeFreeAdjacency(Point point){
-        playableHexes.remove(coordinatesToKey(point.row, point.column));
+        playableHexes.remove(board[point.row][point.column].key);
     }
 
     public boolean isValidOverlap(ProjectionPack projection){
@@ -286,6 +289,12 @@ public class GameBoard {
         starter.projects.downLeft = new Point(BOARD_CENTER+1, BOARD_CENTER-1);
         starter.projects.downRight = new Point(BOARD_CENTER+1, BOARD_CENTER);
 
+        starter.volcano.key = coordinatesToKey(BOARD_CENTER, BOARD_CENTER) ;
+        starter.hexUpLeft.key = coordinatesToKey(BOARD_CENTER-1, BOARD_CENTER);
+        starter.hexUpRight.key = coordinatesToKey(BOARD_CENTER-1, BOARD_CENTER+1);
+        starter.hexDownLeft.key = coordinatesToKey(BOARD_CENTER+1, BOARD_CENTER-1);
+        starter.hexDownRight.key = coordinatesToKey(BOARD_CENTER+1, BOARD_CENTER);
+
         board[starter.projects.volcano.row][starter.projects.volcano.column] = starter.volcano ;
         board[starter.projects.upLeft.row][starter.projects.upLeft.column] = starter.hexUpLeft ;
         board[starter.projects.upRight.row][starter.projects.upRight.column] = starter.hexUpRight ;
@@ -318,6 +327,14 @@ public class GameBoard {
         if(projections.projectedLevel > 1) processVolcanicDestruction(projections);
         // make sure destruction happens before placement
 
+        tileBeingPlaced.volcano.key = coordinatesToKey(projections.volcano.row, projections.volcano.column);
+        tileBeingPlaced.hexA.key = coordinatesToKey(projections.hex_a.row, projections.hex_a.column);
+        tileBeingPlaced.hexB.key = coordinatesToKey(projections.hex_b.row, projections.hex_b.column);
+
+        // ensure old terrain links are broken before placing new terrain!
+        disassociateTerrain(projections.hex_a);
+        disassociateTerrain(projections.hex_b);
+
         board[projections.volcano.row][projections.volcano.column] = tileBeingPlaced.volcano ;
         board[projections.hex_a.row][projections.hex_a.column] = tileBeingPlaced.hexA ;
         board[projections.hex_b.row][projections.hex_b.column] = tileBeingPlaced.hexB ;
@@ -336,9 +353,29 @@ public class GameBoard {
         if(lowerLimit < projections.volcano.row) lowerLimit += 2 ;
     }
 
+    private void disassociateTerrain(Point removal){
+
+        if(board[removal.row][removal.column] != null)
+            board[removal.row][removal.column].unlink();
+
+        int row , column;
+
+        for (int i = 0; i < SIDES_IN_HEX; i++) {
+            row = removal.row + ROW_ADDS[i];
+            column = removal.column + COLUMN_ADDS[i];
+
+            if ((board[removal.row][removal.column] != null) && (board[row][column] != null)) {
+                if(board[row][column].settlementPointer != null) {
+                    board[row][column].settlementPointer.removeFromExpansions(board[removal.row][removal.column].key);
+                }
+            }
+        }
+    }
+
     public void setPiece(Point desiredPosition, OccupantType piece, Settlement settlementPointer){
         board[desiredPosition.row][desiredPosition.column].occupant = piece ;
         board[desiredPosition.row][desiredPosition.column].settlementPointer = settlementPointer ;
+        disassociateTerrain(desiredPosition);
     }
 
     public void setSettlement(Point desiredPosition, Settlement newSettlement){
@@ -373,7 +410,7 @@ public class GameBoard {
         int key;
 
         for(Point removal : settlement.markedForRemoval){
-            key = coordinatesToKey(removal.row, removal.column) ;
+            key = board[removal.row][removal.column].key ;
             settlement.occupantPositions.remove(key);
             settlement.owner.playerSettlements.remove(key);
             board[removal.row][removal.column].occupant = OccupantType.NONE ;
@@ -402,7 +439,7 @@ public class GameBoard {
 
         for(Point origin : originalSettlement.occupantPositions.values()) {
             partialSettlement = board[origin.row][origin.column].settlementPointer ;
-            partialSettlement.owner.playerSettlements.put(coordinatesToKey(origin.row, origin.column), partialSettlement);
+            partialSettlement.owner.playerSettlements.put(board[origin.row][origin.column].key, partialSettlement);
         }
     }
 

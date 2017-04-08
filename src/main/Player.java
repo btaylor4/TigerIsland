@@ -200,7 +200,6 @@ public class Player {
         do{
             selectedPoint = determinePiecePositionByHuman();
         } while(!game.isValidSettlementPosition(selectedPoint)) ;
-        // TODO: The board currently does not/cannot check if it is an underhanded expansion
 
         Settlement freshSettlement = new Settlement(game);
         freshSettlement.owner = this ;
