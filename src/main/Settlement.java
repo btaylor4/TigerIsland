@@ -17,7 +17,7 @@ public class Settlement {
     public int tigerPlaygrounds ;
     public Player owner ;
     private GameBoard game ;
-
+    public AdjacentMeeples adjacentMeeples;
 
     public HashMap<Integer, Point> occupantPositions;
 
@@ -47,11 +47,13 @@ public class Settlement {
 
         mergingSettlements = new ArrayList<>();
         markedForRemoval = new ArrayList<>();
+        adjacentMeeples = new AdjacentMeeples(game);
     }
 
     public void beginNewSettlement(Point point) {
         occupantPositions.put(coordinatesToKey(point.row, point.column), point);
         size = 1;
+        adjacentMeeples.updateAdjacencies(point);
     }
 
     public void addAdjacentTerrains(Point point) {
@@ -177,7 +179,7 @@ public class Settlement {
 
     private void expandThroughTerrain(HashMap<Integer,Point> expansions ){
         for(Point point : expansions.values()){
-            System.out.println("espanding " + point.row + " " + point.column);
+            System.out.println("expanding " + point.row + " " + point.column);
             size++ ;
             owner.placeMeeple(point, this);
             occupantPositions.put(coordinatesToKey(point.row, point.column), point) ;
@@ -203,6 +205,11 @@ public class Settlement {
 
                 if(occupied && differentSettlement && sameOwner) {
                     mergingSettlements.add(new Point(row, column));
+                }
+
+                if(occupied && !differentSettlement && sameOwner)
+                {
+                    adjacentMeeples.updateAdjacencies(point);
                 }
             }
         }
@@ -237,6 +244,30 @@ public class Settlement {
         mergingSettlements.clear();
         cleanTerrainLists();    /* IMPORTANT: remove occupant positions from all adjacent terrain hash maps
                                 there will be at least one conflict to resolve */
+        findEndPoints();
+    }
+
+    public Point findEndPoints()
+    {
+        int min = Integer.MAX_VALUE;
+        Point endPoint = null;
+
+        for(Point point : adjacentMeeples.endPoints.keySet())
+        {
+            if(adjacentMeeples.endPoints.get(point) < min)
+            {
+                endPoint = point;
+                min = adjacentMeeples.endPoints.get(point);
+                adjacentMeeples.setEndPointToNuke(point);
+            }
+
+            else if(adjacentMeeples.endPoints.get(point) == min)
+            {
+
+            }
+        }
+
+        return endPoint;
     }
 
     private void cleanTerrainLists(){
