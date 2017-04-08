@@ -19,7 +19,7 @@ public class AdjacentMeeples
 
     public AdjacentMeeples(GameBoard game)
     {
-        game = new GameBoard();
+        this.game = game;
         endPoints = new HashMap<>();
         endPointToNuke = new Point(0, 0);
     }

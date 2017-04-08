@@ -642,6 +642,7 @@ public class Player {
                     }
                 }
 
+                game.isValidSettlementPosition(new Point(104, 105));
                 tileHeld.setRotation(determineRotationForPlacingAI(settlementChoice));
                 projection = projectTilePlacement(tileHeld, placeMeepleOneAway(settlementChoice));
                 projection.projectedLevel = game.getProjectedHexLevel(projection);

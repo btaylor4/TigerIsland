@@ -11,6 +11,7 @@ public class GameThread implements Runnable{
         game = new GameBoard();
         player1 = new Player(game,1);
         player2 = new Player(game,2);
+        currentPlayer = player2;
     }
 
     @Override
