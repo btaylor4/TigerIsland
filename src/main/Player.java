@@ -7,6 +7,9 @@ import main.enums.Direction;
 import main.enums.OccupantType ;
 import main.enums.TerrainType;
 
+import static main.utils.constants.COLUMN_ADDS;
+import static main.utils.constants.ROW_ADDS;
+import static main.utils.constants.SIDES_IN_HEX;
 import static main.utils.formulas.coordinatesToKey;
 
 public class Player {
@@ -347,41 +350,164 @@ public class Player {
         }
     }
 
-    public void determineBuildByAI() {
-        //Priority list
-        for (Settlement mySets : playerSettlements.values()) {
-            //check if I can place a totoro
-            if (mySets.totoroSanctuaries == 0) {
-                //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
-                //placeTotoro();
-            }
-
-            //check if I can place a tiger
-            else if (mySets.tigerPlaygrounds == 0) {
-                //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
-                //placeTiger();
-            }
-
-            //not sure to check if I can expand a settlement that won't be able to nuke?
-            //next 4 if statements check if I can expand a settlement giving me a a totoro placement on next turn
-            else if (mySets.size + mySets.grasslands.size() >= 5) {
-                expandSettlementMeeple();
-            } else if (mySets.size + mySets.lakes.size() >= 5) {
-                expandSettlementMeeple();
-            } else if (mySets.size + mySets.forests.size() >= 5) {
-                expandSettlementMeeple();
-            } else if (mySets.size + mySets.rocky.size() >= 5) {
-                expandSettlementMeeple();
-            }
-
-            //found new settlement 1 or 2 away from a pre existing settlement
-            foundNewAISettlement();
-        }
-    }
-
     public void foundNewAISettlement()
     {
         //check best place to place meeple
+    }
+
+    public int determineRotationAI(Settlement mySet)
+    {
+        ProjectionPack projection;
+        int minimumRotationValue = 1;
+        int minimumNumberOfMeeplesNuked = Integer.MAX_VALUE;
+
+        for(int i = 1; i < 7; i++)
+        {
+            int meeplesBeingNuked = 0;
+
+            tileHeld.setRotation(i);
+            projection = projectTilePlacement(tileHeld, mySet.adjacentMeeples.endPointToNuke);
+            projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+            if(game.isValidTilePlacement(projection))
+            {
+                if(game.board[projection.hex_a.row][projection.hex_a.column].occupant == OccupantType.MEEPLE)
+                {
+                    if(game.board[projection.hex_b.row][projection.hex_b.column].occupant == OccupantType.MEEPLE)
+                    {
+                        meeplesBeingNuked++;
+                    }
+
+                    meeplesBeingNuked++;
+                }
+
+                if(meeplesBeingNuked < minimumNumberOfMeeplesNuked)
+                {
+                    minimumNumberOfMeeplesNuked = meeplesBeingNuked;
+                    minimumRotationValue = i;
+                }
+            }
+        }
+
+        return minimumRotationValue;
+    }
+
+    public void determineBuildByAI() {
+        //Priority list
+        int row = 0;
+        int column = 0;
+
+        for (Settlement mySets : playerSettlements.values())
+        {
+            //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
+            //check if I can place a totoro
+            if (mySets.totoroSanctuaries == 0)
+            {
+                if(mySets.size >= 5)
+                {
+                    Point point = mySets.findEndPoints();
+
+                    for (int i = 0; i < SIDES_IN_HEX; i++)
+                    {
+                        row = point.row + ROW_ADDS[i];
+                        column = point.column + COLUMN_ADDS[i];
+
+                        if (game.board[row][column] != null)
+                        {
+                            if(!game.isValidTotoroPosition(new Point(row, column), mySets))
+                                continue;
+
+                            else if(game.isValidTotoroPosition(new Point(row, column), mySets))
+                            {
+                                if(mySets.adjacentMeeples.checkPieceAdjacencies(point) <= 1)
+                                {
+                                    point = new Point(row, column);
+                                    break;
+                                }
+                            }
+
+                            else if(game.isValidTotoroPosition(new Point(row, column), mySets))
+                                point = new Point(row, column);
+
+                        }
+                    }
+
+                    if(game.isValidTotoroPosition(point, mySets))
+                    {
+                        game.setPiece(point, OccupantType.TOTORO, mySets);
+                        return;
+                    }
+                }
+            }
+        }
+
+        for (Settlement mySets : playerSettlements.values())
+        {
+            //check if I can place a tiger
+            if (mySets.tigerPlaygrounds == 0)
+            {
+                Point point = mySets.findEndPoints();
+
+                for (int i = 0; i < SIDES_IN_HEX; i++)
+                {
+                    row = point.row + ROW_ADDS[i];
+                    column = point.column + COLUMN_ADDS[i];
+
+                    if (game.board[row][column] != null)
+                    {
+                        if(!game.isValidTigerPosition(new Point(row, column), mySets))
+                            continue;
+
+                        else if(game.isValidTigerPosition(new Point(row, column), mySets))
+                        {
+                            if(mySets.adjacentMeeples.checkPieceAdjacencies(point) <= 1)
+                            {
+                                point = new Point(row, column);
+                                break;
+                            }
+                        }
+
+                        else if(game.isValidTigerPosition(new Point(row, column), mySets))
+                            point = new Point(row, column);
+                    }
+                }
+
+                if(game.isValidTigerPosition(point, mySets))
+                {
+                    game.setPiece(point, OccupantType.TIGERPLAYGROUND, mySets);
+                    return;
+                }
+            }
+        }
+
+        for (Settlement mySets : playerSettlements.values())
+        {
+            if (mySets.size + mySets.grasslands.size() >= 5)
+            {
+                mySets.expand(TerrainType.GRASSLANDS);
+                return;
+            }
+
+            else if (mySets.size + mySets.lakes.size() >= 5)
+            {
+                mySets.expand(TerrainType.LAKE);
+                return;
+            }
+
+            else if (mySets.size + mySets.forests.size() >= 5)
+            {
+                mySets.expand(TerrainType.JUNGLE);
+                return;
+            }
+
+            else if (mySets.size + mySets.rocky.size() >= 5)
+            {
+                mySets.expand(TerrainType.ROCKY);
+                return;
+            }
+        }
+
+        foundNewAISettlement();
     }
 
     public void determineTilePlacementByAI()
@@ -454,29 +580,39 @@ public class Player {
             else
             {
                 //priority list
-                // check if I can nuke in such a way to make different settlements
+                for(Settlement mySet : playerSettlements.values())
+                {
+                    if(mySet.totoroSanctuaries == 1)
+                    {
+                        tileHeld.setRotation(determineRotationAI(mySet));
+                        projection = projectTilePlacement(tileHeld, mySet.adjacentMeeples.endPointToNuke);
+                        projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+                        if(game.isValidTilePlacement(projection))
+                            game.setTile(tileHeld, projection);
+                    }
+                }
 
                 for(Settlement mySet : playerSettlements.values())
                 {
-                    /*
-                       if I have a settlement that has a totoro,
-                       see if I can nuke it in such a way to only lose pieces in a way to have a totoro
-                       option in one or two more turns:
-                       (settlement size >= 5 or expansion options gives me >= 5)
-                    */
-
-                    if(mySet.totoroSanctuaries > 0)
+                    if(mySet.tigerPlaygrounds == 1)
                     {
+                        tileHeld.setRotation(determineRotationAI(mySet));
+                        projection = projectTilePlacement(tileHeld, mySet.adjacentMeeples.endPointToNuke);
+                        projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                    }
-
-                    else if(mySet.tigerPlaygrounds > 0)
-                    {
-
+                        if(game.isValidTilePlacement(projection))
+                            game.setTile(tileHeld, projection);
                     }
                 }
-                //place tile in such a way that I can expand away from volcanos
-                //build one settlement at a time
+
+                for(Settlement mySet : playerSettlements.values())
+                {
+                    //check if I can place a tile that will add to one of the adjacency lists to make expansion better
+                    //and away from volcanoes
+                }
+
+                //place next to settlement that would allow for meeple placement one away
             }
         }
     }
