@@ -2,6 +2,7 @@ package main;
 
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Set;
 
 import main.enums.Direction;
 import main.enums.OccupantType ;
@@ -12,7 +13,7 @@ import static main.utils.formulas.coordinatesToKey;
 public class Player {
     public int designator ;
 
-    public int score;
+    private int score;
     private int meeples;
     private int totoro;
     private int tigers;
@@ -22,6 +23,8 @@ public class Player {
     private GameBoard game;
     private Tile tileHeld ;
     public HashMap<Integer, Settlement> playerSettlements;
+
+    public Player(){}
 
     public Player(GameBoard game, int designator) {
         this.designator = designator ;
@@ -334,17 +337,6 @@ public class Player {
         int level = game.board[selectedPoint.row][selectedPoint.column].level ;
         score += (level * level) ;
         meeples -= level ;
-    }
-
-    public void Place_Tile_By_AI()
-    {
-        drawTile();
-        Point place;
-        ProjectionPack rotationChoice;
-        while(designator == 1)
-        {
-
-        }
     }
 
     public void determineBuildByAI() {
