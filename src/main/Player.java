@@ -29,10 +29,12 @@ public class Player {
 
     public Player(GameBoard game, int designator) {
         this.designator = designator ;
+
         score = 0;
         meeples = 20;
         totoro = 3;
         tigers = 2;
+
         isFinished = false;
         firstPlay = false;
         firstBuild = false;
@@ -213,8 +215,6 @@ public class Player {
 
         game.setSettlement(selectedPoint, freshSettlement);
         placeMeeple(selectedPoint, freshSettlement);
-
-        playerSettlements.put(coordinatesToKey(selectedPoint.row, selectedPoint.column), freshSettlement);
     }
 
     private void expandSettlementMeeple() {
@@ -260,18 +260,29 @@ public class Player {
         return TerrainType.VOLCANO;
     }
 
+    public void placeMeeple(Point selectedPoint, Settlement settlement) {
+        game.setPiece(selectedPoint, OccupantType.MEEPLE, settlement);
+        playerSettlements.put(coordinatesToKey(selectedPoint.row, selectedPoint.column), settlement);
+
+        int level = game.board[selectedPoint.row][selectedPoint.column].level ;
+        score += (level * level) ;
+        meeples -= level ;
+    }
+
     public void placeTotoro(Point selectedPoint, Settlement settlement) {
-        if(game.isValidTotoroPosition(selectedPoint, settlement))
-        {
+        if(game.isValidTotoroPosition(selectedPoint, settlement)){
+            settlement.totoroSanctuaries += 1 ;
             game.setPiece(selectedPoint, OccupantType.TOTORO, settlement);
+            playerSettlements.put(coordinatesToKey(selectedPoint.row, selectedPoint.column), settlement);
             placeTotoro();
         }
     }
 
     public void placeTiger(Point selectedPoint, Settlement settlement) {
-        if(game.isValidTigerPosition(selectedPoint, settlement))
-        {
+        if(game.isValidTigerPosition(selectedPoint, settlement)){
+            settlement.tigerPlaygrounds += 1 ;
             game.setPiece(selectedPoint, OccupantType.TIGERPLAYGROUND, settlement);
+            playerSettlements.put(coordinatesToKey(selectedPoint.row, selectedPoint.column), settlement);
             placeTiger();
         }
     }
@@ -312,10 +323,8 @@ public class Player {
         if (meeples != 0)
             return false;
 
-        else
-        {
-            for(Settlement mySets : playerSettlements.values())
-            {
+        else{
+            for(Settlement mySets : playerSettlements.values()){
                 if(mySets.totoroSanctuaries != 0)
                     continue;
 
@@ -323,21 +332,13 @@ public class Player {
                     return false;
             }
 
-            for(Settlement mySets : playerSettlements.values())
-            {
+            for(Settlement mySets : playerSettlements.values()){
                 if(mySets.tigerPlaygrounds != 0)
                     continue;
             }
         }
 
         return true;
-    }
-
-    public void placeMeeple(Point selectedPoint, Settlement settlement) {
-        game.setPiece(selectedPoint, OccupantType.MEEPLE, settlement);
-        int level = game.board[selectedPoint.row][selectedPoint.column].level ;
-        score += (level * level) ;
-        meeples -= level ;
     }
 
     public int determineRotationForNukingAI(Settlement mySet)
@@ -527,8 +528,7 @@ public class Player {
         }
     }
 
-    public void determineTilePlacementByAI()
-    {
+    public void determineTilePlacementByAI(){
         Point selectedPoint;
         ProjectionPack projection;
         drawTile(); //draw tile
@@ -569,8 +569,7 @@ public class Player {
 
                 else
                 {
-                    switch (tileHeld.hexA.terrain)
-                    {
+                    switch (tileHeld.hexA.terrain){
                         case ROCKY:
 
                         case GRASSLANDS:
@@ -655,8 +654,7 @@ public class Player {
         }
     }
 
-    public int determineRotationForPlacingAI(Settlement settlement)
-    {
+    public int determineRotationForPlacingAI(Settlement settlement){
         Point point = settlement.findEndPoints();
         ProjectionPack projection = null;
 

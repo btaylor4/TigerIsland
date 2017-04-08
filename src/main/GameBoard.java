@@ -128,7 +128,6 @@ public class GameBoard {
         boolean volcanoAligned, totoroPresent, tigerPresent ;
         int tileUnderVolcano, tileUnderHexA, tileUnderHexB ;
 
-
         volcanoAligned = board[projection.volcano.row][projection.volcano.column].terrain == TerrainType.VOLCANO ;
         if(!volcanoAligned) return false ;
 
@@ -139,10 +138,10 @@ public class GameBoard {
         if(totoroPresent) return false ;
 
         tigerPresent = board[projection.hex_a.row][projection.hex_a.column].occupant == OccupantType.TIGERPLAYGROUND ;
-        if(tigerPresent ) return false ;
+        if(tigerPresent) return false ;
 
-        tigerPresent  = board[projection.hex_b.row][projection.hex_b.column].occupant == OccupantType.TIGERPLAYGROUND ;
-        if(tigerPresent ) return false ;
+        tigerPresent = board[projection.hex_b.row][projection.hex_b.column].occupant == OccupantType.TIGERPLAYGROUND ;
+        if(tigerPresent) return false ;
 
         tileUnderVolcano = board[projection.volcano.row][projection.volcano.column].tileNumber ;
         tileUnderHexA = board[projection.hex_a.row][projection.hex_a.column].tileNumber ;

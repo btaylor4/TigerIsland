@@ -16,6 +16,7 @@ public class Settlement {
     public int ownerNumber ;
     public int totoroSanctuaries ;
     public int tigerPlaygrounds ;
+
     public Player owner ;
     private GameBoard game ;
     public AdjacentMeeples adjacentMeeples;
@@ -157,6 +158,17 @@ public class Settlement {
         }
     }
 
+    private void expandPrep(Point target) {
+        occupantPositions.put(coordinatesToKey(target.row, target.column), target);
+        markedForExpansion.add(target);
+
+        for (HexPointPair adjacent : game.board[target.row][target.column].links.values()){
+            if (!occupantPositions.containsKey(adjacent.hex.key)) {
+                expandPrep(adjacent.point);
+            }
+        }
+    }
+
     private void expandThroughTerrain(HashMap<Integer,Point> expansions ){
         for(Point point : expansions.values()){
             expandPrep(point);
@@ -171,17 +183,6 @@ public class Settlement {
 
         expansions.clear();
         markedForExpansion.clear();
-    }
-
-    private void expandPrep(Point target) {
-        occupantPositions.put(coordinatesToKey(target.row, target.column), target);
-        markedForExpansion.add(target);
-
-        for (HexPointPair adjacent : game.board[target.row][target.column].links.values()){
-            if (!occupantPositions.containsKey(adjacent.hex.key)) {
-                expandPrep(adjacent.point);
-            }
-        }
     }
 
     public void addAdjacentSettlementsForMerge(Point point) {
@@ -228,6 +229,8 @@ public class Settlement {
                 volcanoes.putAll(game.board[row][column].settlementPointer.volcanoes);
 
                 size += game.board[row][column].settlementPointer.size ;
+                totoroSanctuaries += game.board[row][column].settlementPointer.totoroSanctuaries ;
+                tigerPlaygrounds += game.board[row][column].settlementPointer.tigerPlaygrounds ;
 
                 for(Point pt : occupantPositions.values()) {
                     game.board[pt.row][pt.column].settlementPointer = this;
@@ -242,8 +245,7 @@ public class Settlement {
         findEndPoints();
     }
 
-    public Point findEndPoints()
-    {
+    public Point findEndPoints(){
         int min = Integer.MAX_VALUE;
         Point endPoint = null;
 
