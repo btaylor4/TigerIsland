@@ -1,38 +1,58 @@
 package main;
 
+import java.lang.management.OperatingSystemMXBean;
+
 public class GameThread implements Runnable{
 
     GameBoard game;
-    Player player1;
-    Player player2;
+
+    int gameID;
+
+    Player AI;
+    Player Opponent;
     Player currentPlayer;
 
-    public GameThread(){
+    //TODO: add client to constructor args
+    public GameThread(int gameNumber, int designatorOfWhoGoesFirst){
         game = new GameBoard();
-        player1 = new Player(game,1);
-        player2 = new Player(game,2);
+
+        gameID = gameNumber;
+
+        AI = new Player(game,1);
+        Opponent = new Player(game,2);
+
+        if(designatorOfWhoGoesFirst == 1){
+            currentPlayer = AI;
+        }
+        else{
+            currentPlayer = Opponent;
+        }
     }
 
     @Override
     public void run() {
 
-        player1.playFirstTile();
-        player1.playBuildPhase();
-        game.printBoard();
-
-        currentPlayer = player2 ;
+        //AI.playFirstTile();
+        //AI.playBuildPhase();
+        //game.printBoard();
 
         //server will tell us when game is over
         while (true) {
-            System.out.println("Player" + currentPlayer.designator + "'s turn");
-            currentPlayer.playTilePhase();
-            currentPlayer.playBuildPhase();
-            game.printBoard();
+            System.out.println("Game " + gameID +": Player" + currentPlayer.designator + "'s turn");
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //currentPlayer.playTilePhase();
+            //currentPlayer.playBuildPhase();
+            //game.printBoard();
 
             if(currentPlayer.designator == 1)
-                currentPlayer = player2 ;
+                currentPlayer = Opponent;
             else
-                currentPlayer = player1 ;
+                currentPlayer = AI;
         }
     }
 }
