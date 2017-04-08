@@ -20,6 +20,10 @@ public class Artificial_Intelligence extends Player
     private int row, collumn, rotation;
     //TESTING GIT ISH
 
+    public Artificial_Intelligence(GameBoard game, int designator)
+    {
+        super(game, designator);
+    }
 
     public void Place_Tile_By_AI()
     {

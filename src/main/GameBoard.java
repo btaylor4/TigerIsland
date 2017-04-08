@@ -27,6 +27,7 @@ public class GameBoard {
         createTiles();
         shuffleTiles();
         tilePlayIndex = 0 ;
+        setFirstTile();
     }
 
     public void createTiles(){

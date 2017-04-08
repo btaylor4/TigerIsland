@@ -21,9 +21,10 @@ public class Player {
     private int tigers;
     private boolean isFinished;
     private boolean firstPlay;
+    private boolean firstBuild;
 
     private GameBoard game;
-    private Tile tileHeld ;
+    public Tile tileHeld ;
     public HashMap<Integer, Settlement> playerSettlements;
 
     public Player(GameBoard game, int designator) {
@@ -34,6 +35,7 @@ public class Player {
         tigers = 2;
         isFinished = false;
         firstPlay = false;
+        firstBuild = false;
 
         this.game = game;
         this.tileHeld = null ;
@@ -382,6 +384,20 @@ public class Player {
         int mostMeeplesInHex = -1;
         Settlement settlementChoice = new Settlement(game);
 
+        if(!firstBuild)
+        {
+            Point firstPoint = new Point(104, 105);
+            Settlement freshSettlement = new Settlement(game);
+            freshSettlement.owner = this ;
+            freshSettlement.ownerNumber = designator ;
+            freshSettlement.beginNewSettlement(firstPoint);
+            game.setSettlement(firstPoint, freshSettlement);
+            placeMeeple(new Point(104, 105), new Settlement(game));
+            playerSettlements.put(coordinatesToKey(firstPoint.row, firstPoint.column), freshSettlement);
+            firstBuild = true;
+            return;
+        }
+
         for (Settlement mySets : playerSettlements.values())
         {
             //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
@@ -419,7 +435,7 @@ public class Player {
 
                     if(game.isValidTotoroPosition(point, mySets))
                     {
-                        game.setPiece(point, OccupantType.TOTORO, mySets);
+                        placeTotoro(point, mySets);
                         return;
                     }
                 }
@@ -459,7 +475,7 @@ public class Player {
 
                 if(game.isValidTigerPosition(point, mySets))
                 {
-                    game.setPiece(point, OccupantType.TIGERPLAYGROUND, mySets);
+                    placeTiger(point, mySets);
                     return;
                 }
             }
@@ -470,24 +486,28 @@ public class Player {
             if (mySets.size + mySets.grasslands.size() >= 5)
             {
                 mySets.expand(TerrainType.GRASSLANDS);
+                mySets.mergeSettlements();
                 return;
             }
 
             else if (mySets.size + mySets.lakes.size() >= 5)
             {
                 mySets.expand(TerrainType.LAKE);
+                mySets.mergeSettlements();
                 return;
             }
 
             else if (mySets.size + mySets.forests.size() >= 5)
             {
                 mySets.expand(TerrainType.JUNGLE);
+                mySets.mergeSettlements();
                 return;
             }
 
             else if (mySets.size + mySets.rocky.size() >= 5)
             {
                 mySets.expand(TerrainType.ROCKY);
+                mySets.mergeSettlements();
                 return;
             }
         }
@@ -527,7 +547,7 @@ public class Player {
 
                         case GRASSLANDS:
                             //set orientation to 2
-                            selectedPoint = new Point(107, 102);
+                            selectedPoint = new Point(108, 103);
                             tileHeld.setRotation(2);
                             projection = projectTilePlacement(tileHeld, selectedPoint);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
@@ -538,8 +558,8 @@ public class Player {
 
                         case JUNGLE:
                             //set orientation to 5
-                            selectedPoint = new Point(101, 106);
-                            tileHeld.setRotation(5);
+                            selectedPoint = new Point(102, 106);
+                            tileHeld.setRotation(3);
                             projection = projectTilePlacement(tileHeld, selectedPoint);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
                             game.setTile(tileHeld, projection);
@@ -644,14 +664,14 @@ public class Player {
 
         for(int i = 0; i < SIDES_IN_HEX; i++)
         {
-            row += ROW_ADDS[i];
-            column += COLUMN_ADDS[i];
+            row += 3 * ROW_ADDS[i];
+            column += 3 * COLUMN_ADDS[i];
 
             if(game.board[row][column] == null)
             {
                 for(int j = 1; j < 7; j++)
                 {
-                    tileHeld.setRotation(i);
+                    tileHeld.setRotation(j);
                     projection = projectTilePlacement(tileHeld, new Point(row, column));
                     projection.projectedLevel = game.getProjectedHexLevel(projection);
 
@@ -675,8 +695,8 @@ public class Player {
 
         for(int i = 0; i < SIDES_IN_HEX; i++)
         {
-            row += ROW_ADDS[i];
-            column += COLUMN_ADDS[i];
+            row += 2 * ROW_ADDS[i];
+            column += 2 * COLUMN_ADDS[i];
 
             if(game.board[row][column] != null && game.isValidSettlementPosition(new Point(row, column)))
             {
