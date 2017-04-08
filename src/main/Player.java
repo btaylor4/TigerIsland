@@ -338,23 +338,7 @@ public class Player {
         meeples -= level ;
     }
 
-    public void Place_Tile_By_AI()
-    {
-        drawTile();
-        Point place;
-        ProjectionPack rotationChoice;
-        while(designator == 1)
-        {
-
-        }
-    }
-
-    public void foundNewAISettlement()
-    {
-        //check best place to place meeple
-    }
-
-    public int determineRotationAI(Settlement mySet)
+    public int determineRotationForNukingAI(Settlement mySet)
     {
         ProjectionPack projection;
         int minimumRotationValue = 1;
@@ -395,6 +379,8 @@ public class Player {
         //Priority list
         int row = 0;
         int column = 0;
+        int mostMeeplesInHex = -1;
+        Settlement settlementChoice = new Settlement(game);
 
         for (Settlement mySets : playerSettlements.values())
         {
@@ -506,7 +492,19 @@ public class Player {
             }
         }
 
-        foundNewAISettlement();
+        for(Settlement mySet : playerSettlements.values())
+        {
+            if(mySet.size > mostMeeplesInHex)
+            {
+                mostMeeplesInHex = mySet.size;
+                settlementChoice = mySet;
+            }
+        }
+
+        if(game.isValidSettlementPosition(placeMeepleOneAway(settlementChoice)))
+        {
+            game.setPiece(placeMeepleOneAway(settlementChoice), OccupantType.MEEPLE, settlementChoice);
+        }
     }
 
     public void determineTilePlacementByAI()
@@ -514,6 +512,9 @@ public class Player {
         Point selectedPoint;
         ProjectionPack projection;
         drawTile(); //draw tile
+
+        int mostMeeplesInHex = -1;
+        Settlement settlementChoice = new Settlement(game);
 
         if (designator == 1)
         {
@@ -583,7 +584,7 @@ public class Player {
                 {
                     if(mySet.totoroSanctuaries == 1)
                     {
-                        tileHeld.setRotation(determineRotationAI(mySet));
+                        tileHeld.setRotation(determineRotationForNukingAI(mySet));
                         projection = projectTilePlacement(tileHeld, mySet.adjacentMeeples.endPointToNuke);
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
@@ -596,7 +597,7 @@ public class Player {
                 {
                     if(mySet.tigerPlaygrounds == 1)
                     {
-                        tileHeld.setRotation(determineRotationAI(mySet));
+                        tileHeld.setRotation(determineRotationForNukingAI(mySet));
                         projection = projectTilePlacement(tileHeld, mySet.adjacentMeeples.endPointToNuke);
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
@@ -612,8 +613,78 @@ public class Player {
                 }
 
                 //place next to settlement that would allow for meeple placement one away
+                for(Settlement mySet : playerSettlements.values())
+                {
+                    if(mySet.size > mostMeeplesInHex)
+                    {
+                        mostMeeplesInHex = mySet.size;
+                        settlementChoice = mySet;
+                    }
+                }
+
+                tileHeld.setRotation(determineRotationForPlacingAI(settlementChoice));
+                projection = projectTilePlacement(tileHeld, placeMeepleOneAway(settlementChoice));
+                projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+                if(game.isValidTilePlacement(projection))
+                {
+                    game.setTile(tileHeld, projection);
+                }
             }
         }
+    }
+
+    public int determineRotationForPlacingAI(Settlement settlement)
+    {
+        Point point = settlement.findEndPoints();
+        ProjectionPack projection = null;
+
+        int row = point.row;
+        int column = point.column;
+
+        for(int i = 0; i < SIDES_IN_HEX; i++)
+        {
+            row += ROW_ADDS[i];
+            column += COLUMN_ADDS[i];
+
+            if(game.board[row][column] == null)
+            {
+                for(int j = 1; j < 7; j++)
+                {
+                    tileHeld.setRotation(i);
+                    projection = projectTilePlacement(tileHeld, new Point(row, column));
+                    projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+                    if(game.isValidTilePlacement(projection))
+                    {
+                        return j;
+                    }
+                }
+            }
+        }
+
+        return 1;
+    }
+
+    public Point placeMeepleOneAway(Settlement mySet)
+    {
+        Point point = mySet.findEndPoints();
+
+        int row = point.row;
+        int column = point.column;
+
+        for(int i = 0; i < SIDES_IN_HEX; i++)
+        {
+            row += ROW_ADDS[i];
+            column += COLUMN_ADDS[i];
+
+            if(game.board[row][column] != null && game.isValidSettlementPosition(new Point(row, column)))
+            {
+                return new Point(row, column);
+            }
+        }
+
+        return point;
     }
 
     public void setMeeples(int meeples)
