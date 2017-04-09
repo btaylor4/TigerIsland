@@ -38,6 +38,8 @@ public class TigerIsland {
 
             //**********Authentication Protocol**********
             client = new NetClient(args[1], Integer.parseInt(args[2])); //IP , port
+            client.Start();
+
             client.getNextMessageFromServer();  //receive welcome message
             client.Send(msg.FormatAuthenticationForTournament(args[3]));
             client.getNextMessageFromServer(); //more bs
