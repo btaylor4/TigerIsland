@@ -31,13 +31,13 @@ public class HumanPlayer extends Player {
         int row, column, rotation ;
 
         System.out.print("Volcano row choice: ");
-        row = chooseOption();
+        row = getOptionFromTerminal();
 
         System.out.print("Volcano column choice: ");
-        column = chooseOption();
+        column = getOptionFromTerminal();
 
         System.out.print("Rotation choice 1 - 6: ");
-        rotation = chooseOption();
+        rotation = getOptionFromTerminal();
 
         tileHeld.setRotation(rotation);
 
@@ -51,8 +51,8 @@ public class HumanPlayer extends Player {
     }
 
     private void determineBuildOptionByHuman(){
-        System.out.println("Build options 1: new  2: expand");
-        int buildOption = chooseOption();
+        System.out.print("Build options 1: new  2: expand  3: Totoro  4: Tiger  -- ");
+        int buildOption = getOptionFromTerminal();
 
         switch(buildOption) {
             case 1:
@@ -67,11 +67,13 @@ public class HumanPlayer extends Player {
                 break;
 
             case 3:
-
+                buildDecision = BuildOptions.TOTORO_SANCTUARY ;
+                determineTotoroPlacement();
                 break;
 
             case 4:
-
+                buildDecision = BuildOptions.TIGER_PLAYGROUND ;
+                determineTigerPlaygroundPlacement();
                 break;
 
             default:
@@ -83,10 +85,10 @@ public class HumanPlayer extends Player {
         int row, column ;
 
         System.out.print("Piece row choice: ");
-        row = chooseOption();
+        row = getOptionFromTerminal();
 
         System.out.print("Piece col choice: ");
-        column = chooseOption();
+        column = getOptionFromTerminal();
 
         return (new Point(row, column));
     }
@@ -102,17 +104,37 @@ public class HumanPlayer extends Player {
         terrainSelection = determineTerrainByHuman();
     }
 
-    public int chooseOption() {
+    public int getOptionFromTerminal() {
         Scanner input = new Scanner(System.in);
         return input.nextInt();
     }
 
+    private void determineTotoroPlacement(){
+        Point finder ;
+
+        do{
+            finder = determineSettlementByHuman();
+            selectedSettlement = game.board[finder.row][finder.column].settlementPointer ;
+            buildPoint = determinePiecePositionByHuman() ;
+        } while(!game.isValidTotoroPosition(buildPoint, selectedSettlement));
+    }
+
+    private void determineTigerPlaygroundPlacement(){
+        Point finder ;
+
+        do{
+            finder = determineSettlementByHuman();
+            selectedSettlement = game.board[finder.row][finder.column].settlementPointer ;
+            buildPoint = determinePiecePositionByHuman() ;
+        } while(!game.isValidTigerPosition(buildPoint, selectedSettlement));
+    }
+
     private Point determineSettlementByHuman() {
         System.out.print("Row of existing settlement: ");
-        int settlementRow = chooseOption();
+        int settlementRow = getOptionFromTerminal();
 
         System.out.print("Column of existing settlement: ");
-        int settlementColumn = chooseOption();
+        int settlementColumn = getOptionFromTerminal();
 
         return new Point(settlementRow,settlementColumn);
     }
