@@ -47,22 +47,24 @@ public class NetClient {
         msg = new NetServerMsg();
     }
 
+    public void Start() throws IOException
+    {
+        reader = new Scanner(socket.getInputStream());
+    }
     public void Listen() throws IOException
     {
         reader = new Scanner(socket.getInputStream());
 
         String message = "";
         while ((message = reader.nextLine()) != null)
-            {
-                if(!message.isEmpty()) {
-                    HandleMessage(message);
-                }
+        {
+            if(!message.isEmpty()) {
+                HandleMessage(message);
+            }
         }
     }
     public NetServerMsg getNextMessageFromServer() throws IOException
     {
-        reader = new Scanner(socket.getInputStream());
-
         String message = "";
         if ((message = reader.nextLine()) != null)
         {
