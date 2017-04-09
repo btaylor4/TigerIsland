@@ -1,12 +1,10 @@
-package main;
-import main.Settlement;
-import main.GameBoard;
-import main.Player;
-import main.ProjectionPack;
+package main.players;
+import main.*;
 import main.enums.Direction;
 import main.enums.OccupantType ;
 import main.enums.TerrainType;
 import main.enums.OccupantType;
+import main.utils.SettlePointPair;
 
 /**
  * Created by Rahul on 4/7/2017.
@@ -32,7 +30,7 @@ public class Artificial_Intelligence extends Player
         {
             game.setFirstTile();
             point = new Point(row, collumn); //Put the values
-            player.tileHeld.setRotation(rotation);
+            tileHeld.setRotation(rotation);
             place = projectTilePlacement(tileHeld, point);
             place.projectedLevel = game.getProjectedHexLevel(place);
             if(game.isValidTilePlacement(place))
@@ -59,9 +57,9 @@ public class Artificial_Intelligence extends Player
 
     public void AI_ExpandSettlement()
     {
-        for(Settlement settlements : playerSettlements.values())
+        for(SettlePointPair settlements : playerSettlements.values())
         {
-            game.setPiece(point, OccupantType.MEEPLE, settlements);
+            game.setPiece(point, OccupantType.MEEPLE, settlements.settlement);
         }
     }
 

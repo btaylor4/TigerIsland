@@ -158,7 +158,7 @@ public class TestSettlement {
         Point point = new Point(108,104);
         ts.hashAdjacentTerrain(TerrainType.JUNGLE, point);
 
-        assertTrue(ts.forests.size() == 3);
+        assertTrue(ts.jungles.size() == 3);
     }
 
     @Test
@@ -194,7 +194,7 @@ public class TestSettlement {
         Point point = new Point(107,104);
         ts.hashAdjacentTerrain(TerrainType.JUNGLE, point);
 
-        assertTrue(ts.forests.size() == 1);
+        assertTrue(ts.jungles.size() == 1);
     }
 
     @Test
