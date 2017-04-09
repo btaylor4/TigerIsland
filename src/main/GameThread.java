@@ -1,5 +1,7 @@
 package main;
 
+import main.players.BryanAI;
+
 import java.lang.management.OperatingSystemMXBean;
 
 public class GameThread implements Runnable{
@@ -10,7 +12,7 @@ public class GameThread implements Runnable{
     boolean isMyTurn;
     boolean gameOver;
 
-    Player AI;
+    BryanAI AI;
     Player Opponent;
 
     //TODO: add client to constructor args
@@ -20,7 +22,7 @@ public class GameThread implements Runnable{
         gameID = gameNumber;
         gameOver = false;
 
-        AI = new Player(game,1);
+        AI = new BryanAI(game,1);
         Opponent = new Player(game,2);
 
         isMyTurn = weGoFirst;
