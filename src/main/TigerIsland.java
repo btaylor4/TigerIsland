@@ -40,6 +40,8 @@ public class TigerIsland {
             client = new NetClient(args[1], Integer.parseInt(args[2])); //IP , port
             client.Start();
 
+            
+>>>>>>> dd77ddcd1a9baef19a69475dba0930be065bf480
             client.getNextMessageFromServer();  //receive welcome message
             client.Send(msg.FormatAuthenticationForTournament(args[3]));
             client.getNextMessageFromServer(); //more bs
