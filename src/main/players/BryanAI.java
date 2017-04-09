@@ -237,7 +237,7 @@ public class BryanAI extends Player {
         }
     }
 
-    public void determineTilePlacementByAI()
+    public Tile determineTilePlacementByAI()
     {
         Point selectedPoint;
         ProjectionPack projection;
@@ -262,7 +262,8 @@ public class BryanAI extends Player {
                             projection = projectTilePlacement(tileHeld, selectedPoint);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
                             game.setTile(tileHeld, projection);
-                            break;
+                            tileHeld.serverPoint = projection.volcano;
+                            return tileHeld;
 
                         case LAKE:
 
@@ -273,7 +274,8 @@ public class BryanAI extends Player {
                             projection = projectTilePlacement(tileHeld, selectedPoint);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
                             game.setTile(tileHeld, projection);
-                            break;
+                            tileHeld.serverPoint = projection.volcano;
+                            return tileHeld;
                     }
                 }
 
@@ -289,7 +291,8 @@ public class BryanAI extends Player {
                             projection = projectTilePlacement(tileHeld, selectedPoint);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
                             game.setTile(tileHeld, projection);
-                            break;
+                            tileHeld.serverPoint = projection.volcano;
+                            return tileHeld;
 
                         case LAKE:
 
@@ -300,7 +303,8 @@ public class BryanAI extends Player {
                             projection = projectTilePlacement(tileHeld, selectedPoint);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
                             game.setTile(tileHeld, projection);
-                            break;
+                            tileHeld.serverPoint = projection.volcano;
+                            return tileHeld;
                     }
                 }
 
@@ -319,7 +323,11 @@ public class BryanAI extends Player {
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
                         if(game.isValidTilePlacement(projection))
+                        {
                             game.setTile(tileHeld, projection);
+                            tileHeld.serverPoint = projection.volcano;
+                            return tileHeld;
+                        }
                     }
                 }
 
@@ -331,8 +339,11 @@ public class BryanAI extends Player {
                         projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        if(game.isValidTilePlacement(projection))
+                        if(game.isValidTilePlacement(projection)) {
                             game.setTile(tileHeld, projection);
+                            tileHeld.serverPoint = projection.volcano;
+                            return tileHeld;
+                        }
                     }
                 }
 
@@ -358,11 +369,14 @@ public class BryanAI extends Player {
                 if(game.isValidTilePlacement(projection))
                 {
                     game.setTile(tileHeld, projection);
+                    tileHeld.serverPoint = projection.volcano;
+                    return tileHeld;
                 }
             }
         }
 
         System.out.println("AI Tile rotation: " + tileHeld.rotation);
+        return tileHeld;
     }
 
     public boolean determineTilePlacementForExpansion(Settlement mySet, TerrainType terrain)
