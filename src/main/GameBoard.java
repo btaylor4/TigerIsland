@@ -16,7 +16,7 @@ public class GameBoard {
     private int upperLimit, lowerLimit, leftLimit, rightLimit ;
 
     public static Hexagon[][] board;
-    private HashMap<Integer, Point> playableHexes;
+    public HashMap<Integer, Point> playableHexes;
     public static Tile tileStack[] = new Tile[NUM_TILES];
 
     private int tilePlayIndex;

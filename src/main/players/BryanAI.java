@@ -372,6 +372,26 @@ public class BryanAI extends Player {
                     tileHeld.serverPoint = projection.volcano;
                     return tileHeld;
                 }
+
+                else
+                {
+                    for(Point point : game.playableHexes.values())
+                    {
+                        for(int i = 1; i < 7; i++)
+                        {
+                            tileHeld.setRotation(i);
+                            projection = projectTilePlacement(tileHeld, point);
+                            projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+                            if(game.isValidTilePlacement(projection))
+                            {
+                                game.setTile(tileHeld, projection);
+                                tileHeld.serverPoint = projection.volcano;
+                                return tileHeld;
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -542,8 +562,8 @@ public class BryanAI extends Player {
         {
             for(int i = 0; i < SIDES_IN_HEX; i++)
             {
-                row = point.row + rowOneAway[i];
-                column = point.column + columnOneAway[i];
+                row = myPoint.row + rowOneAway[i];
+                column = myPoint.column + columnOneAway[i];
 
                 if(game.board[row][column] != null && game.isValidSettlementPosition(new Point(row, column)))
                 {
