@@ -11,9 +11,8 @@ import static main.utils.formulas.coordinatesToKey;
 import static main.utils.constants.* ;
 
 public class GameBoard {
-    public static final int BOARD_CENTER = ARRAY_DIMENSION/2 ;
 
-    private int upperLimit, lowerLimit, leftLimit, rightLimit ;
+    public int upperLimit, lowerLimit, leftLimit, rightLimit ;
 
     public static Hexagon[][] board;
     public HashMap<Integer, Point> playableHexes;
