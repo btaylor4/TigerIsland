@@ -16,8 +16,6 @@ public class GameThread implements Runnable{
     public GameThread(int gameNumber, int designatorOfWhoGoesFirst){
         game = new GameBoard();
 
-
->>>>>>> 44e34fe68a867ecbfab8378f6e84c3cf42dc11ff
         gameID = gameNumber;
 
         AI = new Player(game,1);
@@ -30,14 +28,11 @@ public class GameThread implements Runnable{
             currentPlayer = Opponent;
         }
 
->>>>>>> 44e34fe68a867ecbfab8378f6e84c3cf42dc11ff
     }
 
     @Override
     public void run() {
 
-
->>>>>>> 44e34fe68a867ecbfab8378f6e84c3cf42dc11ff
         //AI.playFirstTile();
         //AI.playBuildPhase();
         //game.printBoard();
@@ -55,7 +50,6 @@ public class GameThread implements Runnable{
             //currentPlayer.playBuildPhase();
             //game.printBoard();
 
->>>>>>> 44e34fe68a867ecbfab8378f6e84c3cf42dc11ff
 
             if(currentPlayer.designator == 1)
                 currentPlayer = Opponent;
