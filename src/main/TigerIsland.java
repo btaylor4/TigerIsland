@@ -67,12 +67,13 @@ public class TigerIsland {
                 g1 = new GameThread(message.GetGameId(), true, client);
                 game1 = new Thread(g1);
                 game1.start();
-
+                System.out.println("starting game1");
             } else { //we go second
                 message = client.getNextMessageFromServer();
                 g2 = new GameThread(message.GetGameId(), false, client);
                 game2 = new Thread(g2);
                 game2.start();
+                System.out.println("starting game2");
             }
             while (true) {
                 message = client.getNextMessageFromServer();
@@ -81,17 +82,19 @@ public class TigerIsland {
                     g1 = new GameThread(message.GetGameId(), false, client);
                     game1 = new Thread(g1);
                     game1.start();
+                    System.out.println("starting game1");
                 }
                 else if(game2 == null && !message.GetGameId().equals(g1.gameID)){
                     g2 = new GameThread(message.GetGameId(), true, client);
                     game2 = new Thread(g2);
                     game2.start();
+                    System.out.println("starting game2");
                 }
                 else if (message.GetGameId().equals(g1.gameID)){
-
+                    System.out.println("received message for game1");
                 }
                 else if (message.GetGameId().equals(g2.gameID)){
-
+                    System.out.println("received message for game2");
                 }
                 else{
                     System.err.printf("unrecognized game id:" + message.GetGameId());
