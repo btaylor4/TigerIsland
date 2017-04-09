@@ -2,6 +2,7 @@ package main.utils;
 
 public class constants {
     public static final int ARRAY_DIMENSION = 210;
+    public static final int BOARD_CENTER = ARRAY_DIMENSION/2 ;
 
     public static final int NUM_TILE_COPIES = 3;
     public static final int NUM_TILES = 48;
