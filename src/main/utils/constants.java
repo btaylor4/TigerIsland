@@ -9,4 +9,7 @@ public class constants {
 
     public static final int ROW_ADDS[] = {0, -1, -1, 0, 1, 1};
     public static final int COLUMN_ADDS[] = {-1, 0, 1, 1, 0, -1};
+
+    public static final int rowOneAway[] = {2, 1, 0, -1, -2, -2, -2, -1, 0, 1};
+    public static final int columnOneAway[] = {-2, -2, -2, -1, 0, 1, 2, 2, 2, 1};
 }

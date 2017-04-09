@@ -3,13 +3,12 @@ package main;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import cucumber.api.java.eo.Se;
 import main.enums.Direction;
 import main.enums.OccupantType ;
 import main.enums.TerrainType;
 
-import static main.utils.constants.COLUMN_ADDS;
-import static main.utils.constants.ROW_ADDS;
-import static main.utils.constants.SIDES_IN_HEX;
+import static main.utils.constants.*;
 import static main.utils.formulas.coordinatesToKey;
 
 public class Player {
@@ -110,7 +109,7 @@ public class Player {
 
             case 2:
                 projections.projectPoint(projections.hex_a, Direction.UP, Direction.RIGHT);
-                projections.projectPoint(projections.hex_b, Direction.NONE, Direction.RIGHT);
+                projections.projectPoint(projections.hex_b, Direction.NONE, Direction.RIGHT); //changing this because incorrect
                 break;
 
             case 3:
@@ -222,7 +221,11 @@ public class Player {
         TerrainType terrainChoice = determineTerrainByHuman();
 
         System.out.println("terrain is: " + terrainChoice);
-        settlementChoice.expand(terrainChoice);
+        while(!settlementChoice.expand(terrainChoice))
+        {
+            terrainChoice = determineTerrainByHuman();
+        }
+
         settlementChoice.mergeSettlements();
     }
 
@@ -435,6 +438,7 @@ public class Player {
 
                     if(game.isValidTotoroPosition(point, mySets))
                     {
+                        System.out.println("Totoro has been fucking placed motherfucker! Score: " + score);
                         placeTotoro(point, mySets);
                         return;
                     }
@@ -483,32 +487,42 @@ public class Player {
 
         for (Settlement mySets : playerSettlements.values())
         {
-            if (mySets.size + mySets.grasslands.size() >= 5)
+            if (mySets.size + mySets.grasslands.size() >= 1)
             {
-                mySets.expand(TerrainType.GRASSLANDS);
-                mySets.mergeSettlements();
-                return;
+                if(mySets.expand(TerrainType.GRASSLANDS))
+                {
+                    mySets.mergeSettlements();
+                    return;
+                }
             }
 
-            else if (mySets.size + mySets.lakes.size() >= 5)
+            else if (mySets.size + mySets.lakes.size() >= 1)
             {
-                mySets.expand(TerrainType.LAKE);
-                mySets.mergeSettlements();
-                return;
+                if(mySets.expand(TerrainType.LAKE))
+                {
+                    mySets.mergeSettlements();
+                    return;
+                }
             }
 
-            else if (mySets.size + mySets.forests.size() >= 5)
+            else if (mySets.size + mySets.forests.size() >= 1)
             {
-                mySets.expand(TerrainType.JUNGLE);
-                mySets.mergeSettlements();
-                return;
+
+                if(mySets.expand(TerrainType.JUNGLE))
+                {
+                    mySets.mergeSettlements();
+                    return;
+                }
             }
 
-            else if (mySets.size + mySets.rocky.size() >= 5)
+            else if (mySets.size + mySets.rocky.size() >= 1)
             {
-                mySets.expand(TerrainType.ROCKY);
-                mySets.mergeSettlements();
-                return;
+
+                if(mySets.expand(TerrainType.ROCKY))
+                {
+                    mySets.mergeSettlements();
+                    return;
+                }
             }
         }
 
@@ -523,7 +537,14 @@ public class Player {
 
         if(game.isValidSettlementPosition(placeMeepleOneAway(settlementChoice)))
         {
-            game.setPiece(placeMeepleOneAway(settlementChoice), OccupantType.MEEPLE, settlementChoice);
+            Point firstPoint = placeMeepleOneAway(settlementChoice);
+            Settlement freshSettlement = new Settlement(game);
+            freshSettlement.owner = this ;
+            freshSettlement.ownerNumber = designator ;
+            freshSettlement.beginNewSettlement(firstPoint);
+            game.setSettlement(firstPoint, freshSettlement);
+            placeMeeple(firstPoint, freshSettlement);
+            playerSettlements.put(coordinatesToKey(firstPoint.row, firstPoint.column), freshSettlement);
         }
     }
 
@@ -642,9 +663,7 @@ public class Player {
                     }
                 }
 
-                game.isValidSettlementPosition(new Point(104, 105));
-                tileHeld.setRotation(determineRotationForPlacingAI(settlementChoice));
-                projection = projectTilePlacement(tileHeld, placeMeepleOneAway(settlementChoice));
+                projection = projectTilePlacement(tileHeld, determineTilePlacementForPlacingAI(settlementChoice));
                 projection.projectedLevel = game.getProjectedHexLevel(projection);
 
                 if(game.isValidTilePlacement(projection))
@@ -653,59 +672,188 @@ public class Player {
                 }
             }
         }
+
+        System.out.println("AI Tile rotation: " + tileHeld.rotation);
     }
 
-    public int determineRotationForPlacingAI(Settlement settlement)
+    public boolean determineTilePlacementForExpansion(Settlement mySet, TerrainType terrain)
+    {
+        switch(terrain)
+        {
+            case JUNGLE:
+                if(mySet.forests.size() >= 1)
+                {
+
+                }
+                break;
+
+            case LAKE:
+                if(mySet.lakes.size() >= 1)
+                {
+
+                }
+
+                break;
+
+            case GRASSLANDS:
+                if(mySet.grasslands.size() >= 1)
+                {
+
+                }
+                break;
+
+            case ROCKY:
+                if(mySet.rocky.size() >= 1)
+                {
+
+                }
+                break;
+        }
+        return false;
+    }
+
+    public Point determineTilePlacementForPlacingAI(Settlement settlement)
     {
         Point point = settlement.findEndPoints();
+        Point volcanoPlacement = null;
+
         ProjectionPack projection = null;
+        int defaultRotation = 1;
 
         int row = point.row;
         int column = point.column;
 
-        for(int i = 0; i < SIDES_IN_HEX; i++)
+        for(int i = 0; i < rowOneAway.length; i++)
         {
-            row += 3 * ROW_ADDS[i];
-            column += 3 * COLUMN_ADDS[i];
+            row = point.row + rowOneAway[i];
+            column = point.column + columnOneAway[i];
 
-            if(game.board[row][column] == null)
+            for(int k = 0; k < SIDES_IN_HEX; k++)
             {
-                for(int j = 1; j < 7; j++)
-                {
-                    tileHeld.setRotation(j);
-                    projection = projectTilePlacement(tileHeld, new Point(row, column));
-                    projection.projectedLevel = game.getProjectedHexLevel(projection);
+                int volcanoRow = row + ROW_ADDS[k];
+                int volcanoColumn = column += COLUMN_ADDS[k];
 
-                    if(game.isValidTilePlacement(projection))
+                if(game.board[volcanoRow][volcanoColumn] == null)
+                {
+                    for(int j = 1; j < 7; j++)
                     {
-                        return j;
+                        tileHeld.setRotation(j);
+                        projection = projectTilePlacement(tileHeld, new Point(row, column));
+                        projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+                        if(game.isValidTilePlacement(projection))
+                        {
+                            if(!checkForAdjacaentVolcanoes(projection))
+                            {
+                                volcanoPlacement = new Point(row, column);
+                                tileHeld.setRotation(j);
+                                projection = projectTilePlacement(tileHeld, new Point(row, column));
+                                projection.projectedLevel = game.getProjectedHexLevel(projection);
+                                return volcanoPlacement;
+                            }
+
+                            else
+                            {
+                                defaultRotation = j;
+                                volcanoPlacement = new Point(row, column);
+                            }
+                        }
                     }
                 }
             }
         }
 
-        return 1;
+        tileHeld.setRotation(defaultRotation);
+        projection = projectTilePlacement(tileHeld, new Point(row, column));
+        projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+        return volcanoPlacement;
+    }
+
+    public boolean checkForAdjacaentVolcanoes(ProjectionPack projection)
+    {
+        int hexARow = projection.hex_a.row;
+        int hexAColumn = projection.hex_a.column;
+        int hexBRow = projection.hex_b.row;
+        int hexBColumn = projection.hex_b.column;
+
+        for(int i = 0; i < SIDES_IN_HEX; i++)
+        {
+            hexARow += ROW_ADDS[i];
+            hexAColumn += COLUMN_ADDS[i];
+            hexBRow += ROW_ADDS[i];
+            hexBColumn += COLUMN_ADDS[i];
+
+            if(game.board[hexARow][hexAColumn] != null && hexARow != projection.volcano.row && hexAColumn != projection.volcano.column)
+            {
+                if(game.board[hexARow][hexAColumn].terrain == TerrainType.VOLCANO)
+                {
+                    if(game.board[hexBRow][hexBColumn] != null && hexBRow != projection.volcano.row && hexBColumn != projection.volcano.column)
+                    {
+                        if(game.board[hexARow][hexAColumn].terrain == TerrainType.VOLCANO)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean checkForVolcanoesNearMeeplePlacement(Point point)
+    {
+        int row = point.row;
+        int column = point.column;
+
+        for(int i = 0; i < SIDES_IN_HEX; i++)
+        {
+            row += ROW_ADDS[i];
+            column += COLUMN_ADDS[i];
+
+            if(game.board[row][column] != null)
+            {
+                if(game.board[row][column].terrain == TerrainType.VOLCANO)
+                {
+                    if(game.board[row][column].tileNumber == game.board[point.row][point.column].tileNumber)
+                        continue;
+                    else
+                        return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public Point placeMeepleOneAway(Settlement mySet)
     {
         Point point = mySet.findEndPoints();
+        Point selectedPoint = null;
 
         int row = point.row;
         int column = point.column;
 
         for(int i = 0; i < SIDES_IN_HEX; i++)
         {
-            row += 3 * ROW_ADDS[i];
-            column += 3 * COLUMN_ADDS[i];
+            row = point.row + rowOneAway[i];
+            column = point.column + columnOneAway[i];
 
             if(game.board[row][column] != null && game.isValidSettlementPosition(new Point(row, column)))
             {
-                return new Point(row, column);
+                if(!checkForVolcanoesNearMeeplePlacement(new Point(row, column)))
+                {
+                    selectedPoint = new Point(row, column);
+                    break;
+                }
+
+                else
+                    selectedPoint = new Point(row, column);
             }
         }
 
-        return point;
+        return selectedPoint;
     }
 
     public void setMeeples(int meeples)
