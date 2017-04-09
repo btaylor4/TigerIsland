@@ -1,28 +1,15 @@
 package net;
 
 public class NetClientMsg {
-    public class ClientError extends Exception
+
+    public String FormatAuthenticationForTournament(String tournamentPass)
     {
-        public ClientError(String message)
-        {
-            super(message);
-        }
-    }
-    public String FormatAuthenticationForTournament(String tournamentPass) throws ClientError
-    {
-        if(tournamentPass.isEmpty())
-        {
-            throw new ClientError("invalid tournament password");
-        }
 
         return String.format("ENTER THUNDERDOME %1$s", tournamentPass);
     }
-    public String FormatAuthenticationPlayer(String username, String password) throws ClientError
+    public String FormatAuthenticationPlayer(String username, String password)
     {
-        if(username.isEmpty() || password.isEmpty())
-        {
-            throw new ClientError("invalid username or password");
-        }
+
         return String.format("I AM %1$s %2$s",username, password );
     }
 

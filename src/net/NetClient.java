@@ -1,5 +1,7 @@
 package net;
 
+import jdk.internal.org.objectweb.asm.Handle;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
@@ -51,13 +53,26 @@ public class NetClient {
 
         String message = "";
         while ((message = reader.nextLine()) != null)
+            {
+                if(!message.isEmpty()) {
+                    HandleMessage(message);
+                }
+        }
+    }
+    public NetServerMsg getNextMessageFromServer() throws IOException
+    {
+        reader = new Scanner(socket.getInputStream());
+
+        String message = "";
+        if ((message = reader.nextLine()) != null)
         {
             if(!message.isEmpty()) {
                 HandleMessage(message);
+                return msg;
             }
         }
+        return null;
     }
-
     public void Send(String message) throws IOException
     {
         output =  new PrintStream(socket.getOutputStream(), true);
