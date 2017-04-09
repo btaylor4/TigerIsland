@@ -1,5 +1,7 @@
 package net;
 
+import main.Tile;
+
 public class NetClientMsg {
     public class ClientError extends Exception
     {
@@ -45,5 +47,11 @@ public class NetClientMsg {
     {
         return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$d", "PLACE", tile, "AT",
                 tileVector.GetX(), tileVector.GetY(), tileVector.GetZ(), tileVector.GetOrientation() );
+    }
+    public String FormatPlaceAction(Tile tileVector)
+    {
+        return "";
+        //return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$d", "PLACE", tile, "AT",
+          //      tileVector.GetX(), tileVector.GetY(), tileVector.GetZ(), tileVector.GetOrientation() );
     }
 }
