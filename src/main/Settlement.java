@@ -3,6 +3,7 @@ package main;
 import main.enums.OccupantType;
 import main.enums.TerrainType;
 import main.utils.HexPointPair;
+import main.utils.SettlePointPair;
 
 import static main.utils.formulas.coordinatesToKey;
 import static main.utils.constants.* ;
@@ -16,21 +17,28 @@ public class Settlement {
     public int ownerNumber ;
     public int totoroSanctuaries ;
     public int tigerPlaygrounds ;
-    public Player owner ;
-    private GameBoard game ;
-    public AdjacentMeeples adjacentMeeples;
 
     public HashMap<Integer, Point> occupantPositions;
 
+    public Player owner ;
+    protected GameBoard game ;
+
     public HashMap<Integer, Point> grasslands;
     public HashMap<Integer, Point> lakes;
-    public HashMap<Integer, Point> forests;
+    public HashMap<Integer, Point> jungles;
     public HashMap<Integer, Point> rocky;
     public HashMap<Integer, Point> volcanoes;
+
+    public int grassExpansions, lakeExpansions, jungleExpansions, rockyExpansions;
 
     private ArrayList<Point> mergingSettlements;
     public ArrayList<Point> markedForExpansion;
     public ArrayList<Point> markedForRemoval;
+
+    private HashMap<Integer, Integer> countedTerrain;
+
+    public AdjacentMeeples adjacentMeeples;
+
 
     public Settlement(GameBoard gamePointer) {
         size = 0 ;
@@ -43,13 +51,17 @@ public class Settlement {
         occupantPositions = new HashMap<>();
         grasslands = new HashMap<>();
         lakes = new HashMap<>();
-        forests = new HashMap<>();
+        jungles = new HashMap<>();
         rocky = new HashMap<>();
         volcanoes = new HashMap<>();
+
+        grassExpansions = lakeExpansions = jungleExpansions = rockyExpansions = 0 ;
 
         mergingSettlements = new ArrayList<>();
         markedForExpansion = new ArrayList<>();
         markedForRemoval = new ArrayList<>();
+
+        countedTerrain = new HashMap<>();
         adjacentMeeples = new AdjacentMeeples(game);
     }
 
@@ -84,7 +96,7 @@ public class Settlement {
 
         switch(terrain) {
             case JUNGLE:
-                forests.put(hashKey, point);
+                jungles.put(hashKey, point);
                 break;
 
             case GRASSLANDS:
@@ -112,7 +124,7 @@ public class Settlement {
     private boolean isFreeTerrainPresent(TerrainType terrain, int key){
         switch(terrain) {
             case JUNGLE:
-                return forests.containsKey(key);
+                return jungles.containsKey(key);
 
             case GRASSLANDS:
                 return grasslands.containsKey(key);
@@ -133,6 +145,40 @@ public class Settlement {
         return false;
     }
 
+    public void updateExpansionCounts(){
+        grassExpansions = countAdjacentTerrain(grasslands);
+        lakeExpansions = countAdjacentTerrain(lakes);
+        jungleExpansions = countAdjacentTerrain(jungles);
+        rockyExpansions = countAdjacentTerrain(rocky);
+    }
+
+    private int countAdjacentTerrain(HashMap<Integer,Point> adjacents){
+        int count = 0 ;
+
+        for(Point point : adjacents.values()){
+            count++ ;
+            countedTerrain.put(game.board[point.row][point.column].key, 1) ;
+            count += countPrep(point);
+        }
+
+        countedTerrain.clear();
+
+        return count ;
+    }
+
+    private int countPrep(Point target) {
+        int count = 1 ;
+        countedTerrain.put(game.board[target.row][target.column].key, 1) ;
+
+        for (HexPointPair adjacent : game.board[target.row][target.column].links.values()){
+            if (!countedTerrain.containsKey(adjacent.hex.key)) {
+                count += countPrep(adjacent.point);
+            }
+        }
+
+        return count ;
+    }
+
     public void expand(TerrainType terrain){
         switch(terrain){
             case GRASSLANDS:
@@ -148,29 +194,13 @@ public class Settlement {
                 break;
 
             case JUNGLE:
-                expandThroughTerrain(forests);
+                expandThroughTerrain(jungles);
                 break;
 
             case VOLCANO:  // be warned you cannot expand on volcanoes
                 expandThroughTerrain(volcanoes);
                 break;
         }
-    }
-
-    private void expandThroughTerrain(HashMap<Integer,Point> expansions ){
-        for(Point point : expansions.values()){
-            expandPrep(point);
-        }
-
-        for(Point target : markedForExpansion) {
-            System.out.println("expanding " + target.row + " " + target.column);
-            owner.placeMeeple(target, this);
-            size++;
-            addAdjacentSettlementsForMerge(target);
-        }
-
-        expansions.clear();
-        markedForExpansion.clear();
     }
 
     private void expandPrep(Point target) {
@@ -182,6 +212,22 @@ public class Settlement {
                 expandPrep(adjacent.point);
             }
         }
+    }
+
+    private void expandThroughTerrain(HashMap<Integer,Point> expansions) {
+        for(Point point : expansions.values()){
+            expandPrep(point);
+        }
+
+        for(Point target : markedForExpansion) {
+            owner.placeMeeple(target, this);
+            size++ ;
+            addAdjacentTerrains(target);
+            addAdjacentSettlementsForMerge(target);
+        }
+
+        expansions.clear();
+        markedForExpansion.clear();
     }
 
     public void addAdjacentSettlementsForMerge(Point point) {
@@ -201,6 +247,7 @@ public class Settlement {
 
                 if(occupied && differentSettlement && sameOwner) {
                     mergingSettlements.add(new Point(row, column));
+                    adjacentMeeples.updateAdjacencies(point);
                 }
 
                 if(occupied && !differentSettlement && sameOwner) {
@@ -218,20 +265,20 @@ public class Settlement {
             column = settlementPoint.column ;
 
             if(game.board[row][column].settlementPointer != this) {
-                System.out.println("merging:" + game.board[row][column].settlementPointer + " with : " + this);
-
                 occupantPositions.putAll(game.board[row][column].settlementPointer.occupantPositions);
-                forests.putAll(game.board[row][column].settlementPointer.forests);
+                jungles.putAll(game.board[row][column].settlementPointer.jungles);
                 grasslands.putAll(game.board[row][column].settlementPointer.grasslands);
                 lakes.putAll(game.board[row][column].settlementPointer.lakes);
                 rocky.putAll(game.board[row][column].settlementPointer.rocky);
                 volcanoes.putAll(game.board[row][column].settlementPointer.volcanoes);
 
                 size += game.board[row][column].settlementPointer.size ;
+                totoroSanctuaries += game.board[row][column].settlementPointer.totoroSanctuaries ;
+                tigerPlaygrounds += game.board[row][column].settlementPointer.tigerPlaygrounds ;
 
                 for(Point pt : occupantPositions.values()) {
                     game.board[pt.row][pt.column].settlementPointer = this;
-                    owner.playerSettlements.put(coordinatesToKey(pt.row, pt.column), this);
+                    owner.playerSettlements.put(coordinatesToKey(pt.row, pt.column), new SettlePointPair(this, pt));
                 }
             }
         }
@@ -239,11 +286,9 @@ public class Settlement {
         mergingSettlements.clear();
         cleanTerrainLists();    /* IMPORTANT: remove occupant positions from all adjacent terrain hash maps
                                 there will be at least one conflict to resolve */
-        findEndPoints();
     }
 
-    public Point findEndPoints()
-    {
+    public Point findEndPoints(){
         int min = Integer.MAX_VALUE;
         Point endPoint = null;
 
@@ -269,7 +314,7 @@ public class Settlement {
         int hashKey ;
         for(Point point : occupantPositions.values()){
             hashKey = coordinatesToKey(point.row, point.column);
-            forests.remove(hashKey);
+            jungles.remove(hashKey);
             grasslands.remove(hashKey);
             lakes.remove(hashKey);
             rocky.remove(hashKey);
@@ -278,7 +323,7 @@ public class Settlement {
     }
 
     public void removeFromExpansions(int key){
-        forests.remove(key);
+        jungles.remove(key);
         grasslands.remove(key);
         volcanoes.remove(key);
         rocky.remove(key);

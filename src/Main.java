@@ -36,7 +36,7 @@ public class Main {
 
         try {
             //me=new client(InetAddress.getLocalHost().getHostAddress(), 1025);
-            NetClient ntc = new NetClient();
+            NetClient ntc = new NetClient(); // gets and sets default IP and PORT
             if(ntc.IsConnected())
             {
                 ntc.Listen();

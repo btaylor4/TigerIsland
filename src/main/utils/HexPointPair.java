@@ -1,6 +1,5 @@
 package main.utils;
 
-
 import main.Hexagon;
 import main.Point;
 

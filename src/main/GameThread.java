@@ -1,38 +1,76 @@
 package main;
 
+import main.players.BryanAI;
+
+import java.lang.management.OperatingSystemMXBean;
+
 public class GameThread implements Runnable{
 
     GameBoard game;
-    Player player1;
-    Player player2;
-    Player currentPlayer;
 
-    public GameThread(){
+    int gameID;
+    boolean isMyTurn;
+    boolean gameOver;
+
+    BryanAI AI;
+    Player Opponent;
+
+    //TODO: add client to constructor args
+    public GameThread(int gameNumber, boolean weGoFirst){
         game = new GameBoard();
-        player1 = new Player(game,1);
-        player2 = new Player(game,2);
+
+        gameID = gameNumber;
+        gameOver = false;
+
+        AI = new BryanAI(game,1);
+        Opponent = new Player(game,2);
+
+        isMyTurn = weGoFirst;
+
     }
 
     @Override
     public void run() {
 
-        player1.playFirstTile();
-        player1.playBuildPhase();
-        game.printBoard();
-
-        currentPlayer = player2 ;
-
         //server will tell us when game is over
-        while (true) {
-            System.out.println("Player" + currentPlayer.designator + "'s turn");
-            currentPlayer.playTilePhase();
-            currentPlayer.playBuildPhase();
-            game.printBoard();
+        while (!gameOver) {
+            System.out.println("Game " + gameID +": " + (isMyTurn ? "AI":"Opponent") + "'s turn");
 
-            if(currentPlayer.designator == 1)
-                currentPlayer = player2 ;
-            else
-                currentPlayer = player1 ;
+
+            if(isMyTurn){
+                AI.determineTilePlacementByAI();
+                AI.determineBuildByAI();
+            }
+            else { //its opponents turn
+                synchronized (this) {
+                    while (!isMyTurn) {
+                        try {
+                            //client will notify when it receives move from server
+                            this.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    //simulate opponents move
+                    applyOpponentsMoves();
+                }
+            }
+
+            //game.printBoard();
+
+            isMyTurn = !isMyTurn;
+
         }
     }
+
+    //these will change once client is visible
+    public void applyOpponentsMoves(){
+        Opponent.playTilePhase();
+        Opponent.playBuildPhase();
+    }
+
+    public void gameIsOver(){
+        gameOver = true;
+    }
+
 }

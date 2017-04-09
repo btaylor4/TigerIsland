@@ -100,8 +100,8 @@ public class TestHexagon
         Point point = new Point(106, 105);
         Settlement settle = new Settlement(game);
         game.setFirstTile();
-        game.setPiece(point, OccupantType.TIGERPLAYGROUND, settle);
-        assertTrue(game.board[point.row][point.column].occupant == OccupantType.TIGERPLAYGROUND);
+        game.setPiece(point, OccupantType.TIGER, settle);
+        assertTrue(game.board[point.row][point.column].occupant == OccupantType.TIGER);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class TestHexagon
         Point point = new Point(106, 105);
         Settlement settle = new Settlement(game);
         game.setFirstTile();
-        game.setPiece(point, OccupantType.TIGERPLAYGROUND, settle);
-        assertFalse(game.board[point.row][point.column].occupant != OccupantType.TIGERPLAYGROUND);
+        game.setPiece(point, OccupantType.TIGER, settle);
+        assertFalse(game.board[point.row][point.column].occupant != OccupantType.TIGER);
     }
 }

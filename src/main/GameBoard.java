@@ -2,6 +2,7 @@ package main;
 
 import main.enums.OccupantType;
 import main.enums.TerrainType;
+import main.utils.SettlePointPair;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -19,7 +20,7 @@ public class GameBoard {
     public static Tile tileStack[] = new Tile[NUM_TILES];
 
     private int tilePlayIndex;
-
+    private int TileCount = 0;
     public GameBoard(){
         board = new Hexagon[ARRAY_DIMENSION][ARRAY_DIMENSION];
         playableHexes = new HashMap<>() ;
@@ -27,6 +28,7 @@ public class GameBoard {
         createTiles();
         shuffleTiles();
         tilePlayIndex = 0 ;
+        setFirstTile();
     }
 
     public void createTiles(){
@@ -47,6 +49,7 @@ public class GameBoard {
                 }
             }
         }
+        TileCount = tileCounter;
     }
 
     public void shuffleTiles(){
@@ -125,8 +128,8 @@ public class GameBoard {
 
     public boolean isValidOverlap(ProjectionPack projection){
         boolean volcanoAligned, totoroPresent, tigerPresent ;
+        boolean sizeTwo, sameSettlement ;
         int tileUnderVolcano, tileUnderHexA, tileUnderHexB ;
-
 
         volcanoAligned = board[projection.volcano.row][projection.volcano.column].terrain == TerrainType.VOLCANO ;
         if(!volcanoAligned) return false ;
@@ -137,11 +140,11 @@ public class GameBoard {
         totoroPresent = board[projection.hex_b.row][projection.hex_b.column].occupant == OccupantType.TOTORO ;
         if(totoroPresent) return false ;
 
-        tigerPresent = board[projection.hex_a.row][projection.hex_a.column].occupant == OccupantType.TIGERPLAYGROUND ;
-        if(tigerPresent ) return false ;
+        tigerPresent = board[projection.hex_a.row][projection.hex_a.column].occupant == OccupantType.TIGER;
+        if(tigerPresent) return false ;
 
-        tigerPresent  = board[projection.hex_b.row][projection.hex_b.column].occupant == OccupantType.TIGERPLAYGROUND ;
-        if(tigerPresent ) return false ;
+        tigerPresent = board[projection.hex_b.row][projection.hex_b.column].occupant == OccupantType.TIGER;
+        if(tigerPresent) return false ;
 
         tileUnderVolcano = board[projection.volcano.row][projection.volcano.column].tileNumber ;
         tileUnderHexA = board[projection.hex_a.row][projection.hex_a.column].tileNumber ;
@@ -155,9 +158,18 @@ public class GameBoard {
             if(board[projection.hex_a.row][projection.hex_a.column].settlementPointer.size == 1)
                 return false ;
         }
-        else if(board[projection.hex_b.row][projection.hex_b.column].occupant != OccupantType.NONE){
+
+        if(board[projection.hex_b.row][projection.hex_b.column].occupant != OccupantType.NONE){
             if(board[projection.hex_b.row][projection.hex_b.column].settlementPointer.size == 1)
                 return false ;
+        }
+
+        if(board[projection.hex_a.row][projection.hex_a.column].occupant != OccupantType.NONE){
+            sizeTwo = (board[projection.hex_a.row][projection.hex_a.column].settlementPointer.size == 2) ;
+            sameSettlement = board[projection.hex_a.row][projection.hex_a.column].settlementPointer
+                    == board[projection.hex_b.row][projection.hex_b.column].settlementPointer ;
+
+            if(sizeTwo && sameSettlement) return false;
         }
 
         return true ;
@@ -379,10 +391,16 @@ public class GameBoard {
     }
 
     public void setSettlement(Point desiredPosition, Settlement newSettlement){
+        newSettlement.beginNewSettlement(desiredPosition);
         newSettlement.addAdjacentTerrains(desiredPosition);
         newSettlement.addAdjacentSettlementsForMerge(desiredPosition);
         newSettlement.mergeSettlements();
         board[desiredPosition.row][desiredPosition.column].settlementPointer = newSettlement ;
+    }
+
+    public void expandSettlement(Point settlementPoint, TerrainType terrainChoice){
+        board[settlementPoint.row][settlementPoint.column].settlementPointer.expand(terrainChoice);
+        board[settlementPoint.row][settlementPoint.column].settlementPointer.mergeSettlements();
     }
 
     public void processVolcanicDestruction(ProjectionPack projection){
@@ -413,6 +431,7 @@ public class GameBoard {
             key = board[removal.row][removal.column].key ;
             settlement.occupantPositions.remove(key);
             settlement.owner.playerSettlements.remove(key);
+            settlement.removeFromExpansions(key);
             board[removal.row][removal.column].occupant = OccupantType.NONE ;
             board[removal.row][removal.column].settlementPointer = null ;
         }
@@ -426,6 +445,7 @@ public class GameBoard {
         for(Point origin : originalSettlement.occupantPositions.values()){
             partialSettlement = new Settlement(this) ;
             partialSettlement.owner = originalSettlement.owner ;
+            partialSettlement.ownerNumber = originalSettlement.ownerNumber ;
             partialSettlement.beginNewSettlement(origin);
             partialSettlement.addAdjacentTerrains(origin);
             board[origin.row][origin.column].settlementPointer = partialSettlement ;
@@ -439,7 +459,8 @@ public class GameBoard {
 
         for(Point origin : originalSettlement.occupantPositions.values()) {
             partialSettlement = board[origin.row][origin.column].settlementPointer ;
-            partialSettlement.owner.playerSettlements.put(board[origin.row][origin.column].key, partialSettlement);
+            partialSettlement.owner.playerSettlements.put(board[origin.row][origin.column].key,
+                    new SettlePointPair(partialSettlement, origin));
         }
     }
 
@@ -460,11 +481,26 @@ public class GameBoard {
         }
     }
 
+
+    // write better tests, these should not be here
     public static Tile[] getTileStack() {
         return tileStack;
     }
 
     public static Hexagon[][] getBoard() {
         return board;
+    }
+
+    public void decreaseTileCount()
+    {
+        TileCount--;
+    }
+    public int getTileCount()
+    {
+        return TileCount;
+    }
+    public boolean isInBuildPhase()
+    {
+        return true;
     }
 }

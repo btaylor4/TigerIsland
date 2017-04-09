@@ -1,0 +1,22 @@
+<component name="libraryTable">
+  <library name="info.cukes:cucumber-spring:1.2.5" type="repository">
+    <properties maven-id="info.cukes:cucumber-spring:1.2.5" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/cucumber-spring-1.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/cucumber-java-1.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/cucumber-core-1.2.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/cucumber-html-0.2.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/cucumber-jvm-deps-1.0.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/gherkin-2.12.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/spring-tx-4.3.2.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/spring-beans-4.3.2.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/spring-core-4.3.2.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-logging-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/spring-context-support-4.3.2.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/spring-context-4.3.2.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/spring-test-4.3.2.RELEASE.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
