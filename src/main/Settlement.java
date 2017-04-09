@@ -133,28 +133,42 @@ public class Settlement {
         return false;
     }
 
-    public void expand(TerrainType terrain){
+    public boolean expand(TerrainType terrain){
         switch(terrain){
             case GRASSLANDS:
-                expandThroughTerrain(grasslands);
+                if(!grasslands.isEmpty())
+                    expandThroughTerrain(grasslands);
+                else
+                    return false;
                 break;
 
             case ROCKY:
-                expandThroughTerrain(rocky);
+                if(!rocky.isEmpty())
+                    expandThroughTerrain(rocky);
+                else
+                    return false;
                 break;
 
             case LAKE:
-                expandThroughTerrain(lakes);
+                if(!lakes.isEmpty())
+                    expandThroughTerrain(lakes);
+                else
+                    return false;
                 break;
 
             case JUNGLE:
-                expandThroughTerrain(forests);
+                if(!forests.isEmpty())
+                    expandThroughTerrain(forests);
+                else
+                    return false;
                 break;
 
             case VOLCANO:  // be warned you cannot expand on volcanoes
                 expandThroughTerrain(volcanoes);
                 break;
         }
+
+        return true;
     }
 
     private void expandThroughTerrain(HashMap<Integer,Point> expansions ){
@@ -201,6 +215,7 @@ public class Settlement {
 
                 if(occupied && differentSettlement && sameOwner) {
                     mergingSettlements.add(new Point(row, column));
+                    adjacentMeeples.updateAdjacencies(point);
                 }
 
                 if(occupied && !differentSettlement && sameOwner) {
@@ -239,7 +254,6 @@ public class Settlement {
         mergingSettlements.clear();
         cleanTerrainLists();    /* IMPORTANT: remove occupant positions from all adjacent terrain hash maps
                                 there will be at least one conflict to resolve */
-        findEndPoints();
     }
 
     public Point findEndPoints()
