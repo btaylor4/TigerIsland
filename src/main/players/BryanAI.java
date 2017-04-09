@@ -36,7 +36,7 @@ public class BryanAI extends Player {
             int meeplesBeingNuked = 0;
 
             tileHeld.setRotation(i);
-            projection = projectTilePlacement(tileHeld, mySet.adjacentMeeples.endPointToNuke);
+            projection = projectTilePlacement(tileHeld, mySet.endPointToNuke);
             projection.projectedLevel = game.getProjectedHexLevel(projection);
 
             if(game.isValidTilePlacement(projection))
@@ -107,7 +107,7 @@ public class BryanAI extends Player {
 
                             else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
                             {
-                                if(mySets.settlement.adjacentMeeples.checkPieceAdjacencies(point) <= 1)
+                                if(mySets.settlement.checkPieceAdjacencies(point) <= 1)
                                 {
                                     point = new Point(row, column);
                                     break;
@@ -149,7 +149,7 @@ public class BryanAI extends Player {
 
                         else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
                         {
-                            if(mySets.settlement.adjacentMeeples.checkPieceAdjacencies(point) <= 1)
+                            if(mySets.settlement.checkPieceAdjacencies(point) <= 1)
                             {
                                 point = new Point(row, column);
                                 break;
@@ -315,7 +315,7 @@ public class BryanAI extends Player {
                     if(mySet.settlement.totoroSanctuaries == 1)
                     {
                         tileHeld.setRotation(determineRotationForNukingAI(mySet.settlement));
-                        projection = projectTilePlacement(tileHeld, mySet.settlement.adjacentMeeples.endPointToNuke);
+                        projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
                         if(game.isValidTilePlacement(projection))
@@ -328,7 +328,7 @@ public class BryanAI extends Player {
                     if(mySet.settlement.tigerPlaygrounds == 1)
                     {
                         tileHeld.setRotation(determineRotationForNukingAI(mySet.settlement));
-                        projection = projectTilePlacement(tileHeld, mySet.settlement.adjacentMeeples.endPointToNuke);
+                        projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
                         if(game.isValidTilePlacement(projection))
@@ -524,22 +524,28 @@ public class BryanAI extends Player {
         int row = point.row;
         int column = point.column;
 
-        for(int i = 0; i < SIDES_IN_HEX; i++)
+        for(Point myPoint : mySet.occupantPositions.values())
         {
-            row = point.row + rowOneAway[i];
-            column = point.column + columnOneAway[i];
-
-            if(game.board[row][column] != null && game.isValidSettlementPosition(new Point(row, column)))
+            for(int i = 0; i < SIDES_IN_HEX; i++)
             {
-                if(!checkForVolcanoesNearMeeplePlacement(new Point(row, column)))
-                {
-                    selectedPoint = new Point(row, column);
-                    break;
-                }
+                row = point.row + rowOneAway[i];
+                column = point.column + columnOneAway[i];
 
-                else
-                    selectedPoint = new Point(row, column);
+                if(game.board[row][column] != null && game.isValidSettlementPosition(new Point(row, column)))
+                {
+                    if(!checkForVolcanoesNearMeeplePlacement(new Point(row, column)))
+                    {
+                        selectedPoint = new Point(row, column);
+                        break;
+                    }
+
+                    else
+                        selectedPoint = new Point(row, column);
+                }
             }
+
+            if(selectedPoint != null)
+                return  selectedPoint;
         }
 
         return selectedPoint;

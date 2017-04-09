@@ -37,8 +37,8 @@ public class Settlement {
 
     private HashMap<Integer, Integer> countedTerrain;
 
-    public AdjacentMeeples adjacentMeeples;
-
+    public Point endPointToNuke;
+    public Point endPoint;
 
     public Settlement(GameBoard gamePointer) {
         size = 0 ;
@@ -62,13 +62,14 @@ public class Settlement {
         markedForRemoval = new ArrayList<>();
 
         countedTerrain = new HashMap<>();
-        adjacentMeeples = new AdjacentMeeples(game);
+        endPoint = null;
+        endPointToNuke = null;
     }
 
     public void beginNewSettlement(Point point) {
         occupantPositions.put(coordinatesToKey(point.row, point.column), point);
         size = 1;
-        adjacentMeeples.updateAdjacencies(point);
+        endPoint = point;
     }
 
     public void addAdjacentTerrains(Point point) {
@@ -247,11 +248,6 @@ public class Settlement {
 
                 if(occupied && differentSettlement && sameOwner) {
                     mergingSettlements.add(new Point(row, column));
-                    adjacentMeeples.updateAdjacencies(point);
-                }
-
-                if(occupied && !differentSettlement && sameOwner) {
-                    adjacentMeeples.updateAdjacencies(point);
                 }
             }
         }
@@ -286,28 +282,64 @@ public class Settlement {
         mergingSettlements.clear();
         cleanTerrainLists();    /* IMPORTANT: remove occupant positions from all adjacent terrain hash maps
                                 there will be at least one conflict to resolve */
+        endPoint = findEndPoints();
     }
 
     public Point findEndPoints(){
         int min = Integer.MAX_VALUE;
         Point endPoint = null;
 
-        for(Point point : adjacentMeeples.endPoints.keySet())
+        for(Point point : occupantPositions.values())
         {
-            if(adjacentMeeples.endPoints.get(point) < min)
+            int row = point.row;
+            int column = point .column;
+            int numberOfAdjacencies = 0;
+
+            for(int i = 0; i < SIDES_IN_HEX; i++)
             {
-                endPoint = point;
-                min = adjacentMeeples.endPoints.get(point);
-                adjacentMeeples.setEndPointToNuke(point);
+                row = point.row + ROW_ADDS[i];
+                column = point.column + COLUMN_ADDS[i];
+
+                if(game.board[row][column] != null && game.board[row][column].occupant != OccupantType.MEEPLE)
+                {
+                    if(game.board[row][column].settlementPointer == this)
+                    {
+                        numberOfAdjacencies++;
+                    }
+                }
             }
 
-            else if(adjacentMeeples.endPoints.get(point) == min)
+            if(numberOfAdjacencies < min)
             {
-
+                endPoint = point;
+                min = numberOfAdjacencies;
+                endPointToNuke = point;
             }
         }
 
         return endPoint;
+    }
+
+    public int checkPieceAdjacencies(Point point){
+        int row = point.row;
+        int column = point.column;
+        int numberOfAdjacencies = 0;
+
+        for(int i = 0; i < SIDES_IN_HEX; i++)
+        {
+            row = point.row + ROW_ADDS[i];
+            column = point.column + COLUMN_ADDS[i];
+
+            if(game.board[row][column] != null && game.board[row][column].occupant != OccupantType.MEEPLE)
+            {
+                if(game.board[row][column].settlementPointer == this)
+                {
+                    numberOfAdjacencies++;
+                }
+            }
+        }
+
+        return numberOfAdjacencies;
     }
 
     private void cleanTerrainLists(){
