@@ -7,54 +7,68 @@ public class GameThread implements Runnable{
     GameBoard game;
 
     int gameID;
+    boolean isMyTurn;
+    boolean gameOver;
 
     Player AI;
     Player Opponent;
-    Player currentPlayer;
 
     //TODO: add client to constructor args
-    public GameThread(int gameNumber, int designatorOfWhoGoesFirst){
+    public GameThread(int gameNumber, boolean weGoFirst){
         game = new GameBoard();
 
         gameID = gameNumber;
+        gameOver = false;
 
         AI = new Player(game,1);
         Opponent = new Player(game,2);
 
-        if(designatorOfWhoGoesFirst == 1){
-            currentPlayer = AI;
-        }
-        else{
-            currentPlayer = Opponent;
-        }
+        isMyTurn = weGoFirst;
 
     }
 
     @Override
     public void run() {
 
-        //AI.playFirstTile();
-        //AI.playBuildPhase();
-        //game.printBoard();
-
         //server will tell us when game is over
-        while (true) {
-            System.out.println("Game " + gameID +": Player" + currentPlayer.designator + "'s turn");
+        while (!gameOver) {
+            System.out.println("Game " + gameID +": " + (isMyTurn ? "AI":"Opponent") + "'s turn");
 
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+            if(isMyTurn){
+                AI.determineTilePlacementByAI();
+                AI.determineBuildByAI();
             }
-            //currentPlayer.playTilePhase();
-            //currentPlayer.playBuildPhase();
+            else { //its opponents turn
+                synchronized (this) {
+                    while (!isMyTurn) {
+                        try {
+                            //client will notify when it receives move from server
+                            this.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    //simulate opponents move
+                    applyOpponentsMoves();
+                }
+            }
+
             //game.printBoard();
 
+            isMyTurn = !isMyTurn;
 
-            if(currentPlayer.designator == 1)
-                currentPlayer = Opponent;
-            else
-                currentPlayer = AI;
         }
     }
+
+    //these will change once client is visible
+    public void applyOpponentsMoves(){
+        Opponent.playTilePhase();
+        Opponent.playBuildPhase();
+    }
+
+    public void gameIsOver(){
+        gameOver = true;
+    }
+
 }
