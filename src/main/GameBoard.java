@@ -394,12 +394,14 @@ public class GameBoard {
         newSettlement.addAdjacentTerrains(desiredPosition);
         newSettlement.addAdjacentSettlementsForMerge(desiredPosition);
         newSettlement.mergeSettlements();
+        newSettlement.countSettlementMembers();
         board[desiredPosition.row][desiredPosition.column].settlementPointer = newSettlement ;
     }
 
     public void expandSettlement(Point settlementPoint, TerrainType terrainChoice){
         board[settlementPoint.row][settlementPoint.column].settlementPointer.expand(terrainChoice);
         board[settlementPoint.row][settlementPoint.column].settlementPointer.mergeSettlements();
+        board[settlementPoint.row][settlementPoint.column].settlementPointer.countSettlementMembers();
     }
 
     public void processVolcanicDestruction(ProjectionPack projection){
@@ -454,6 +456,7 @@ public class GameBoard {
             partialSettlement = board[origin.row][origin.column].settlementPointer ;
             partialSettlement.addAdjacentSettlementsForMerge(origin);
             partialSettlement.mergeSettlements();
+            partialSettlement.countSettlementMembers();
         }
 
         for(Point origin : originalSettlement.occupantPositions.values()) {
