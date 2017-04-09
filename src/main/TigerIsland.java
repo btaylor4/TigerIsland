@@ -24,27 +24,13 @@ public class TigerIsland {
 
     public static void main(String[] args) {
 
-        //client will be started here and will send responses to corresponding game
-        //GameThread will need access to client in order to send moves out
-
-
-
-
-
         Thread game1 = null;
         Thread game2 = null;
         GameThread g1 = null;
         GameThread g2 = null;
 
         try {
-            client = new NetClient(args[1], Integer.parseInt(args[2])); //IP , port
-            client.Start();
-            client.getNextMessageFromServer();  //receive welcome message
-            client.Send(msg.FormatAuthenticationForTournament(args[3]));
-            client.getNextMessageFromServer(); //more bs
-            client.Send(msg.FormatAuthenticationPlayer("Team M", args[4])); // I Am User Password
-            message = client.getNextMessageFromServer(); //get the pid here
-            PID = message.GetPlayerId();
+            TournamentAndAuthenticationProtocol(args);
 
             while(true) {
                 challengeProtocolBegin();
