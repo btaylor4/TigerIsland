@@ -8,9 +8,6 @@ import static main.utils.constants.COLUMN_ADDS;
 import static main.utils.constants.ROW_ADDS;
 import static main.utils.constants.SIDES_IN_HEX;
 
-/**
- * Created by Bryan on 4/7/17.
- */
 public class AdjacentMeeples
 {
     public HashMap<Point, Integer> endPoints;
