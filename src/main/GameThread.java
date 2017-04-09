@@ -1,14 +1,15 @@
 package main;
 
 import main.players.BryanAI;
-
-import java.lang.management.OperatingSystemMXBean;
+import net.*;
 
 public class GameThread implements Runnable{
 
     GameBoard game;
 
-    int gameID;
+    NetClient c;
+
+    String gameID;
     boolean isMyTurn;
     boolean gameOver;
 
@@ -16,8 +17,10 @@ public class GameThread implements Runnable{
     Player Opponent;
 
     //TODO: add client to constructor args
-    public GameThread(int gameNumber, boolean weGoFirst){
+    public GameThread(String gameNumber, boolean weGoFirst, NetClient c){
         game = new GameBoard();
+
+        this.c = c;
 
         gameID = gameNumber;
         gameOver = false;
