@@ -1,4 +1,4 @@
-/**
+package main; /**
  * Created by zainlateef on 4/3/17.
  */
 import java.io.IOException;
