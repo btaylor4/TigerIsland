@@ -68,7 +68,6 @@ public class Settlement {
 
     public void beginNewSettlement(Point point) {
         occupantPositions.put(coordinatesToKey(point.row, point.column), point);
-        size = 1;
         endPoint = point;
     }
 
@@ -222,12 +221,14 @@ public class Settlement {
 
         for(Point target : markedForExpansion) {
             owner.placeMeeple(target, this);
-            size++ ;
+        }
+        expansions.clear();
+
+        for(Point target : markedForExpansion) {
             addAdjacentTerrains(target);
             addAdjacentSettlementsForMerge(target);
         }
 
-        expansions.clear();
         markedForExpansion.clear();
     }
 
@@ -268,10 +269,6 @@ public class Settlement {
                 rocky.putAll(game.board[row][column].settlementPointer.rocky);
                 volcanoes.putAll(game.board[row][column].settlementPointer.volcanoes);
 
-                size += game.board[row][column].settlementPointer.size ;
-                totoroSanctuaries += game.board[row][column].settlementPointer.totoroSanctuaries ;
-                tigerPlaygrounds += game.board[row][column].settlementPointer.tigerPlaygrounds ;
-
                 for(Point pt : occupantPositions.values()) {
                     game.board[pt.row][pt.column].settlementPointer = this;
                     owner.playerSettlements.put(coordinatesToKey(pt.row, pt.column), new SettlePointPair(this, pt));
@@ -279,10 +276,34 @@ public class Settlement {
             }
         }
 
+
         mergingSettlements.clear();
         cleanTerrainLists();    /* IMPORTANT: remove occupant positions from all adjacent terrain hash maps
                                 there will be at least one conflict to resolve */
         endPoint = findEndPoints();
+    }
+
+    public void countSettlementMembers(){ // call after merging
+        size = 0 ;
+        totoroSanctuaries = 0 ;
+        tigerPlaygrounds = 0 ;
+
+        for(Point pt : occupantPositions.values()){
+
+            size++ ;
+            switch(game.board[pt.row][pt.column].occupant){
+                case TOTORO:
+                    totoroSanctuaries++ ;
+                    break;
+
+                case TIGER:
+                    tigerPlaygrounds++ ;
+                    break;
+
+                default:
+                    break;
+            }
+        }
     }
 
     public Point findEndPoints(){
