@@ -36,6 +36,11 @@ public class BryanAI extends Player {
 
     }
 
+    public void setTile(Tile tile)
+    {
+        super.tileHeld = tile;
+    }
+
     public int determineRotationForNukingAI(Settlement mySet)
     {
         ProjectionPack projection;
@@ -142,10 +147,10 @@ public class BryanAI extends Player {
 
                     if(game.isValidTotoroPosition(point, mySets.settlement))
                     {
-                        System.out.println("Totoro has been fucking placed motherfucker! Score: " + score);
                         buildDecision = BuildOptions.TOTORO_SANCTUARY;
                         buildPoint = point;
                         placeTotoro(point, mySets.settlement);
+                        System.out.println("Totoro has been fucking placed motherfucker! Score: " + score);
                         return;
                     }
                 }
@@ -333,7 +338,6 @@ public class BryanAI extends Player {
     {
         Point selectedPoint;
         ProjectionPack projection;
-        drawTile(); //draw tile
 
         int mostMeeplesInHex = -1;
         Settlement settlementChoice = new Settlement(game);
