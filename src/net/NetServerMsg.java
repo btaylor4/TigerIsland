@@ -1,7 +1,9 @@
 package net;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import main.enums.TerrainType;
+import main.enums.BuildOptions;
 
 public class NetServerMsg {
 
@@ -128,6 +130,20 @@ public class NetServerMsg {
         else
             return null;
     }
+    private String CheckBuildString(String input) {
+        input = input.replace(" ", "_");
+        return input;
+    }
+    public BuildOptions GetSettlement()
+    {
+        Token token = GetTokenByType(TokenType.TOKEN_BUILT);
+        if(token != null) {
+            String option = (String) token.Data;
+            return BuildOptions.valueOf(CheckBuildString(option));
+        }
+        else
+            return null;
+    }
     public TileVector GetTitlePlacement()
     {
         Token token = GetTokenByTypeAndIndex(TokenType.TOKEN_AT, 1);
@@ -160,6 +176,22 @@ public class NetServerMsg {
             return (float)token.Data;
         else
             return -1;
+    }
+    public boolean HasProtocolEnded()
+    {
+        Token token = GetTokenByType(TokenType.TOKEN_END);
+        if(token != null)
+            return (boolean) token.Data;
+        else
+            return false;
+    }
+    public boolean ShouldWaitForNext()
+    {
+        Token token = GetTokenByType(TokenType.TOKEN_WAIT);
+        if(token != null)
+            return (boolean) token.Data;
+        else
+            return false;
     }
     // returns <Player_ID, SCORE>
     public HashMap<String, Integer> GetGameResults()
