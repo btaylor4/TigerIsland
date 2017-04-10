@@ -19,7 +19,6 @@ public class GameThread implements Runnable{
     NetClient client;
     NetServerMsg currentMessage = null;
 
-
     String gameID;
     String ourPlayerID = TigerIsland.PID;
 
@@ -68,8 +67,13 @@ public class GameThread implements Runnable{
 
                 }
 
-                makeAIMove();
-            } else { //its opponents turn
+                try {
+                    makeAIMove();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else { //its opponents turn
 
                 while (!isMyTurn) {
                     try {
@@ -97,7 +101,7 @@ public class GameThread implements Runnable{
         }
     }
 
-    private void makeAIMove(){
+    private void makeAIMove() throws IOException {
         Tile tileFromServer = new Tile();
         TerrainType A;
         TerrainType B;
@@ -111,64 +115,53 @@ public class GameThread implements Runnable{
         TerrainType tp;
         BuildOptions buildDecision;
         Point p;
+
         AI.setTile(tileFromServer);
         Tile tile = AI.determineTilePlacementByAI();
+
         if(AI.hasPlayerLost()){
             msg = new NetClientMsg();
             String clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatUnableToBuild());
-            try {
-                client.Send(clientMsg);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
+
+            client.Send(clientMsg);
+        }
+        else {
             AI.determineBuildByAI();
             buildDecision = AI.buildDecision;
             p = AI.buildPoint;
             tp = AI.expansionAction;
             msg = new NetClientMsg();
+
             switch (buildDecision) {
                 case TIGER_PLAYGROUND:
                     String clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
                             buildDecision.toString(), p));
-                    try {
-                        client.Send(clientMsg);
-                    } catch (IOException ex)
 
-                    {
-
-                    }
+                    client.Send(clientMsg);
+                    break;
 
                 case TOTORO_SANCTUARY:
                     clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
                             buildDecision.toString(), p));
-                    try {
-                        client.Send(clientMsg);
-                    } catch (IOException ex)
-
-                    {
-
-                    }
+                    client.Send(clientMsg);
+                    break;
 
                 case EXPAND:
                     clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildActionWithTerrain(p,
                             tp));
-                    try {
-                        client.Send(clientMsg);
-                    } catch (IOException ex)
 
-                    {
-
-                    }
+                    client.Send(clientMsg);
+                    break;
 
                 case FOUND_SETTLEMENT:
                     clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
                             buildDecision.toString(), p));
-                    try {
-                        client.Send(clientMsg);
-                    } catch (IOException ex) {
-                        System.err.println("error cuath");
-                    }
+                    client.Send(clientMsg);
+                    break;
+
+                default:
+                    System.err.print("Error, invalid AI build option") ;
+                    break;
             }
         }
     }
