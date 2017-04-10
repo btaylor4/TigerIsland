@@ -27,11 +27,15 @@ public class NetClientMsg {
     {
         return String.format("I AM %1$s %2$s",username, password );
     }
+    private String FormatEnum(String action)
+    {
+        return action.replace('_', ' ');
+    }
 
     public String FormatGameMove(String gameId, int moveNum, String placeAction, String buildAction)
     {
         return String.format("%1$s %2$s %3$s %4$d %5$s %6$s", "GAME", gameId,
-                "MOVE", moveNum, placeAction, buildAction);
+                "MOVE", moveNum, placeAction, FormatEnum(buildAction));
     }
     public String FormatBuildAction(String action, String target, TileVector tileVector)
     {
@@ -64,19 +68,20 @@ public class NetClientMsg {
         return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$s", action, target, "AT",
                 tileVector.GetX(), tileVector.GetY(), tileVector.GetZ(),  tileVector.GetTerrain() );
     }
+
     public String FormatBuildActionWithTerrain(Point point, TerrainType type)
     {
         XYZ cubePoint = new XYZ(point);
 
         return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$s", "EXPAND", "SETTLEMENT", "AT",
-                cubePoint.x, cubePoint.y, cubePoint.z,  type.toString() );
+                cubePoint.x, cubePoint.y, cubePoint.z, (type)  );
     }
     public String FormatBuildActionWithTerrain(Tile tile, TerrainType type)
     {
         XYZ cubePoint = new XYZ(tile.serverPoint);
 
         return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$s", "EXPAND", "SETTLEMENT", "AT",
-                cubePoint.x, cubePoint.y, cubePoint.z,  type.toString() );
+                cubePoint.x, cubePoint.y, cubePoint.z, (type)   );
     }
 
     public String FormatBuildActionWithTerrain(String action, String target, Tile tile, TerrainType type)
@@ -84,7 +89,7 @@ public class NetClientMsg {
         XYZ cubePoint = new XYZ(tile.serverPoint);
 
         return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$s", action, target, "AT",
-                cubePoint.x, cubePoint.y, cubePoint.z,  type.toString() );
+                cubePoint.x, cubePoint.y, cubePoint.z, (type)  );
     }
 
 
