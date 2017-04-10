@@ -62,22 +62,8 @@ public class TigerIsland {
                         {
                             break;
                         }
-                        if (message.GetGameId().equals(g1.gameID)) {
-                            System.out.println("received message for game1");
-                            game1.interrupt();
-                        }
-                        else if (message.GetGameId().equals(g2.gameID)) {
-                            System.out.println("received message for game2");
-                            game2.interrupt();
-                        }else if(message.GetGameResults() != null){
-                            if (message.GetGameId().equals(g1.gameID)){
-                                game1.join();
-                            } else if (message.GetGameId().equals(g2.gameID)){
-                                game2.join();
-                            }
-                        }
                         //in case other thread has not been started
-                        else if (game1 == null && !message.GetGameId().equals(g2.gameID)) {
+                        if (game1 == null && !message.GetGameId().equals(g2.gameID)) {
                             g1 = new GameThread(message.GetGameId(), false, client);
                             game1 = new Thread(g1);
                             game1.start();
@@ -87,6 +73,20 @@ public class TigerIsland {
                             game2 = new Thread(g2);
                             game2.start();
                             System.out.println("starting game2");
+                        }
+                        else if (message.GetGameId().equals(g1.gameID)) {
+                            System.out.println("received message for game1");
+                            game1.interrupt();
+                        }
+                        else if (message.GetGameId().equals(g2.gameID)) {
+                            System.out.println("received message for game2");
+                            game2.interrupt();
+                        }else if(message.GetGameResults() != null) {
+                            if (message.GetGameId().equals(g1.gameID)) {
+                                game1.join();
+                            } else if (message.GetGameId().equals(g2.gameID)) {
+                                game2.join();
+                            }
                         }
                         //unrecognized gid
                         else {
