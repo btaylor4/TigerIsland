@@ -471,6 +471,11 @@ public class BryanAI extends Player {
                 {
                     //check if I can place a tile that will add to one of the adjacency lists to make expansion better
                     //and away from volcanoes
+                    if(determineTilePlacementForExpansion(mySet, tileHeld.hexA.terrain))
+                        return tileHeld;
+
+                    else if(determineTilePlacementForExpansion(mySet, tileHeld.hexB.terrain))
+                        return tileHeld;
                 }
 
                 //place next to settlement that would allow for meeple placement one away
@@ -522,39 +527,97 @@ public class BryanAI extends Player {
         return tileHeld;
     }
 
-    public boolean determineTilePlacementForExpansion(Settlement mySet, TerrainType terrain)
+    public boolean determineTilePlacementForExpansion(SettlePointPair mySet, TerrainType terrain)
     {
+        ProjectionPack projection = null;
+
         switch(terrain)
         {
             case JUNGLE:
-                if(mySet.jungles.size() >= 1)
+                if(mySet.settlement.jungles.size() > 1)
                 {
+                    for(Point point : mySet.settlement.occupantPositions.values())
+                    {
+                        for(int i = 1; i < 7; i++)
+                        {
+                            tileHeld.setRotation(i);
+                            projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
+                            projection.projectedLevel = game.getProjectedHexLevel(projection);
 
+                            if(game.isValidTilePlacement(projection))
+                            {
+                                tileHeld.serverPoint = projection.volcano;
+                                game.setTile(tileHeld, projection);
+                            }
+                        }
+                    }
                 }
-                break;
+                return true;
 
             case LAKE:
-                if(mySet.lakes.size() >= 1)
+                if(mySet.settlement.jungles.size() > 1)
                 {
+                    for(Point point : mySet.settlement.occupantPositions.values())
+                    {
+                        for(int i = 1; i < 7; i++)
+                        {
+                            tileHeld.setRotation(i);
+                            projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
+                            projection.projectedLevel = game.getProjectedHexLevel(projection);
 
+                            if(game.isValidTilePlacement(projection))
+                            {
+                                tileHeld.serverPoint = projection.volcano;
+                                game.setTile(tileHeld, projection);
+                            }
+                        }
+                    }
                 }
-
-                break;
+                return true;
 
             case GRASSLANDS:
-                if(mySet.grasslands.size() >= 1)
+                if(mySet.settlement.jungles.size() > 1)
                 {
+                    for(Point point : mySet.settlement.occupantPositions.values())
+                    {
+                        for(int i = 1; i < 7; i++)
+                        {
+                            tileHeld.setRotation(i);
+                            projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
+                            projection.projectedLevel = game.getProjectedHexLevel(projection);
 
+                            if(game.isValidTilePlacement(projection))
+                            {
+                                tileHeld.serverPoint = projection.volcano;
+                                game.setTile(tileHeld, projection);
+                            }
+                        }
+                    }
                 }
-                break;
+                return true;
 
             case ROCKY:
-                if(mySet.rocky.size() >= 1)
+                if(mySet.settlement.jungles.size() > 1)
                 {
+                    for(Point point : mySet.settlement.occupantPositions.values())
+                    {
+                        for(int i = 1; i < 7; i++)
+                        {
+                            tileHeld.setRotation(i);
+                            projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
+                            projection.projectedLevel = game.getProjectedHexLevel(projection);
 
+                            if(game.isValidTilePlacement(projection))
+                            {
+                                tileHeld.serverPoint = projection.volcano;
+                                game.setTile(tileHeld, projection);
+                            }
+                        }
+                    }
                 }
-                break;
+                return true;
         }
+
         return false;
     }
 
