@@ -27,11 +27,14 @@ enum TokenType
     TOKEN_WITHIN,
     TOKEN_LOST,
     TOKEN_FORFEITED,
-    TOKEN_OVER
+    TOKEN_OVER,
+    TOKEN_FOUNDED,
+    TOKEN_EXPANDED
 }
 
 public class Token {
     public Object Data;
     public TokenType Type;
     public String Value;
+    public PlayerAction Action;
 }
