@@ -29,7 +29,7 @@ public class TigerIsland {
         GameThread g1 = null;
         GameThread g2 = null;
 
-        try {
+        try{
             TournamentAndAuthenticationProtocol(args);
 
             while(true) {
@@ -50,6 +50,7 @@ public class TigerIsland {
                         System.out.println("starting game1");
                         g1.currentMessage = message;
                         game1.interrupt();
+
                     } else { //we go second
                         message = client.getNextMessageFromServer();
                         g2 = new GameThread(message.GetGameId(), false, client);
@@ -98,22 +99,20 @@ public class TigerIsland {
                                 game2.join();
                             }
                         }
-                        //unrecognized gid
-                        else {
+                        else {//unrecognized gid
                             System.err.printf("unrecognized game id:" + message.GetGameId());
                         }
                     }
-                    ////**********Move Protocol End**********
 
+                    ////**********Move Protocol End**********
                     message = client.getNextMessageFromServer();
                     if (message.HasProtocolEnded()){
                         break;
                     }
                 }
             }
-
-
-        } catch (IOException | NullPointerException | InterruptedException e) {
+        }
+        catch (IOException | NullPointerException | InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -129,6 +128,7 @@ public class TigerIsland {
         Server: GAME <gid> OVER PLAYER <pid> <score> PLAYER <pid> <score>
         Server: GAME <gid> OVER PLAYER <pid> <score> PLAYER <pid> <score>
      */
+
     private static void matchProtocolEnd() throws IOException {
 
     }

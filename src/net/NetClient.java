@@ -50,12 +50,11 @@ public class NetClient {
         msg = new NetServerMsg();
     }
 
-    public void Start() throws IOException
-    {
+    public void Start() throws IOException {
         reader = new Scanner(socket.getInputStream());
     }
-    public void Listen() throws IOException
-    {
+
+    public void Listen() throws IOException {
         reader = new Scanner(socket.getInputStream());
 
         String message = "";
@@ -66,11 +65,10 @@ public class NetClient {
             }
         }
     }
-    public NetServerMsg getNextMessageFromServer() throws IOException
-    {
-        String message = "";
-        if ((message = reader.nextLine()) != null)
-        {
+
+    public NetServerMsg getNextMessageFromServer() throws IOException {
+        String message ;
+        if ((message = reader.nextLine()) != null) {
             if(!message.isEmpty()) {
                 HandleMessage(message);
                 return msg;
@@ -78,8 +76,8 @@ public class NetClient {
         }
         return null;
     }
-    public void Send(String message) throws IOException
-    {
+
+    public void Send(String message) throws IOException {
         output = new PrintStream(socket.getOutputStream(), true);
         output.println(message);
     }
@@ -88,12 +86,13 @@ public class NetClient {
     {
         return socket.isConnected();
     }
-    private void HandleMessage(String message)
-    {
+
+    private void HandleMessage(String message) {
         msg.ParseLine(message);
 
         System.out.println(message);
     }
+
     public NetServerMsg GetCurrentMessage()
     {
         return msg;

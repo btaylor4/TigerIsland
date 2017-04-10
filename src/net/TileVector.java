@@ -1,6 +1,5 @@
 package net;
 
-
 import main.enums.TerrainType;
 
 public class TileVector {
