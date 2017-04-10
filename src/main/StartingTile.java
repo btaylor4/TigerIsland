@@ -39,8 +39,8 @@ public class StartingTile{
     public void assignTerrain(){
         hexUpLeft.terrain = TerrainType.JUNGLE ;
         hexUpRight.terrain = TerrainType.LAKE ;
-        hexDownLeft.terrain = TerrainType.ROCKY ;
-        hexDownRight.terrain = TerrainType.GRASSLANDS ;
+        hexDownLeft.terrain = TerrainType.ROCK;
+        hexDownRight.terrain = TerrainType.GRASS;
     }
 
     public void setHexLevels(int level){

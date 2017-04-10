@@ -7,9 +7,7 @@ import main.enums.TerrainType;
 import main.players.AIUtils.SettlementData;
 import main.utils.SettlePointPair;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
 import static main.utils.constants.*;
 import static main.utils.constants.columnOneAway;
@@ -36,7 +34,7 @@ public class BryanAI extends Player {
         foundableSpots = new HashMap<>();
         buildDecision = BuildOptions.NONE;
         buildPoint = null;
-        expansionAction = TerrainType.GRASSLANDS;
+        expansionAction = TerrainType.GRASS;
         setData = new HashMap<>();
 
     }
@@ -220,8 +218,8 @@ public class BryanAI extends Player {
                 {
                     buildDecision = BuildOptions.EXPAND;
                     buildPoint = mySets.point;
-                    expansionAction = TerrainType.GRASSLANDS;
-                    mySets.settlement.expand(TerrainType.GRASSLANDS);
+                    expansionAction = TerrainType.GRASS;
+                    mySets.settlement.expand(TerrainType.GRASS);
                     game.expandSettlement(buildPoint, expansionAction);
                     mySets.settlement.mergeSettlements();
                     return;
@@ -277,8 +275,8 @@ public class BryanAI extends Player {
                 {
                     buildDecision = BuildOptions.EXPAND;
                     buildPoint = mySets.point;
-                    expansionAction = TerrainType.ROCKY;
-                    mySets.settlement.expand(TerrainType.ROCKY);
+                    expansionAction = TerrainType.ROCK;
+                    mySets.settlement.expand(TerrainType.ROCK);
                     game.expandSettlement(buildPoint, expansionAction);
                     mySets.settlement.mergeSettlements();
                     return;
@@ -375,9 +373,9 @@ public class BryanAI extends Player {
             if (tileHeld.hexA.terrain == tileHeld.hexB.terrain)//check if terrains are equal
             {
                 switch (tileHeld.hexA.terrain) {
-                    case ROCKY:
+                    case ROCK:
 
-                    case GRASSLANDS:
+                    case GRASS:
                         //set orientation to 2
                         selectedPoint = new Point(108, 103);
                         tileHeld.setRotation(2);
@@ -407,9 +405,9 @@ public class BryanAI extends Player {
             {
                 switch (tileHeld.hexA.terrain)
                 {
-                    case ROCKY:
+                    case ROCK:
 
-                    case GRASSLANDS:
+                    case GRASS:
                         selectedPoint = new Point(108, 103);
                         tileHeld.setRotation(2);
                         projection = projectTilePlacement(tileHeld, selectedPoint);
@@ -607,7 +605,7 @@ public class BryanAI extends Player {
                 }
                 return false;
 
-            case GRASSLANDS:
+            case GRASS:
                 if(mySet.settlement.jungles.size() > 1)
                 {
                     for(Point point : mySet.settlement.occupantPositions.values())
@@ -629,7 +627,7 @@ public class BryanAI extends Player {
                 }
                 return false;
 
-            case ROCKY:
+            case ROCK:
                 if(mySet.settlement.jungles.size() > 1)
                 {
                     for(Point point : mySet.settlement.occupantPositions.values())

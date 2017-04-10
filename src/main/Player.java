@@ -61,10 +61,10 @@ public class Player {
 
         switch (terrains.charAt(0)){
             case 'g':
-                hexAterrain = TerrainType.GRASSLANDS;
+                hexAterrain = TerrainType.GRASS;
                 break;
             case 'r':
-                hexAterrain = TerrainType.ROCKY ;
+                hexAterrain = TerrainType.ROCK;
                 break;
             case 'l':
             case 'w':
@@ -83,10 +83,10 @@ public class Player {
 
         switch (terrains.charAt(0)){
             case 'g':
-                hexBterrain = TerrainType.GRASSLANDS;
+                hexBterrain = TerrainType.GRASS;
                 break;
             case 'r':
-                hexBterrain = TerrainType.ROCKY ;
+                hexBterrain = TerrainType.ROCK;
                 break;
             case 'l':
             case 'w':

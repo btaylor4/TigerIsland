@@ -179,7 +179,7 @@ public class TestPlayer
         game.setFirstTile();
         Point point = new Point(104, 105);
         Tile tile = new Tile();
-        tile.assignTerrain(TerrainType.GRASSLANDS, TerrainType.GRASSLANDS);
+        tile.assignTerrain(TerrainType.GRASS, TerrainType.GRASS);
 
         game.board[104][105].level = 2;
         player1.placeMeeple(point, new Settlement(game));

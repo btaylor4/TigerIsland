@@ -39,7 +39,7 @@ public class TestSettlement {
 
         // third tile
         tile = new Tile();
-        tile.assignTerrain(TerrainType.GRASSLANDS, TerrainType.ROCKY);
+        tile.assignTerrain(TerrainType.GRASS, TerrainType.ROCK);
         tile.rotation = 5 ;
         tile.setHexLevels(1);
         game.setTile(tile, p1.projectTilePlacement(tile, new Point(107, 104)));
@@ -53,21 +53,21 @@ public class TestSettlement {
 
         // 5th tile
         tile = new Tile();
-        tile.assignTerrain(TerrainType.JUNGLE, TerrainType.ROCKY);
+        tile.assignTerrain(TerrainType.JUNGLE, TerrainType.ROCK);
         tile.rotation = 5 ;
         tile.setHexLevels(1);
         game.setTile(tile, p1.projectTilePlacement(tile, new Point(106, 107)));
 
         // 6th guy
         tile = new Tile();
-        tile.assignTerrain(TerrainType.ROCKY, TerrainType.GRASSLANDS);
+        tile.assignTerrain(TerrainType.ROCK, TerrainType.GRASS);
         tile.rotation = 5 ;
         tile.setHexLevels(1);
         game.setTile(tile, p1.projectTilePlacement(tile, new Point(104, 108)));
 
         /* nuke with this
         tile = new Tile();
-        tile.assignTerrain(TerrainType.ROCKY, TerrainType.ROCKY);
+        tile.assignTerrain(TerrainType.ROCK, TerrainType.ROCK);
         tile.rotation = 5 ;
         tile.setHexLevels(2);
         game.setTile(tile, p1.projectTilePlacement(tile, new Point(103, 108)));
@@ -138,7 +138,7 @@ public class TestSettlement {
     public void hash_terrain_grass(){
         ts = new Settlement(game);
         Point point = new Point(106,105);
-        ts.hashAdjacentTerrain(TerrainType.GRASSLANDS, point);
+        ts.hashAdjacentTerrain(TerrainType.GRASS, point);
 
         assertTrue(ts.grasslands.size() == 1);
     }
@@ -147,7 +147,7 @@ public class TestSettlement {
     public void hash_terrain_rocky(){
         ts = new Settlement(game);
         Point point = new Point(106,106);
-        ts.hashAdjacentTerrain(TerrainType.ROCKY, point);
+        ts.hashAdjacentTerrain(TerrainType.ROCK, point);
 
         assertTrue(ts.rocky.size() == 2);
     }
@@ -174,7 +174,7 @@ public class TestSettlement {
     public void hash_terrain_grass_typeOverlook(){
         ts = new Settlement(game);
         Point point = new Point(107,104);
-        ts.hashAdjacentTerrain(TerrainType.GRASSLANDS, point);
+        ts.hashAdjacentTerrain(TerrainType.GRASS, point);
 
         assertTrue(ts.grasslands.size() == 1);
     }
@@ -183,7 +183,7 @@ public class TestSettlement {
     public void hash_terrain_rocky_typeOverlook(){
         ts = new Settlement(game);
         Point point = new Point(107,104);
-        ts.hashAdjacentTerrain(TerrainType.ROCKY, point);
+        ts.hashAdjacentTerrain(TerrainType.ROCK, point);
 
         assertTrue(ts.rocky.size() == 1);
     }

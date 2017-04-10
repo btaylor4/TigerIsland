@@ -99,7 +99,7 @@ public class Settlement {
                 jungles.put(hashKey, point);
                 break;
 
-            case GRASSLANDS:
+            case GRASS:
                 grasslands.put(hashKey, point);
                 break;
 
@@ -107,7 +107,7 @@ public class Settlement {
                 volcanoes.put(hashKey, point);
                 break;
 
-            case ROCKY:
+            case ROCK:
                 rocky.put(hashKey, point);
                 break;
 
@@ -126,13 +126,13 @@ public class Settlement {
             case JUNGLE:
                 return jungles.containsKey(key);
 
-            case GRASSLANDS:
+            case GRASS:
                 return grasslands.containsKey(key);
 
             case VOLCANO:
                 return volcanoes.containsKey(key);
 
-            case ROCKY:
+            case ROCK:
                 return rocky.containsKey(key);
 
             case LAKE:
@@ -181,11 +181,11 @@ public class Settlement {
 
     public void expand(TerrainType terrain){
         switch(terrain){
-            case GRASSLANDS:
+            case GRASS:
                 expandThroughTerrain(grasslands);
                 break;
 
-            case ROCKY:
+            case ROCK:
                 expandThroughTerrain(rocky);
                 break;
 

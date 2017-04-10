@@ -146,10 +146,10 @@ public class HumanPlayer extends Player {
 
         switch (terrains.charAt(0)){
             case 'g':
-                return TerrainType.GRASSLANDS;
+                return TerrainType.GRASS;
 
             case 'r':
-                return  TerrainType.ROCKY;
+                return  TerrainType.ROCK;
 
             case 'l':
             case 'w':
