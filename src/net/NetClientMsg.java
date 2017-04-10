@@ -45,6 +45,13 @@ public class NetClientMsg {
         return String.format("%1$s %2$s %3$s %4$d %5$d %6$d", action, target, "AT",
                 cubePoint.x, cubePoint.y, cubePoint.z);
     }
+    public String FormatBuildAction(String action, String target, Point point)
+    {
+        XYZ cubePoint = new XYZ(point);
+
+        return String.format("%1$s %2$s %3$s %4$d %5$d %6$d", action, target, "AT",
+                cubePoint.x, cubePoint.y, cubePoint.z);
+    }
     public String FormatBuildAction(ClientBuild cb)
     {
         XYZ cubePoint = new XYZ(cb.Point);
@@ -56,6 +63,13 @@ public class NetClientMsg {
     {
         return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$s", action, target, "AT",
                 tileVector.GetX(), tileVector.GetY(), tileVector.GetZ(),  tileVector.GetTerrain() );
+    }
+    public String FormatBuildActionWithTerrain(Point point, TerrainType type)
+    {
+        XYZ cubePoint = new XYZ(point);
+
+        return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$s", "EXPAND", "SETTLEMENT", "AT",
+                cubePoint.x, cubePoint.y, cubePoint.z,  type.toString() );
     }
     public String FormatBuildActionWithTerrain(Tile tile, TerrainType type)
     {
@@ -72,6 +86,7 @@ public class NetClientMsg {
         return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$s", action, target, "AT",
                 cubePoint.x, cubePoint.y, cubePoint.z,  type.toString() );
     }
+
 
     public String FormatPlaceAction(String tile, TileVector tileVector)
     {
