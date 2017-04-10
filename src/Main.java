@@ -19,7 +19,7 @@ public class Main {
     public static void main(String args[]) {
         NetClientMsg msg = new NetClientMsg();
 
-//
+/*
         client me = null;
 
         Tile tile = new Tile();
@@ -45,7 +45,7 @@ public class Main {
 
         System.out.println(gameMove);
 
-//
+*/
 
 
         //XYZ
@@ -73,11 +73,25 @@ public class Main {
         // ROCKY -> ROCK
 */
         try {
+            message.ParseLine("GAME B MOVE 3 PLAYER Player2 PLACED GRASS+ROCK AT 1 3 2 -4 EXPANDED SETTLEMENT AT 9 2 4 GRASS");
+
+            PlayerAction action = message.GetAction();
+
+            message.ParseLine("GAME B MOVE 3 PLAYER Player2 PLACED GRASS+ROCK AT 1 3 2 -4 FOUNDED SETTLEMENT AT 9 2 4");
+            action = message.GetAction();
+
+            message.ParseLine("GAME B MOVE 3 PLAYER Player2 PLACED GRASS+WATER AT 1 3 2 765 BUILT TIGER PLAYGROUND AT -9 2 4");
+            action = message.GetAction();
+
+
+
 
             //**********Authentication Protocol**********
             client = new NetClient(); //IP , port
             client.Start();
+
             message = client.getNextMessageFromServer();  //receive welcome message
+
 
             ArrayList<TerrainType> terrainTypes = message.GetTileTerrains();
 

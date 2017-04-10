@@ -20,6 +20,8 @@ public class NetServerMsg {
         {
             t = scanner.Scan();
             tokens.add(t);
+
+            System.out.println(t.Value);
         }
     }
     public String GetPlayerId()
@@ -170,6 +172,14 @@ public class NetServerMsg {
         else
             return null;
     }
+    public PlayerAction GetAction()
+    {
+        Token token = GetFunctionToken();
+        if(token != null)
+            return token.Action;
+        else
+            return null;
+    }
     private Token GetTokenByType(TokenType type)
     {
         for ( Token token : tokens)
@@ -181,7 +191,17 @@ public class NetServerMsg {
         }
         return null;
     }
-
+    private Token GetFunctionToken()
+    {
+        for ( Token token : tokens)
+        {
+            if(token.Action != PlayerAction.NONE)
+            {
+                return token;
+            }
+        }
+        return null;
+    }
     private Token GetTokenByTypeAndIndex(TokenType type, int index)
     {
         int i = 1;
@@ -194,4 +214,5 @@ public class NetServerMsg {
         }
         return null;
     }
+
 }
