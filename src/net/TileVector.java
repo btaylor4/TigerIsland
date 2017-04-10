@@ -1,6 +1,8 @@
 package net;
 
 
+import main.enums.TerrainType;
+
 public class TileVector {
     private int x;
     private int y;
@@ -49,5 +51,7 @@ public class TileVector {
     public int GetOrientation() {return orientation;}
     public void SetOrientation(int Orientation)  { orientation = Orientation;}
     public String GetTerrain(){ return terrain;}
+    public TerrainType GetTerrainType(){ return TerrainType.valueOf(terrain);}
+
     public void SetTerrain(String Terrain)  { terrain = Terrain;}
 }

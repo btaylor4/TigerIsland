@@ -77,7 +77,7 @@ public class NetClient {
     }
     public void Send(String message) throws IOException
     {
-        output =  new PrintStream(socket.getOutputStream(), true);
+        output = new PrintStream(socket.getOutputStream(), true);
         output.println(message);
     }
 

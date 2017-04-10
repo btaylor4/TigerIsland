@@ -40,7 +40,7 @@ public class TigerIsland {
 
                     matchProtocolBegin();
 
-                    //**********Move Protocol**********
+                    //**********Move Protocol Begin**********
                     message = client.getNextMessageFromServer();
 
                     if (message.GetPlayerId() == null) { //we go first
@@ -84,6 +84,7 @@ public class TigerIsland {
                             System.err.printf("unrecognized game id:" + message.GetGameId());
                         }
                     }
+                    ////**********Move Protocol End**********
 
                     matchProtocolEnd();
 

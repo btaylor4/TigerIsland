@@ -1,6 +1,7 @@
 package net;
 import java.util.*;
 import java.util.function.IntConsumer;
+
 enum ValueType
 {
     Int,
@@ -11,7 +12,10 @@ enum ValueType
     Float,
     Message,
     Result,
-    Function
+    Function,
+    Action,
+    End,
+    Wait
 }
 
 public class NetScanner {
@@ -21,84 +25,93 @@ public class NetScanner {
     public String Buffer;
 
     private java.util.Scanner sc;
+    private ArrayList<String> actions;
 
-    public NetScanner()
-    {
-        String[] integers = new String[] { "ROUND", "OF", "PLAY", "MOVE"};
-        for(String intVal:  integers) {
+    public NetScanner() {
+        String[] integers = new String[]{"ROUND", "OF", "PLAY", "MOVE"};
+        for (String intVal : integers) {
             hm.put(intVal, ValueType.Int);
         }
 
-        String[] tiles = new String[] { "PLACE", "PLACED" };
-        for(String tileTok:  tiles) {
+        String[] tiles = new String[]{"PLACE", "PLACED"};
+        for (String tileTok : tiles) {
             hm.put(tileTok, ValueType.Tile);
         }
-        String[] hexVectors = new String[] { "AT" };
-        for(String vecTok:  hexVectors) {
+        String[] hexVectors = new String[]{"AT"};
+        for (String vecTok : hexVectors) {
             hm.put(vecTok, ValueType.Vector);
         }
-        String[] funcVectors = new String[] { "BEGIN"};
-        for(String vecTok:  funcVectors) {
+        String[] funcVectors = new String[]{"BEGIN"};
+        for (String vecTok : funcVectors) {
             hm.put(vecTok, ValueType.Function);
         }
-        String[] stringVectors = new String[] { "GAME", "PLAYER", "CHALLENGE" };
-        for(String vecTok:  stringVectors) {
+        String[] stringVectors = new String[]{"GAME", "PLAYER", "CHALLENGE"};
+        for (String vecTok : stringVectors) {
             hm.put(vecTok, ValueType.String);
         }
-        String[] stringNVectors = new String[] { "BUILT"};
-        for(String vecTok:  stringNVectors) {
+        String[] stringNVectors = new String[]{"BUILT"};
+        for (String vecTok : stringNVectors) {
             hm.put(vecTok, ValueType.StringN);
         }
-        String[] floatVectors = new String[] { "WITHIN"};
-        for(String vecTok:  floatVectors) {
+        String[] floatVectors = new String[]{"WITHIN"};
+        for (String vecTok : floatVectors) {
             hm.put(vecTok, ValueType.Float);
         }
-        String[] msgVectors = new String[] { "FORFEITED", "LOST"};
-        for(String vecTok:  msgVectors) {
+        String[] msgVectors = new String[]{"FORFEITED", "LOST"};
+        for (String vecTok : msgVectors) {
             hm.put(vecTok, ValueType.Message);
         }
-        String[] endVectors = new String[] { "OVER"};
-        for(String vecTok:  endVectors) {
+        String[] resultVectors = new String[]{"OVER"};
+        for (String vecTok : resultVectors) {
             hm.put(vecTok, ValueType.Result);
         }
+        String[] actionTokens = new String[]{"BUILT", "FOUNDED", "EXPANDED"};
+        for (String vecTok : actionTokens) {
+            hm.put(vecTok, ValueType.Action);
+        }
+        String[] endVectors = new String[]{"END"};
+        for (String vecTok : endVectors) {
+            hm.put(vecTok, ValueType.End);
+        }
+        String[] waitVectors = new String[]{"WAIT"};
+        for (String vecTok : waitVectors) {
+            hm.put(vecTok, ValueType.Wait);
+        }
+        //ArrayList<String> actions = new ArrayList<String>(
+        //      Arrays.asList( "BUILT", "FOUNDED", "EXPANDED", "BUILT"));
+
     }
 
-    public void SetBuffer(String buffer)
-    {
+    public void SetBuffer(String buffer) {
         Buffer = buffer.toUpperCase();
         sc = new java.util.Scanner(Buffer);
     }
 
-    public boolean hasNext()
-    {
+    public boolean hasNext() {
         return (sc.hasNext());
     }
 
-    public String next1()
-    {
+    public String next1() {
         String current = next;
         next = (sc.hasNext() ? sc.next() : null);
         return current;
     }
 
-    public String peek()
-    {
+    public String peek() {
         return next;
     }
 
-    private String CheckString(String input)
-    {
+    private String CheckString(String input) {
         input = input.replace(":", "");
         return input;
     }
-    private void ScanByType( String tokenString, Token token)
-    {
-        if(hm.containsKey(tokenString))
-        {
+
+    private void ScanByType(String tokenString, Token token) {
+        if (hm.containsKey(tokenString)) {
             String tokenTypeStr = "TOKEN_" + tokenString;
             token.Type = TokenType.valueOf(tokenTypeStr);
-            switch (hm.get(tokenString))
-            {
+            token.Action = PlayerAction.NONE;
+            switch (hm.get(tokenString)) {
                 case Int:
                     ScanInt(sc, token);
                     break;
@@ -114,9 +127,9 @@ public class NetScanner {
                 case String:
                     ScanString(sc, token);
                     break;
-                case StringN:
-                    ScanStringN(sc, token);
-                    break;
+                //case StringN:
+                  //  ScanStringN(sc, token);
+                    //break;
                 case Message:
                     ScanMessage(sc, token);
                     break;
@@ -126,28 +139,93 @@ public class NetScanner {
                 case Function:
                     ScanFunction(sc, token);
                     break;
+                case Action:
+                    token.Action = PlayerAction.valueOf(tokenString);
+                    ScanAction(sc, token);
+                    break;
+                case End:
+                    ScanEnd(sc, token, "OF");
+                    break;
+                case Wait:
+                    ScanWait(sc, token, "FOR");
+                    break;
 
             }
-        }
-        else
-        {
+        } else {
             token.Type = TokenType.TOKEN_EOS;
         }
     }
+
     // need to make a special case for game over with Player pid
-    public Token Scan()
-    {
+    public Token Scan() {
         String tokenString = CheckString(sc.next());
         Token token = new Token();
-        if(tokenString.isEmpty())
-        {
+        if (tokenString.isEmpty()) {
             token.Type = TokenType.TOKEN_EOS;
         }
         token.Value = tokenString;
         ScanByType(tokenString, token);
         return token;
     }
+    private void ScanEnd(java.util.Scanner sc, Token token, String validator)
+    {
+        token.Data = false;
+        if(sc.hasNext())
+        {
+            String next = sc.next();
+            if(next.equalsIgnoreCase(validator))
+            {
+                token.Data = true;
+            }
+        }
+    }
+    private void ScanWait(java.util.Scanner sc, Token token, String validator)
+    {
+        token.Data = false;
+        if(sc.hasNext())
+        {
+            String next = sc.next();
+            if(next.equalsIgnoreCase(validator))
+            {
+                token.Data = true;
+            }
+        }
+    }
+    private static String ActionTerminator = "AT";
+    private void ScanAction(java.util.Scanner sc, Token token)
+    {
+        if(!sc.hasNext())
+            return;
 
+        switch (token.Action)
+        {
+            case BUILT:
+                ScanStringN(sc, token, 2);
+                break;
+            case EXPANDED:
+            case FOUNDED:
+                ScanStringN(sc, token, 1);
+                break;
+        }
+        /*
+        int i = 0;
+        String tokenStr = sc.next();
+        String finalStr = tokenStr;
+
+        while(sc.hasNext() )
+        {
+            tokenStr = sc.next();
+            if(!tokenStr.equalsIgnoreCase(ActionTerminator)) {
+                finalStr += " " + tokenStr;
+            }
+            else
+            {
+                break;
+            }
+        }
+        token.Data = finalStr;
+        */
+    }
     private void ScanFunction(java.util.Scanner sc, Token token)
     {
         if(sc.hasNext()) {
@@ -172,15 +250,15 @@ public class NetScanner {
         }
     }
     public static int NStringTerminator = 2;
-    private void ScanStringN(java.util.Scanner sc, Token token)
+    private void ScanStringN(java.util.Scanner sc, Token token, int terminator)
     {
         int i =0;
         String tokenStr = "";
-        while ( i < NStringTerminator)
+        while ( i < terminator)
         {
             tokenStr += sc.next();
             i++;
-            if(i != NStringTerminator)
+            if(i != terminator)
                 tokenStr += " ";
         }
         token.Data = tokenStr;
