@@ -14,9 +14,9 @@ public class GameBoard {
 
     public int upperLimit, lowerLimit, leftLimit, rightLimit ;
 
-    public static Hexagon[][] board;
+    public Hexagon[][] board;
     public HashMap<Integer, Point> playableHexes;
-    public static Tile tileStack[] = new Tile[NUM_TILES];
+    public Tile tileStack[] = new Tile[NUM_TILES];
 
     private int tilePlayIndex;
 
@@ -484,11 +484,11 @@ public class GameBoard {
 
 
     // write better tests, these should not be here
-    public static Tile[] getTileStack() {
+    public Tile[] getTileStack() {
         return tileStack;
     }
 
-    public static Hexagon[][] getBoard() {
+    public Hexagon[][] getBoard() {
         return board;
     }
 }

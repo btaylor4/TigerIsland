@@ -183,7 +183,7 @@ public class GameThread implements Runnable{
                 break;
             case EXPANDED:
                 A = opponentPlacement.GetTerrainType();
-                GameBoard.board[twoDimensionalPoint.row][twoDimensionalPoint.column].settlementPointer.expand(A);
+                game.board[twoDimensionalPoint.row][twoDimensionalPoint.column].settlementPointer.expand(A);
                 break;
             case FOUNDED:
                 buildOption = BuildOptions.FOUND_SETTLEMENT;
@@ -197,8 +197,8 @@ public class GameThread implements Runnable{
                 buildOption = opponentsMove.GetSettlement();
                 Settlement addTotoroOrTigerToMe = null;
                 for (int j=0; j<SIDES_IN_HEX; j++){
-                    if (GameBoard.board[twoDimensionalPoint.row+ROW_ADDS[j]][twoDimensionalPoint.column+COLUMN_ADDS[j]].settlementPointer.owner == Opponent){
-                        addTotoroOrTigerToMe = GameBoard.board[twoDimensionalPoint.row+ROW_ADDS[j]][twoDimensionalPoint.column+COLUMN_ADDS[j]].settlementPointer;
+                    if (game.board[twoDimensionalPoint.row+ROW_ADDS[j]][twoDimensionalPoint.column+COLUMN_ADDS[j]].settlementPointer.owner == Opponent){
+                        addTotoroOrTigerToMe = game.board[twoDimensionalPoint.row+ROW_ADDS[j]][twoDimensionalPoint.column+COLUMN_ADDS[j]].settlementPointer;
                     }
                 }
 
