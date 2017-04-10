@@ -160,8 +160,8 @@ public class Player {
     }
 
     public void drawTile() {
-        // tileHeld = game.releaseTopTile() ;
-        getTileFromConsole();
+        tileHeld = game.releaseTopTile() ;
+        //getTileFromConsole();
     }
 
     protected void determineTilePlacement(){
