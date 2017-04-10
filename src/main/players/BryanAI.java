@@ -99,6 +99,7 @@ public class BryanAI extends Player {
                     firstBuild = true;
                     buildDecision = BuildOptions.FOUND_SETTLEMENT;
                     buildPoint = point;
+                    return;
                 }
             }
 
@@ -195,7 +196,7 @@ public class BryanAI extends Player {
 
         for (SettlePointPair mySets : playerSettlements.values())
         {
-            if (mySets.settlement.size + mySets.settlement.grasslands.size() >= 1 && meeples > mySets.settlement.grasslands.size())
+            if (mySets.settlement.size + mySets.settlement.grasslands.size() > 1 && meeples > mySets.settlement.grasslands.size())
             {
                 if(mySets.settlement.grasslands.size() > 0)
                 {
@@ -208,7 +209,7 @@ public class BryanAI extends Player {
                 }
             }
 
-            else if (mySets.settlement.size + mySets.settlement.lakes.size() >= 1 && meeples > mySets.settlement.lakes.size())
+            else if (mySets.settlement.size + mySets.settlement.lakes.size() > 1 && meeples > mySets.settlement.lakes.size())
             {
                 if(mySets.settlement.lakes.size() > 0)
                 {
@@ -221,7 +222,7 @@ public class BryanAI extends Player {
                 }
             }
 
-            else if (mySets.settlement.size + mySets.settlement.jungles.size() >= 1 && meeples > mySets.settlement.jungles.size())
+            else if (mySets.settlement.size + mySets.settlement.jungles.size() > 1 && meeples > mySets.settlement.jungles.size())
             {
                 if(mySets.settlement.jungles.size() > 0)
                 {
@@ -234,7 +235,7 @@ public class BryanAI extends Player {
                 }
             }
 
-            else if (mySets.settlement.size + mySets.settlement.rocky.size() >= 1 && meeples > mySets.settlement.rocky.size())
+            else if (mySets.settlement.size + mySets.settlement.rocky.size() > 1 && meeples > mySets.settlement.rocky.size())
             {
                 if(mySets.settlement.rocky.size() > 0)
                 {
@@ -272,6 +273,7 @@ public class BryanAI extends Player {
                         new SettlePointPair(freshSettlement, firstPoint));
                 buildDecision = BuildOptions.FOUND_SETTLEMENT;
                 buildPoint = firstPoint;
+                return;
             }
         }
 
@@ -281,17 +283,17 @@ public class BryanAI extends Player {
             {
                 if(game.isValidSettlementPosition(point))
                 {
-                    Point firstPoint = placeMeepleOneAway(settlementChoice);
                     Settlement freshSettlement = new Settlement(game);
                     freshSettlement.owner = this ;
                     freshSettlement.ownerNumber = designator ;
-                    freshSettlement.beginNewSettlement(firstPoint);
-                    game.setSettlement(firstPoint, freshSettlement);
-                    placeMeeple(firstPoint, freshSettlement);
-                    playerSettlements.put(coordinatesToKey(firstPoint.row, firstPoint.column),
-                            new SettlePointPair(freshSettlement, firstPoint));
+                    freshSettlement.beginNewSettlement(point);
+                    game.setSettlement(point, freshSettlement);
+                    placeMeeple(point, freshSettlement);
+                    playerSettlements.put(coordinatesToKey(point.row, point.column),
+                            new SettlePointPair(freshSettlement, point));
                     buildDecision = BuildOptions.FOUND_SETTLEMENT;
-                    buildPoint = firstPoint;
+                    buildPoint = point;
+                    return;
                 }
             }
         }
@@ -348,6 +350,7 @@ public class BryanAI extends Player {
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
                             game.setTile(tileHeld, projection);
                             tileHeld.serverPoint = projection.volcano;
+                            firstPlay = true;
                             return tileHeld;
 
                         case LAKE:
@@ -360,6 +363,7 @@ public class BryanAI extends Player {
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
                             game.setTile(tileHeld, projection);
                             tileHeld.serverPoint = projection.volcano;
+                            firstPlay = true;
                             return tileHeld;
                     }
                 }
@@ -377,6 +381,7 @@ public class BryanAI extends Player {
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
                             game.setTile(tileHeld, projection);
                             tileHeld.serverPoint = projection.volcano;
+                            firstPlay = true;
                             return tileHeld;
 
                         case LAKE:
@@ -389,6 +394,7 @@ public class BryanAI extends Player {
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
                             game.setTile(tileHeld, projection);
                             tileHeld.serverPoint = projection.volcano;
+                            firstPlay = true;
                             return tileHeld;
                     }
                 }
@@ -412,6 +418,7 @@ public class BryanAI extends Player {
                             {
                                 game.setTile(tileHeld, projection);
                                 tileHeld.serverPoint = projection.volcano;
+                                firstPlay = true;
                                 return tileHeld;
                             }
                         }
