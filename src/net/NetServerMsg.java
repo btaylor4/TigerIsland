@@ -2,6 +2,9 @@ package net;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import gherkin.lexer.Ar;
+import main.enums.TerrainType;
+
 public class NetServerMsg {
 
     NetScanner scanner;
@@ -65,6 +68,10 @@ public class NetServerMsg {
     }
     public ArrayList<String> GetTile()
     {
+        return GetTileStrings();
+    }
+    public ArrayList<String> GetTileStrings()
+    {
         Token token = GetTokenByType(TokenType.TOKEN_PLACED);
         if(token != null)
             return (ArrayList<String>)token.Data;
@@ -72,6 +79,32 @@ public class NetServerMsg {
             token = GetTokenByType(TokenType.TOKEN_PLACE);
             if(token != null)
                 return (ArrayList<String>)token.Data;
+            return null;
+        }
+    }
+    public ArrayList<TerrainType> GetTileTerrains()
+    {
+        Token token = GetTokenByType(TokenType.TOKEN_PLACED);
+        if(token != null && ((ArrayList<String>) token.Data) != null) {
+            ArrayList<String> terrainList = (ArrayList<String>) token.Data;
+            ArrayList<TerrainType> terrains = new ArrayList<TerrainType>();
+            for (String terrain : terrainList) {
+                TerrainType terrainType = TerrainType.valueOf(terrain);
+                terrains.add(terrainType);
+            }
+            return terrains;
+        }
+        else {
+            token = GetTokenByType(TokenType.TOKEN_PLACE);
+            if(token != null && ((ArrayList<String>) token.Data) != null) {
+                ArrayList<String> terrainList = (ArrayList<String>) token.Data;
+                ArrayList<TerrainType> terrains = new ArrayList<TerrainType>();
+                for (String terrain : terrainList) {
+                    TerrainType terrainType = TerrainType.valueOf(terrain);
+                    terrains.add(terrainType);
+                }
+                return terrains;
+            }
             return null;
         }
     }

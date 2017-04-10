@@ -13,6 +13,7 @@ public class Tile {
     public Hexagon volcano ;
     public Hexagon hexA ;
     public Hexagon hexB ;
+    public Point serverPoint;
 
     public Tile(){
         rotation = 1;
@@ -22,6 +23,7 @@ public class Tile {
 
         hexA = new Hexagon();
         hexB = new Hexagon();
+        serverPoint = null;
     }
 
     public void assignTerrain(TerrainType terrainA, TerrainType terrainB){
@@ -64,4 +66,8 @@ public class Tile {
         this.rotation = rotation ;
     }
 
+    public void setServerPoint(Point point)
+    {
+        serverPoint = point;
+    }
 }

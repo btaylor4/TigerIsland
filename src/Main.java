@@ -1,3 +1,7 @@
+import main.Point;
+import main.enums.TerrainType;
+import main.Tile;
+
 import net.* ;
 
 import java.util.ArrayList;
@@ -5,35 +9,149 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.io.*;
 import java.net.*;
+import main.utils.*;
+
 /**
  * Created by Thierry on 4/3/2017.
  */
 
 public class Main {
     public static void main(String args[]) {
-/*
+        NetClientMsg msg = new NetClientMsg();
+
+//
         client me = null;
+
+        Tile tile = new Tile();
+        tile.serverPoint = new Point(101, 105);
+        tile.assignTerrain(TerrainType.GRASS, TerrainType.GRASS);
+        tile.setRotation(3);
+        String buildAct = msg.FormatBuildAction("BUILD", "TOTORO SANCTUARY", tile);
+        String errorMsg = msg.FormatUnableToBuild();
+
+        String placeTile = msg.FormatPlaceAction(tile);
+        String placeWithTer = msg.FormatBuildActionWithTerrain(tile, TerrainType.ROCK);
+
+        String tournEnter = msg.FormatAuthenticationForTournament("CRAZY");
+        String authUser = msg.FormatAuthenticationPlayer("USER", "PASS");
+
+        TileVector tv = new TileVector(90, 91, 92, 4 );
+        TileVector tvWithTerrain = new TileVector(90, 91, 92, "GRASS+LAKE" );
+        String placeAction = msg.FormatPlaceAction("JUNGLE+ROCK", tv);
+        String buildAction = msg.FormatBuildAction("FOUND", "TIGER PLAYGROUND", tv);
+        String bAWithTerrain = msg.FormatBuildActionWithTerrain("EXPAND", "SETTLEMENT", tvWithTerrain );
+
+        String gameMove = msg.FormatGameMove("CLOUDS", 4, placeAction, buildAction );
+
+        System.out.println(gameMove);
+
+//
+
+
+        //XYZ
+        String PID;
+        String opponentPID;
+        String challengeID;
+
+        int totalMatches;
+
+        int totalRounds;
+        int roundID;
+
+        NetClient client;
+        NetServerMsg message = new NetServerMsg();
+
+        Thread game1 = null;
+        Thread game2 = null;
+/*
+        public enum TerrainType {
+            JUNGLE, LAKE, GRASSLANDS, ROCKY, VOLCANO
+        }
+        // Good: JUNGLE, LAKE, (VOLCANO) not needed for parser
+        // Bad:
+        // GRASSLANDS - > GRASS
+        // ROCKY -> ROCK
+*/
         try {
 
-            NetClientMsg msg = new NetClientMsg();
-            String tournEnter = msg.FormatAuthenticationForTournament("CRAZY");
-            String authUser = msg.FormatAuthenticationPlayer("USER", "PASS");
+            //**********Authentication Protocol**********
+            client = new NetClient(); //IP , port
+            client.Start();
+            message = client.getNextMessageFromServer();  //receive welcome message
 
-            TileVector tv = new TileVector(90, 91, 92, 4 );
-            TileVector tvWithTerrain = new TileVector(90, 91, 92, "GRASS+LAKE" );
-            String placeAction = msg.FormatPlaceAction("JUNGLE+ROCK", tv);
-            String buildAction = msg.FormatBuildAction("FOUND", "TIGER PLAYGROUND", tv);
-            String bAWithTerrain = msg.FormatBuildActionWithTerrain("EXPAND", "SETTLEMENT", tvWithTerrain );
+            ArrayList<TerrainType> terrainTypes = message.GetTileTerrains();
 
-            String gameMove = msg.FormatGameMove("CLOUDS", 4, placeAction, buildAction );
+            //client.Send(msg.FormatAuthenticationForTournament("TEST"));
+            client.getNextMessageFromServer(); //more bs
+            //client.Send(msg.FormatAuthenticationPlayer("Team M", "TETS")); // I Am User Password
+            message = client.getNextMessageFromServer(); //get the pid here
+            PID = message.GetPlayerId();
 
-            System.out.println(gameMove);
-        } catch ( NetClientMsg.ClientError e) {
+            //client.Send("test");
+
+            //**********Challenge Protocol**********
+            message = client.getNextMessageFromServer();
+            challengeID = message.GetChallengeId();
+            totalMatches = message.GetNumMatchesToPlay();
+            //client.Send("test");
+
+            //**********Round Protocol**********
+            message = client.getNextMessageFromServer();
+            totalRounds = message.GetTotalRounds();
+            roundID = message.GetRoundId();
+            //client.Send("test");
+
+            //**********Match Protocol**********
+            message = client.getNextMessageFromServer();
+            opponentPID = message.GetPlayerId();
+
+            //**********Move Protocol**********
+            message = client.getNextMessageFromServer();
+            boolean didGoFirst = false;
+            if (message.GetPlayerId() == null) { //we go first
+
+
+            } else { //we go second
+
+            }
+            while (true) {
+                message = client.getNextMessageFromServer();
+            }
+
+
+
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
-*/
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*
+        try {
+            //me=new client(InetAddress.getLocalHost().getHostAddress(), 1025);
+            ntc = new NetClient(); // gets and sets default IP and PORT
+            if(ntc.IsConnected())
+            {
+                ntc.Listen();
+                NetClientMsg msg = new NetClientMsg();
+                msg.FormatAuthenticationForTournament("CRAZY");
+                msg.FormatAuthenticationPlayer("USER", "PASS");
+            }
+        } catch (IOException | NetClientMsg.ClientError e) {
         try {
             //me=new client(InetAddress.getLocalHost().getHostAddress(), 1025);
             NetClient ntc = new NetClient(); // gets and sets default IP and PORT
@@ -60,8 +178,8 @@ public class Main {
         }
         */
 
-
-        NetServerMsg msg = new NetServerMsg();
+/*
+        //NetServerMsg msg = new NetServerMsg();
         //msg.ParseLine("GAME A MOVE 4 PLAYER Player2 PLACED GRASS+WATER AT 1 6 2 backwards EXPANDED SETTLEMENT AT 0 5 4 GRASS");
         //msg.ParseLine("GAME B MOVE 3 PLAYER Player2 PLACED GRASS+WATER AT 1 -3 2 12 BUILT TOTORO SANCTUARY AT 9 2 4 GRASS");
         //msg.ParseLine("GAME B MOVE 3 PLAYER Player2 PLACED GRASS+WATER AT 1 3 2 765 BUILT TIGER PLAYGROUND AT -9 2 4 JUNGLE");
@@ -87,18 +205,19 @@ public class Main {
         TileVector bdl = msg.GetBuildLocation();
         msg.ParseLine("NEW CHALLENGE 20 YOU WILL PLAY 2 MATCHES");
         String cid = msg.GetChallengeId();
-        int totalMatches = msg.GetNumMatchesToPlay();
+         totalMatches = msg.GetNumMatchesToPlay();
         msg.ParseLine("NEW MATCH BEGINNING NOW YOUR OPPONENT IS PLAYER Player200000000");
         pid = msg.GetPlayerId();
 
         msg.ParseLine("BEGIN ROUND 1 OF 5");
         int roundId = msg.GetRoundId();
-        int totalRounds = msg.GetTotalRounds();
+         totalRounds = msg.GetTotalRounds();
         msg.ParseLine("PLACED JUNGLE+LAKE AT 4 4 6 5");
         tv = msg.GetTitlePlacement();
         msg.ParseLine("NEW CHALLENGE 4 YOU WILL PLAY 6 MATCHES");
 
         msg.ParseLine("WELCOME TO ANOTHER EDITION OF THUNDERDOME");
+        */
 
     }
 }

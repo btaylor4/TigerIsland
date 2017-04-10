@@ -1,5 +1,7 @@
 package net;
 
+import jdk.internal.org.objectweb.asm.Handle;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
@@ -45,6 +47,10 @@ public class NetClient {
         msg = new NetServerMsg();
     }
 
+    public void Start() throws IOException
+    {
+        reader = new Scanner(socket.getInputStream());
+    }
     public void Listen() throws IOException
     {
         reader = new Scanner(socket.getInputStream());
@@ -57,7 +63,18 @@ public class NetClient {
             }
         }
     }
-
+    public NetServerMsg getNextMessageFromServer() throws IOException
+    {
+        String message = "";
+        if ((message = reader.nextLine()) != null)
+        {
+            if(!message.isEmpty()) {
+                HandleMessage(message);
+                return msg;
+            }
+        }
+        return null;
+    }
     public void Send(String message) throws IOException
     {
         output =  new PrintStream(socket.getOutputStream(), true);
@@ -74,7 +91,7 @@ public class NetClient {
 
         //System.out.println(msg.GetPlayerId());
     }
-    private NetServerMsg GetCurrentMessage()
+    public NetServerMsg GetCurrentMessage()
     {
         return msg;
     }

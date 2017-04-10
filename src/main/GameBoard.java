@@ -503,4 +503,13 @@ public class GameBoard {
     {
         return true;
     }
+
+    public Point GetPointFromTile(int tileNumber)
+    {
+        if(playableHexes.containsKey(tileNumber))
+        {
+            return playableHexes.get(tileNumber);
+        }
+        return  null;
+    }
 }

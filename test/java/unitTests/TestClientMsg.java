@@ -1,5 +1,8 @@
 package unitTests;
 
+import main.Point;
+import main.Tile;
+import main.enums.TerrainType;
 import net.* ;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,13 +22,13 @@ public class TestClientMsg {
     }
 
     @Test
-    public void TestFormatTournamentPassword() throws NetClientMsg.ClientError
+    public void TestFormatTournamentPassword()
     {
         String enter = msg.FormatAuthenticationForTournament("SECRETPASSWORD");
         assertEquals(enter, "ENTER THUNDERDOME SECRETPASSWORD");
     }
     @Test
-    public void TestFormatPlayerLogin() throws NetClientMsg.ClientError
+    public void TestFormatPlayerLogin()
     {
         String enter = msg.FormatAuthenticationPlayer("SECRETUSERNAME","SECRETPASSWORD");
         assertEquals(enter, "I AM SECRETUSERNAME SECRETPASSWORD");
@@ -79,5 +82,47 @@ public class TestClientMsg {
 
         assertEquals(gameMove, "GAME CLOUDS MOVE 4 PLACE JUNGLE+ROCK AT " +
                 "100 101 102 2 EXPAND SETTLEMENT AT 90 91 92 GRASS+LAKE");
+    }
+    @Test
+    public void TestFormatUnableToBuild()
+    {
+        String gameMove = msg.FormatUnableToBuild();
+
+        assertEquals(gameMove, "UNABLE TO BUILD");
+    }
+    @Test
+    public void TestFormatBuildActionTile()
+    {
+        Tile tile = new Tile();
+        tile.serverPoint = new Point(101, 105);
+        tile.assignTerrain(TerrainType.GRASS, TerrainType.GRASS);
+        tile.setRotation(3);
+        String buildAct = msg.FormatBuildAction("BUILD", "TOTORO SANCTUARY", tile);
+
+        assertEquals(buildAct, "BUILD TOTORO SANCTUARY AT 0 4 -4");
+    }
+    @Test
+    public void TestFormatPlaceActionTile()
+    {
+        Tile tile = new Tile();
+        tile.serverPoint = new Point(101, 105);
+        tile.assignTerrain(TerrainType.GRASS, TerrainType.GRASS);
+        tile.setRotation(3);
+        String placeTile = msg.FormatPlaceAction(tile);
+
+
+        assertEquals(placeTile, "PLACE TILE GRASS+GRASS AT 0 4 -4 3");
+    }
+    @Test
+    public void TestFormatBuildActionWithTileAndTerrain()
+    {
+        Tile tile = new Tile();
+        tile.serverPoint = new Point(101, 105);
+        tile.assignTerrain(TerrainType.GRASS, TerrainType.GRASS);
+        tile.setRotation(3);
+        String placeWithTer = msg.FormatBuildActionWithTerrain(tile, TerrainType.ROCK);
+
+
+        assertEquals(placeWithTer, "EXPAND SETTLEMENT AT 0 4 -4 ROCK");
     }
 }
