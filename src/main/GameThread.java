@@ -26,7 +26,6 @@ public class GameThread implements Runnable{
     BryanAI AI;
     Player Opponent;
 
-    //TODO: add client to constructor args
     public GameThread(String gameNumber, boolean weGoFirst, NetClient c){
         game = new GameBoard();
 
@@ -58,58 +57,71 @@ public class GameThread implements Runnable{
 
 
             if(isMyTurn){
+                NetClientMsg msg;
+                TerrainType tp;
+                BuildOptions buildDecision;
+                Point p;
+
                 Tile tile = AI.determineTilePlacementByAI();
-                AI.determineBuildByAI();
-                BuildOptions buildDecision = AI.buildDecision;
-                Point p = AI.buildPoint;
-                TerrainType tp = AI.expansionAction;
-                NetClientMsg msg = new NetClientMsg();
-                switch (buildDecision)
-                {
-                    case TIGER_PLAYGROUND:
-                        String clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
-                                        buildDecision.toString(), p));
-                        try {
-                            client.Send(clientMsg);
-                        }catch (IOException ex)
+                if(AI.hasPlayerLost()){
+                    msg = new NetClientMsg();
+                    String clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatUnableToBuild());
+                    try {
+                        client.Send(clientMsg);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    AI.determineBuildByAI();
+                    buildDecision = AI.buildDecision;
+                    p = AI.buildPoint;
+                    tp = AI.expansionAction;
+                    msg = new NetClientMsg();
+                    switch (buildDecision) {
+                        case TIGER_PLAYGROUND:
+                            String clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
+                                    buildDecision.toString(), p));
+                            try {
+                                client.Send(clientMsg);
+                            } catch (IOException ex)
 
-                        {
+                            {
 
-                        }
+                            }
 
-                    case TOTORO_SANCTUARY:
-                        clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
-                                buildDecision.toString(), p));
-                        try {
-                            client.Send(clientMsg);
-                        }catch (IOException ex)
+                        case TOTORO_SANCTUARY:
+                            clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
+                                    buildDecision.toString(), p));
+                            try {
+                                client.Send(clientMsg);
+                            } catch (IOException ex)
 
-                        {
+                            {
 
-                        }
+                            }
 
-                    case EXPAND:
-                         clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildActionWithTerrain(p,
-                                 tp));
-                        try {
-                            client.Send(clientMsg);
-                        }catch (IOException ex)
+                        case EXPAND:
+                            clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildActionWithTerrain(p,
+                                    tp));
+                            try {
+                                client.Send(clientMsg);
+                            } catch (IOException ex)
 
-                        {
+                            {
 
-                        }
+                            }
 
-                    case FOUND_SETTLEMENT:
-                         clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
-                                buildDecision.toString(), p));
-                        try {
-                            client.Send(clientMsg);
-                        }catch (IOException ex){
-                            System.err.println("error cuath");
-                        }
+                        case FOUND_SETTLEMENT:
+                            clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
+                                    buildDecision.toString(), p));
+                            try {
+                                client.Send(clientMsg);
+                            } catch (IOException ex) {
+                                System.err.println("error cuath");
+                            }
+                    }
                 }
-            }
-            else { //its opponents turn
+            } else { //its opponents turn
 
                 while (!isMyTurn) {
                     try {
@@ -198,9 +210,6 @@ public class GameThread implements Runnable{
 
                 break;
         }
-
-
-
     }
 
 }
