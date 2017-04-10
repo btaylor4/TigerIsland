@@ -700,20 +700,43 @@ public class BryanAI extends Player {
         if (meeples != 0)
             return false;
 
-        else{
+        else
+        {
             for(SettlePointPair mySets : playerSettlements.values())
             {
                 if(mySets.settlement.totoroSanctuaries != 0)
                     continue;
 
                 else if(mySets.settlement.size >= 5) //do we also have to check if there's a hex that we can put on?
-                    return false;
+                {
+                    for(Point point : mySets.settlement.occupantPositions.values())
+                    {
+                        for(int i = 0; i < SIDES_IN_HEX; i++)
+                        {
+                            if(game.isValidTotoroPosition(new Point(point.row + ROW_ADDS[i], point.column + COLUMN_ADDS[i]), mySets.settlement))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
             }
 
             for(SettlePointPair mySets : playerSettlements.values())
             {
                 if(mySets.settlement.tigerPlaygrounds != 0)
                     continue;
+
+                for(Point point : mySets.settlement.occupantPositions.values())
+                {
+                    for(int i = 0; i < SIDES_IN_HEX; i++)
+                    {
+                        if(game.isValidTigerPosition(new Point(point.row + ROW_ADDS[i], point.column + COLUMN_ADDS[i]), mySets.settlement))
+                        {
+                            return false;
+                        }
+                    }
+                }
             }
         }
 
