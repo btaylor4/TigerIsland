@@ -21,7 +21,7 @@ public class NetServerMsg {
             t = scanner.Scan();
             tokens.add(t);
 
-            System.out.println(t.Value);
+            //System.out.println(t.Value);
         }
     }
     public String GetPlayerId()

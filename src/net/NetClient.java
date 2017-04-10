@@ -92,7 +92,7 @@ public class NetClient {
     {
         msg.ParseLine(message);
 
-        System.out.println(msg.GetPlayerId());
+        System.out.println(message);
     }
     public NetServerMsg GetCurrentMessage()
     {
