@@ -91,7 +91,7 @@ public class NetClient {
 
         //System.out.println(msg.GetPlayerId());
     }
-    private NetServerMsg GetCurrentMessage()
+    public NetServerMsg GetCurrentMessage()
     {
         return msg;
     }
