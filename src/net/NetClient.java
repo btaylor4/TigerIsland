@@ -37,8 +37,10 @@ public class NetClient {
 
     public NetClient(String ip, int port) throws IOException
     {
+        IP = ip;
         Port = port;
         Initialize();
+        Start();
     }
 
     private void Initialize() throws IOException
@@ -89,7 +91,7 @@ public class NetClient {
     {
         msg.ParseLine(message);
 
-        //System.out.println(msg.GetPlayerId());
+        System.out.println(msg.GetPlayerId());
     }
     public NetServerMsg GetCurrentMessage()
     {

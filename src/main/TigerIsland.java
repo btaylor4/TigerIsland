@@ -156,11 +156,11 @@ public class TigerIsland {
     }
 
     private static void TournamentAndAuthenticationProtocol(String[] args) throws IOException {
-        client = new NetClient(args[1], Integer.parseInt(args[2])); //IP , port
+        client = new NetClient("10.136.31.59", 6969); //IP , port
         client.getNextMessageFromServer();  //receive welcome message
-        client.Send(msg.FormatAuthenticationForTournament(args[3]));
+        client.Send(msg.FormatAuthenticationForTournament("heygang"));
         client.getNextMessageFromServer(); //more bs
-        client.Send(msg.FormatAuthenticationPlayer("Team M", args[4])); // I Am User Password
+        client.Send(msg.FormatAuthenticationPlayer("M", "M")); // I Am User Password
         message = client.getNextMessageFromServer(); //get the pid here
         PID = message.GetPlayerId();
     }
