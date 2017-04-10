@@ -62,7 +62,13 @@ public class NetServerMsg {
     }
     public int GetNumMatchesToPlay()
     {
-        return (int)GetTokenByType(TokenType.TOKEN_PLAY).Data;
+        Token token = GetTokenByType(TokenType.TOKEN_PLAY);
+        if(token != null)
+            return (int)token.Data;
+        else {
+
+            return -1;
+        }
     }
     public int GetRoundId()
     {
