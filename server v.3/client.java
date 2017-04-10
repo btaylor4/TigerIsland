@@ -1,6 +1,5 @@
-package main; /**
- * Created by zainlateef on 4/3/17.
- */
+package main;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
