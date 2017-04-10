@@ -1,6 +1,7 @@
 package net;
 import java.util.*;
 import java.util.function.IntConsumer;
+
 enum ValueType
 {
     Int,
@@ -13,6 +14,8 @@ enum ValueType
     Result,
     Function,
     Action,
+    End,
+    Wait
 }
 
 public class NetScanner {
@@ -50,6 +53,7 @@ public class NetScanner {
         for (String vecTok : stringNVectors) {
             hm.put(vecTok, ValueType.StringN);
         }
+
         String[] floatVectors = new String[]{"WITHIN"};
         for (String vecTok : floatVectors) {
             hm.put(vecTok, ValueType.Float);
@@ -58,13 +62,21 @@ public class NetScanner {
         for (String vecTok : msgVectors) {
             hm.put(vecTok, ValueType.Message);
         }
-        String[] endVectors = new String[]{"OVER"};
-        for (String vecTok : endVectors) {
+        String[] resultVectors = new String[]{"OVER"};
+        for (String vecTok : resultVectors) {
             hm.put(vecTok, ValueType.Result);
         }
         String[] actionTokens = new String[]{"BUILT", "FOUNDED", "EXPANDED"};
         for (String vecTok : actionTokens) {
             hm.put(vecTok, ValueType.Action);
+        }
+        String[] endVectors = new String[]{"END"};
+        for (String vecTok : endVectors) {
+            hm.put(vecTok, ValueType.End);
+        }
+        String[] waitVectors = new String[]{"WAIT"};
+        for (String vecTok : waitVectors) {
+            hm.put(vecTok, ValueType.Wait);
         }
         //ArrayList<String> actions = new ArrayList<String>(
         //      Arrays.asList( "BUILT", "FOUNDED", "EXPANDED", "BUILT"));
@@ -128,11 +140,16 @@ public class NetScanner {
                 case Function:
                     ScanFunction(sc, token);
                     break;
-                case Action: {
+                case Action:
                     token.Action = PlayerAction.valueOf(tokenString);
                     //ScanAction(sc, token);
                     break;
-                }
+                case End:
+                    ScanEnd(sc, token, "OF");
+                    break;
+                case Wait:
+                    ScanWait(sc, token, "FOR");
+                    break;
 
             }
         } else {
@@ -151,7 +168,30 @@ public class NetScanner {
         ScanByType(tokenString, token);
         return token;
     }
-
+    private void ScanEnd(java.util.Scanner sc, Token token, String validator)
+    {
+        token.Data = false;
+        if(sc.hasNext())
+        {
+            String next = sc.next();
+            if(next.equalsIgnoreCase(validator))
+            {
+                token.Data = true;
+            }
+        }
+    }
+    private void ScanWait(java.util.Scanner sc, Token token, String validator)
+    {
+        token.Data = false;
+        if(sc.hasNext())
+        {
+            String next = sc.next();
+            if(next.equalsIgnoreCase(validator))
+            {
+                token.Data = true;
+            }
+        }
+    }
     private void ScanAction(java.util.Scanner sc, Token token)
     {
 

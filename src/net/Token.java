@@ -29,7 +29,9 @@ enum TokenType
     TOKEN_FORFEITED,
     TOKEN_OVER,
     TOKEN_FOUNDED,
-    TOKEN_EXPANDED
+    TOKEN_EXPANDED,
+    TOKEN_END,
+    TOKEN_WAIT
 }
 
 public class Token {

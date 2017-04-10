@@ -18,7 +18,6 @@ public class NetClientMsg {
     }
     public String FormatAuthenticationPlayer(String username, String password)
     {
-
         return String.format("I AM %1$s %2$s",username, password );
     }
 

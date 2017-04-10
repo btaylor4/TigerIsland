@@ -73,9 +73,30 @@ public class Main {
         // ROCKY -> ROCK
 */
         try {
+            message.ParseLine("WAIT FOR THE TOURNAMENT TO BEGIN Player1");
+            boolean shouldWaitForNext = message.ShouldWaitForNext();
+
+            message.ParseLine("WAIT FOR THE NEXT CHALLENGE TO BEGIN");
+            shouldWaitForNext = message.ShouldWaitForNext();
+            boolean ended = message.HasProtocolEnded();
+
+            message.ParseLine("END OF CHALLENGES");
+             ended = message.HasProtocolEnded();
+            shouldWaitForNext = message.ShouldWaitForNext();
+            message.ParseLine("END OF ROUND 1 OF 30");
+            ended = message.HasProtocolEnded();
+            message.ParseLine("END OF ROUND 1 OF 30 WAIT FOR THE NEXT MATCH");
+            ended = message.HasProtocolEnded();
             message.ParseLine("GAME B MOVE 3 PLAYER Player2 PLACED GRASS+ROCK AT 1 3 2 -4 EXPANDED SETTLEMENT AT 9 2 4 GRASS");
 
             PlayerAction action = message.GetAction();
+            TileVector vec = message.GetTitlePlacement();
+            ended = message.HasProtocolEnded();
+
+            XYZ cs = new XYZ(vec.GetX(), vec.GetY(), vec.GetZ());
+
+            Point point = cs.get2DTranslation();
+            TileVector bd = message.GetBuildLocation();
 
             message.ParseLine("GAME B MOVE 3 PLAYER Player2 PLACED GRASS+ROCK AT 1 3 2 -4 FOUNDED SETTLEMENT AT 9 2 4");
             action = message.GetAction();
