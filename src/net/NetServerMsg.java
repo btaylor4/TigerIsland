@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import main.enums.TerrainType;
+import main.enums.BuildOptions;
 
 public class NetServerMsg {
 
@@ -126,6 +127,20 @@ public class NetServerMsg {
         Token token = GetTokenByType(TokenType.TOKEN_BUILT);
         if(token != null)
             return (String)token.Data;
+        else
+            return null;
+    }
+    private String CheckBuildString(String input) {
+        input = input.replace(" ", "_");
+        return input;
+    }
+    public BuildOptions GetSettlement()
+    {
+        Token token = GetTokenByType(TokenType.TOKEN_BUILT);
+        if(token != null) {
+            String option = (String) token.Data;
+            return BuildOptions.valueOf(CheckBuildString(option));
+        }
         else
             return null;
     }

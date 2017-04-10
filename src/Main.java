@@ -1,4 +1,5 @@
 import main.Point;
+import main.enums.BuildOptions;
 import main.enums.TerrainType;
 import main.Tile;
 
@@ -73,21 +74,35 @@ public class Main {
         // ROCKY -> ROCK
 */
         try {
+            //message.ParseLine("GAME B MOVE 3 PLAYER Player2 PLACED GRASS+ROCK AT 1 3 2 -4 BUILT TOTORO SANCTUARY AT 9 2 4 GRASS");
+
             message.ParseLine("WAIT FOR THE TOURNAMENT TO BEGIN Player1");
             boolean shouldWaitForNext = message.ShouldWaitForNext();
+
 
             message.ParseLine("WAIT FOR THE NEXT CHALLENGE TO BEGIN");
             shouldWaitForNext = message.ShouldWaitForNext();
             boolean ended = message.HasProtocolEnded();
 
             message.ParseLine("END OF CHALLENGES");
-             ended = message.HasProtocolEnded();
+            ended = message.HasProtocolEnded();
             shouldWaitForNext = message.ShouldWaitForNext();
             message.ParseLine("END OF ROUND 1 OF 30");
             ended = message.HasProtocolEnded();
             message.ParseLine("END OF ROUND 1 OF 30 WAIT FOR THE NEXT MATCH");
             ended = message.HasProtocolEnded();
-            message.ParseLine("GAME B MOVE 3 PLAYER Player2 PLACED GRASS+ROCK AT 1 3 2 -4 EXPANDED SETTLEMENT AT 9 2 4 GRASS");
+
+            //message.ParseLine("GAME B MOVE 3 PLAYER Player2 PLACED GRASS+ROCK AT 1 3 2 -4 EXPANDED SETTLEMENT AT 9 2 4 GRASS");
+            message.ParseLine("GAME B MOVE 3 PLAYER Player2 PLACED GRASS+ROCK AT 1 3 2 -4 BUILT TOTORO SANCTUARY AT 9 2 4 GRASS");
+            BuildOptions opt = message.GetSettlement();
+
+            message.ParseLine("GAME B MOVE 3 PLAYER Player2 PLACED JUNGLE+LAKE AT 1 3 2 -4 BUILT TIGER PLAYGROUND AT 9 2 4 Lake");
+
+             opt = message.GetSettlement();
+
+            message.GetTitlePlacement();
+            message.GetBuildLocation();
+
 
             PlayerAction action = message.GetAction();
             TileVector vec = message.GetTitlePlacement();

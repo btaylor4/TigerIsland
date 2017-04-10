@@ -327,4 +327,12 @@ public class TestServerMsg
 
         assertEquals(settlementName, "TIGER PLAYGROUND");
     }
+    @Test
+    public void TestShouldWaitFor()
+    {
+        msg.ParseLine("WAIT FOR THE TOURNAMENT TO BEGIN Player1");
+        boolean shouldWaitForNext = msg.ShouldWaitForNext();
+
+        assertTrue(shouldWaitForNext);//settlementName, "TIGER PLAYGROUND");
+    }
 }

@@ -53,7 +53,6 @@ public class NetScanner {
         for (String vecTok : stringNVectors) {
             hm.put(vecTok, ValueType.StringN);
         }
-
         String[] floatVectors = new String[]{"WITHIN"};
         for (String vecTok : floatVectors) {
             hm.put(vecTok, ValueType.Float);
@@ -128,9 +127,9 @@ public class NetScanner {
                 case String:
                     ScanString(sc, token);
                     break;
-                case StringN:
-                    ScanStringN(sc, token);
-                    break;
+                //case StringN:
+                  //  ScanStringN(sc, token);
+                    //break;
                 case Message:
                     ScanMessage(sc, token);
                     break;
@@ -142,7 +141,7 @@ public class NetScanner {
                     break;
                 case Action:
                     token.Action = PlayerAction.valueOf(tokenString);
-                    //ScanAction(sc, token);
+                    ScanAction(sc, token);
                     break;
                 case End:
                     ScanEnd(sc, token, "OF");
@@ -192,9 +191,40 @@ public class NetScanner {
             }
         }
     }
+    private static String ActionTerminator = "AT";
     private void ScanAction(java.util.Scanner sc, Token token)
     {
+        if(!sc.hasNext())
+            return;
 
+        switch (token.Action)
+        {
+            case BUILT:
+                ScanStringN(sc, token, 2);
+                break;
+            case EXPANDED:
+            case FOUNDED:
+                ScanStringN(sc, token, 1);
+                break;
+        }
+        /*
+        int i = 0;
+        String tokenStr = sc.next();
+        String finalStr = tokenStr;
+
+        while(sc.hasNext() )
+        {
+            tokenStr = sc.next();
+            if(!tokenStr.equalsIgnoreCase(ActionTerminator)) {
+                finalStr += " " + tokenStr;
+            }
+            else
+            {
+                break;
+            }
+        }
+        token.Data = finalStr;
+        */
     }
     private void ScanFunction(java.util.Scanner sc, Token token)
     {
@@ -220,15 +250,15 @@ public class NetScanner {
         }
     }
     public static int NStringTerminator = 2;
-    private void ScanStringN(java.util.Scanner sc, Token token)
+    private void ScanStringN(java.util.Scanner sc, Token token, int terminator)
     {
         int i =0;
         String tokenStr = "";
-        while ( i < NStringTerminator)
+        while ( i < terminator)
         {
             tokenStr += sc.next();
             i++;
-            if(i != NStringTerminator)
+            if(i != terminator)
                 tokenStr += " ";
         }
         token.Data = tokenStr;
