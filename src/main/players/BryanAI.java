@@ -204,6 +204,7 @@ public class BryanAI extends Player {
                     buildPoint = mySets.point;
                     expansionAction = TerrainType.GRASSLANDS;
                     mySets.settlement.expand(TerrainType.GRASSLANDS);
+                    game.expandSettlement(buildPoint, expansionAction);
                     mySets.settlement.mergeSettlements();
                     return;
                 }
@@ -217,6 +218,7 @@ public class BryanAI extends Player {
                     buildPoint = mySets.point;
                     expansionAction = TerrainType.LAKE;
                     mySets.settlement.expand(TerrainType.LAKE);
+                    game.expandSettlement(buildPoint, expansionAction);
                     mySets.settlement.mergeSettlements();
                     return;
                 }
@@ -230,6 +232,7 @@ public class BryanAI extends Player {
                     buildPoint = mySets.point;
                     expansionAction = TerrainType.JUNGLE;
                     mySets.settlement.expand(TerrainType.JUNGLE);
+                    game.expandSettlement(buildPoint, expansionAction);
                     mySets.settlement.mergeSettlements();
                     return;
                 }
@@ -243,6 +246,7 @@ public class BryanAI extends Player {
                     buildPoint = mySets.point;
                     expansionAction = TerrainType.ROCKY;
                     mySets.settlement.expand(TerrainType.ROCKY);
+                    game.expandSettlement(buildPoint, expansionAction);
                     mySets.settlement.mergeSettlements();
                     return;
                 }
@@ -293,6 +297,7 @@ public class BryanAI extends Player {
                             new SettlePointPair(freshSettlement, point));
                     buildDecision = BuildOptions.FOUND_SETTLEMENT;
                     buildPoint = point;
+                    freshSettlement.mergeSettlements();
                     return;
                 }
             }
