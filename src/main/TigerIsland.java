@@ -12,7 +12,7 @@ public class TigerIsland {
     static String opponentPID;
     static String challengeID;
 
-    static boolean gameOver = false;
+    static boolean hasProtocolEnded = false;
 
     static int totalMatches;
     static int totalRounds;
@@ -56,9 +56,12 @@ public class TigerIsland {
                         System.out.println("starting game2");
                     }
 
-                    while (!gameOver) {
+                    while (!hasProtocolEnded) {
                         message = client.getNextMessageFromServer();
-
+                        if(message.HasProtocolEnded())
+                        {
+                            break;
+                        }
                         if (message.GetGameId().equals(g1.gameID)) {
                             System.out.println("received message for game1");
                             game1.interrupt();
@@ -66,6 +69,12 @@ public class TigerIsland {
                         else if (message.GetGameId().equals(g2.gameID)) {
                             System.out.println("received message for game2");
                             game2.interrupt();
+                        }else if(message.GetGameResults() != null){
+                            if (message.GetGameId().equals(g1.gameID)){
+                                game1.join();
+                            } else if (message.GetGameId().equals(g2.gameID)){
+                                game2.join();
+                            }
                         }
                         //in case other thread has not been started
                         else if (game1 == null && !message.GetGameId().equals(g2.gameID)) {
@@ -86,15 +95,17 @@ public class TigerIsland {
                     }
                     ////**********Move Protocol End**********
 
-                    matchProtocolEnd();
-
-                    roundProtocolEnd();
+                    message = client.getNextMessageFromServer();
+                    if (message.HasProtocolEnded()){
+                        break;
+                    }
                 }
-                challengeProtocolEnd();
             }
 
 
         } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -111,7 +122,7 @@ public class TigerIsland {
         Server: GAME <gid> OVER PLAYER <pid> <score> PLAYER <pid> <score>
      */
     private static void matchProtocolEnd() throws IOException {
-        message = client.getNextMessageFromServer();
+
     }
 
     private static void roundProtocolBegin() throws IOException {
