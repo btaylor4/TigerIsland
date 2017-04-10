@@ -156,7 +156,7 @@ public class TigerIsland {
     }
 
     private static void TournamentAndAuthenticationProtocol(String[] args) throws IOException {
-        client = new NetClient("10.136.31.59", 6969); //IP , port
+        client = new NetClient("10.136.15.159", 6969); //IP , port
         client.getNextMessageFromServer();  //receive welcome message
         client.Send(msg.FormatAuthenticationForTournament("heygang"));
         client.getNextMessageFromServer(); //more bs
