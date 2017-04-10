@@ -77,7 +77,7 @@ public class GameThread implements Runnable{
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         System.out.println("Simulating Opponents move");
-                        if(currentMessage.GetPlayerId() != ourPlayerID) {
+                        if(!currentMessage.GetPlayerId().equals(ourPlayerID)) {
                             break;
                         }
                     }

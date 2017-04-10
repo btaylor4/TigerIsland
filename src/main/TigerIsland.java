@@ -9,7 +9,7 @@ public class TigerIsland {
 
 
     static String PID;
-    static String opponentPID;
+    static String opponentPID; //should not really be needed
     static String challengeID;
 
     static boolean hasProtocolEnded = false;
@@ -111,9 +111,7 @@ public class TigerIsland {
             }
 
 
-        } catch (IOException | NullPointerException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | NullPointerException | InterruptedException e) {
             e.printStackTrace();
         }
 
