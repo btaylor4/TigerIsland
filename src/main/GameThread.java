@@ -62,7 +62,7 @@ public class GameThread implements Runnable{
 
             if(isMyTurn){
                 try {
-                    System.out.println("Its my turn! I'm going to sleep until client gives me a tile");
+                    System.out.println("Game " + gameID +": " +"Its my turn! I'm going to sleep until client gives me a tile");
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
 
@@ -73,7 +73,7 @@ public class GameThread implements Runnable{
 
                 while (!isMyTurn) {
                     try {
-                        System.out.println("Its NOT my turn! I'm going to sleep until opponent makes move");
+                        System.out.println("Game " + gameID + ": " +"Its NOT my turn! I'm going to sleep until opponent makes move");
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         System.out.println("Simulating Opponents move");
