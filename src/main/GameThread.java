@@ -7,7 +7,7 @@ public class GameThread implements Runnable{
 
     GameBoard game;
 
-    NetClient c;
+    NetClient client;
 
     String gameID;
     boolean isMyTurn;
@@ -20,7 +20,7 @@ public class GameThread implements Runnable{
     public GameThread(String gameNumber, boolean weGoFirst, NetClient c){
         game = new GameBoard();
 
-        this.c = c;
+        client = c;
 
         gameID = gameNumber;
         gameOver = false;
@@ -45,18 +45,17 @@ public class GameThread implements Runnable{
                 AI.determineBuildByAI();
             }
             else { //its opponents turn
-                synchronized (this) {
-                    while (!isMyTurn) {
-                        try {
-                            //client will notify when it receives move from server
-                            this.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+
+                while (!isMyTurn) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    //simulate opponents move
-                    applyOpponentsMoves();
                 }
+                //simulate opponents move
+                client.GetCurrentMessage();
+
             }
 
             //game.printBoard();

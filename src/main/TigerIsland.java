@@ -91,7 +91,7 @@ public class TigerIsland {
             }
 
 
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
 
