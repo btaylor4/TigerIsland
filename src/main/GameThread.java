@@ -17,6 +17,8 @@ public class GameThread implements Runnable{
     GameBoard game;
 
     NetClient client;
+    NetServerMsg currentMessage = null;
+
 
     String gameID;
     int moveNumber;
@@ -57,76 +59,21 @@ public class GameThread implements Runnable{
 
 
             if(isMyTurn){
-                NetClientMsg msg;
-                TerrainType tp;
-                BuildOptions buildDecision;
-                Point p;
+                try {
+                    System.out.println("its my turn! I'm going to sleep until client gives me a tile");
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
 
-                Tile tile = AI.determineTilePlacementByAI();
-                if(AI.hasPlayerLost()){
-                    msg = new NetClientMsg();
-                    String clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatUnableToBuild());
-                    try {
-                        client.Send(clientMsg);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    AI.determineBuildByAI();
-                    buildDecision = AI.buildDecision;
-                    p = AI.buildPoint;
-                    tp = AI.expansionAction;
-                    msg = new NetClientMsg();
-                    switch (buildDecision) {
-                        case TIGER_PLAYGROUND:
-                            String clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
-                                    buildDecision.toString(), p));
-                            try {
-                                client.Send(clientMsg);
-                            } catch (IOException ex)
-
-                            {
-
-                            }
-
-                        case TOTORO_SANCTUARY:
-                            clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
-                                    buildDecision.toString(), p));
-                            try {
-                                client.Send(clientMsg);
-                            } catch (IOException ex)
-
-                            {
-
-                            }
-
-                        case EXPAND:
-                            clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildActionWithTerrain(p,
-                                    tp));
-                            try {
-                                client.Send(clientMsg);
-                            } catch (IOException ex)
-
-                            {
-
-                            }
-
-                        case FOUND_SETTLEMENT:
-                            clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
-                                    buildDecision.toString(), p));
-                            try {
-                                client.Send(clientMsg);
-                            } catch (IOException ex) {
-                                System.err.println("error cuath");
-                            }
-                    }
                 }
+
+                makeAIMove();
             } else { //its opponents turn
 
                 while (!isMyTurn) {
                     try {
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
+                        System.out.println("Simulating Opponents move");
                         break;
                     }
                 }
@@ -141,7 +88,86 @@ public class GameThread implements Runnable{
 
         }
     }
+
+    private void makeAIMove(){
+        Tile tileFromServer = new Tile();
+        TerrainType A;
+        TerrainType B;
+
+        A = currentMessage.GetTileTerrains().get(0);
+        B = currentMessage.GetTileTerrains().get(1);
+        tileFromServer.assignTerrain(A,B);
+
+
+        NetClientMsg msg;
+        TerrainType tp;
+        BuildOptions buildDecision;
+        Point p;
+        AI.setTile(tileFromServer);
+        Tile tile = AI.determineTilePlacementByAI();
+        if(AI.hasPlayerLost()){
+            msg = new NetClientMsg();
+            String clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatUnableToBuild());
+            try {
+                client.Send(clientMsg);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            AI.determineBuildByAI();
+            buildDecision = AI.buildDecision;
+            p = AI.buildPoint;
+            tp = AI.expansionAction;
+            msg = new NetClientMsg();
+            switch (buildDecision) {
+                case TIGER_PLAYGROUND:
+                    String clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
+                            buildDecision.toString(), p));
+                    try {
+                        client.Send(clientMsg);
+                    } catch (IOException ex)
+
+                    {
+
+                    }
+
+                case TOTORO_SANCTUARY:
+                    clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
+                            buildDecision.toString(), p));
+                    try {
+                        client.Send(clientMsg);
+                    } catch (IOException ex)
+
+                    {
+
+                    }
+
+                case EXPAND:
+                    clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildActionWithTerrain(p,
+                            tp));
+                    try {
+                        client.Send(clientMsg);
+                    } catch (IOException ex)
+
+                    {
+
+                    }
+
+                case FOUND_SETTLEMENT:
+                    clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
+                            buildDecision.toString(), p));
+                    try {
+                        client.Send(clientMsg);
+                    } catch (IOException ex) {
+                        System.err.println("error cuath");
+                    }
+            }
+        }
+    }
+
     private void replicateOpponentMove(){
+        NetServerMsg opponentsMove = currentMessage;
+
         BuildOptions buildOption;
 
         Tile tile;
@@ -152,8 +178,6 @@ public class GameThread implements Runnable{
 
         XYZ xyzTo2DConverter;
         Point twoDimensionalPoint;
-
-        NetServerMsg opponentsMove = client.GetCurrentMessage();
 
         moveNumber = opponentsMove.GetMoveId() + 1;
 

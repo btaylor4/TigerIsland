@@ -68,20 +68,26 @@ public class TigerIsland {
                             game1 = new Thread(g1);
                             game1.start();
                             System.out.println("starting game1");
-                        } else if (game2 == null && !message.GetGameId().equals(g1.gameID)) {
+                            g1.currentMessage = message;
+                        }
+                        else if (game2 == null && !message.GetGameId().equals(g1.gameID)) {
                             g2 = new GameThread(message.GetGameId(), true, client);
                             game2 = new Thread(g2);
                             game2.start();
                             System.out.println("starting game2");
+                            g2.currentMessage = message;
                         }
                         else if (message.GetGameId().equals(g1.gameID)) {
                             System.out.println("received message for game1");
+                            g1.currentMessage = message;
                             game1.interrupt();
                         }
                         else if (message.GetGameId().equals(g2.gameID)) {
                             System.out.println("received message for game2");
+                            g2.currentMessage = message;
                             game2.interrupt();
-                        }else if(message.GetGameResults() != null) {
+                        }
+                        else if(message.GetGameResults() != null) {
                             if (message.GetGameId().equals(g1.gameID)) {
                                 game1.join();
                             } else if (message.GetGameId().equals(g2.gameID)) {
