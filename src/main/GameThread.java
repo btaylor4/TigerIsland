@@ -80,7 +80,7 @@ public class GameThread implements Runnable{
                         System.out.println("Game " + gameID + ": " +"Its NOT my turn! I'm going to sleep until opponent makes move");
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
-                        if(currentMessage != null && !currentMessage.GetPlayerId().equals(ourPlayerID)) {
+                        if(currentMessage != null && !currentMessage.GetPlayerId().equals(ourPlayerID)) { //null pointers
                             System.out.println("Game " + gameID + ": " +"Simulating Opponents move");
                             break;
                         }

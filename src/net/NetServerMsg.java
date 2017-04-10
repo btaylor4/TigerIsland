@@ -134,6 +134,18 @@ public class NetServerMsg {
             return null;
         }
     }
+    public boolean HasForfeited()
+    {
+        Token token = GetTokenByType(TokenType.TOKEN_LOST);
+        if(token != null)
+            return true;
+        else {
+            token = GetTokenByType(TokenType.TOKEN_FORFEITED);
+            if(token != null)
+                return true;
+            return false;
+        }
+    }
     public String GetSettlementName()
     {
         Token token = GetTokenByType(TokenType.TOKEN_BUILT);
