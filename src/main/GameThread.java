@@ -21,6 +21,8 @@ public class GameThread implements Runnable{
 
 
     String gameID;
+    String ourPlayerID = TigerIsland.PID;
+
     int moveNumber;
     boolean isMyTurn;
     boolean gameOver;
@@ -60,7 +62,7 @@ public class GameThread implements Runnable{
 
             if(isMyTurn){
                 try {
-                    System.out.println("its my turn! I'm going to sleep until client gives me a tile");
+                    System.out.println("Its my turn! I'm going to sleep until client gives me a tile");
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
 
@@ -71,10 +73,13 @@ public class GameThread implements Runnable{
 
                 while (!isMyTurn) {
                     try {
+                        System.out.println("Its NOT my turn! I'm going to sleep until opponent makes move");
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         System.out.println("Simulating Opponents move");
-                        break;
+                        if(currentMessage.GetPlayerId() != ourPlayerID) {
+                            break;
+                        }
                     }
                 }
                 //simulate opponents move
