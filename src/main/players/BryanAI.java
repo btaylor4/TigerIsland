@@ -4,9 +4,12 @@ import main.*;
 import main.enums.BuildOptions;
 import main.enums.OccupantType;
 import main.enums.TerrainType;
+import main.players.AIUtils.SettlementData;
 import main.utils.SettlePointPair;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import static main.utils.constants.*;
 import static main.utils.constants.columnOneAway;
@@ -22,6 +25,7 @@ public class BryanAI extends Player {
     public BuildOptions buildDecision ;
     public Point buildPoint ;
     public TerrainType expansionAction;
+    public HashMap<Settlement, SettlementData> setData;
 
     public BryanAI(GameBoard gamePointer, int designator){
         super(gamePointer, designator);
@@ -33,6 +37,7 @@ public class BryanAI extends Player {
         buildDecision = BuildOptions.NONE;
         buildPoint = null;
         expansionAction = TerrainType.GRASSLANDS;
+        setData = new HashMap<>();
 
     }
 
@@ -97,6 +102,7 @@ public class BryanAI extends Player {
                     freshSettlement.owner = this ;
                     freshSettlement.ownerNumber = designator ;
                     freshSettlement.beginNewSettlement(point);
+                    setData.put(freshSettlement, new SettlementData(freshSettlement, game));
                     game.setSettlement(point, freshSettlement);
                     placeMeeple(point, freshSettlement);
                     playerSettlements.put(coordinatesToKey(point.row, point.column),
@@ -201,9 +207,16 @@ public class BryanAI extends Player {
 
         for (SettlePointPair mySets : playerSettlements.values())
         {
+            setData.get(mySets).compileSettlementData();
+
             if (mySets.settlement.size + mySets.settlement.grasslands.size() > 1 && meeples > mySets.settlement.grasslands.size())
             {
-                if(mySets.settlement.grasslands.size() > 0)
+                if(setData.get(mySets).afterGrass > meeples)
+                {
+                    break;
+                }
+
+                else if(mySets.settlement.grasslands.size() > 0)
                 {
                     buildDecision = BuildOptions.EXPAND;
                     buildPoint = mySets.point;
@@ -217,6 +230,11 @@ public class BryanAI extends Player {
 
             else if (mySets.settlement.size + mySets.settlement.lakes.size() > 1 && meeples > mySets.settlement.lakes.size())
             {
+                if(setData.get(mySets).afterLake > meeples)
+                {
+                    break;
+                }
+
                 if(mySets.settlement.lakes.size() > 0)
                 {
                     buildDecision = BuildOptions.EXPAND;
@@ -231,6 +249,11 @@ public class BryanAI extends Player {
 
             else if (mySets.settlement.size + mySets.settlement.jungles.size() > 1 && meeples > mySets.settlement.jungles.size())
             {
+                if(setData.get(mySets).afterJungle > meeples)
+                {
+                    break;
+                }
+
                 if(mySets.settlement.jungles.size() > 0)
                 {
                     buildDecision = BuildOptions.EXPAND;
@@ -245,6 +268,11 @@ public class BryanAI extends Player {
 
             else if (mySets.settlement.size + mySets.settlement.rocky.size() > 1 && meeples > mySets.settlement.rocky.size())
             {
+                if(setData.get(mySets).afterRocky > meeples)
+                {
+                    break;
+                }
+
                 if(mySets.settlement.rocky.size() > 0)
                 {
                     buildDecision = BuildOptions.EXPAND;
