@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class NetClient {
 
     private String IP;
-    public int Port = 1025; //Port of the process you want to communicate with
+    public int Port = 6969; //Port of the process you want to communicate with
 
     public String UserName = "admin";
     public String Password = "password1";
@@ -45,6 +45,7 @@ public class NetClient {
 
     private void Initialize() throws IOException
     {
+        System.out.println("connecting to: " + IP + ":" + Port);
         socket = new Socket(IP, Port);
         msg = new NetServerMsg();
     }
