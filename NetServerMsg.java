@@ -72,7 +72,13 @@ public class NetServerMsg {
     }
     public int GetRoundId()
     {
-        return (int)GetTokenByType(TokenType.TOKEN_ROUND).Data;
+        Token token = GetTokenByType(TokenType.TOKEN_ROUND);
+        if(token != null)
+            return (int)token.Data;
+        else {
+
+            return -1;
+        }
     }
     public ArrayList<String> GetTile()
     {
