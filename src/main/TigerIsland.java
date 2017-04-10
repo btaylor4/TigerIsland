@@ -49,6 +49,7 @@ public class TigerIsland {
                         game1.start();
                         System.out.println("starting game1");
                         g1.currentMessage = message;
+                        game1.interrupt();
                     } else { //we go second
                         message = client.getNextMessageFromServer();
                         g2 = new GameThread(message.GetGameId(), false, client);
@@ -56,6 +57,7 @@ public class TigerIsland {
                         game2.start();
                         System.out.println("starting game2");
                         g2.currentMessage = message;
+                        game2.interrupt();
                     }
 
                     while (!hasProtocolEnded) {

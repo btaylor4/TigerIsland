@@ -76,9 +76,12 @@ public class GameThread implements Runnable{
                         System.out.println("Game " + gameID + ": " +"Its NOT my turn! I'm going to sleep until opponent makes move");
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
-                        System.out.println("Simulating Opponents move");
                         if(!currentMessage.GetPlayerId().equals(ourPlayerID)) {
+                            System.out.println("Game " + gameID + ": " +"Simulating Opponents move");
                             break;
+                        }
+                        else if (currentMessage.GetPlayerId().equals(ourPlayerID)){
+                            System.out.println("Game " + gameID + ": " + "Ignoring Broadcast of our own move");
                         }
                     }
                 }
