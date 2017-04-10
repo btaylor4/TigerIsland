@@ -6,6 +6,8 @@ import main.players.BryanAI;
 import main.utils.XYZ;
 import net.*;
 
+import java.io.IOException;
+
 import static main.utils.constants.COLUMN_ADDS;
 import static main.utils.constants.ROW_ADDS;
 import static main.utils.constants.SIDES_IN_HEX;
@@ -17,6 +19,7 @@ public class GameThread implements Runnable{
     NetClient client;
 
     String gameID;
+    int moveNumber;
     boolean isMyTurn;
     boolean gameOver;
 
@@ -37,6 +40,13 @@ public class GameThread implements Runnable{
 
         isMyTurn = weGoFirst;
 
+        if(weGoFirst){
+            moveNumber = 1;
+        }
+        else{
+            moveNumber = 2;
+        }
+
     }
 
     @Override
@@ -48,9 +58,56 @@ public class GameThread implements Runnable{
 
 
             if(isMyTurn){
-                //AI stuff goes here basically AI main method goes here:
-                AI.determineTilePlacementByAI();
+                Tile tile = AI.determineTilePlacementByAI();
                 AI.determineBuildByAI();
+                BuildOptions buildDecision = AI.buildDecision;
+                Point p = AI.buildPoint;
+                TerrainType tp = AI.expansionAction;
+                NetClientMsg msg = new NetClientMsg();
+                switch (buildDecision)
+                {
+                    case TIGER_PLAYGROUND:
+                        String clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
+                                        buildDecision.toString(), p));
+                        try {
+                            client.Send(clientMsg);
+                        }catch (IOException ex)
+
+                        {
+
+                        }
+
+                    case TOTORO_SANCTUARY:
+                        clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
+                                buildDecision.toString(), p));
+                        try {
+                            client.Send(clientMsg);
+                        }catch (IOException ex)
+
+                        {
+
+                        }
+
+                    case EXPAND:
+                         clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildActionWithTerrain(p,
+                                 tp));
+                        try {
+                            client.Send(clientMsg);
+                        }catch (IOException ex)
+
+                        {
+
+                        }
+
+                    case FOUND_SETTLEMENT:
+                         clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
+                                buildDecision.toString(), p));
+                        try {
+                            client.Send(clientMsg);
+                        }catch (IOException ex){
+                            System.err.println("error cuath");
+                        }
+                }
             }
             else { //its opponents turn
 
@@ -85,6 +142,8 @@ public class GameThread implements Runnable{
         Point twoDimensionalPoint;
 
         NetServerMsg opponentsMove = client.GetCurrentMessage();
+
+        moveNumber = opponentsMove.GetMoveId() + 1;
 
         //parse tile placement
         tile = new Tile();
