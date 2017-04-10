@@ -61,9 +61,11 @@ public class TigerIsland {
 
                         if (message.GetGameId().equals(g1.gameID)) {
                             System.out.println("received message for game1");
+                            game1.interrupt();
                         }
                         else if (message.GetGameId().equals(g2.gameID)) {
                             System.out.println("received message for game2");
+                            game2.interrupt();
                         }
                         //in case other thread has not been started
                         else if (game1 == null && !message.GetGameId().equals(g2.gameID)) {
