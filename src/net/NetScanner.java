@@ -128,8 +128,8 @@ public class NetScanner {
                     ScanString(sc, token);
                     break;
                 //case StringN:
-                  //  ScanStringN(sc, token);
-                    //break;
+                //  ScanStringN(sc, token);
+                //break;
                 case Message:
                     ScanMessage(sc, token);
                     break;
@@ -319,8 +319,18 @@ public class NetScanner {
             playerStr = sc.next();
             if(playerStr.equalsIgnoreCase("PLAYER")) {
                 String pid = sc.next();
-                int score = sc.nextInt();
-                playerResult.put(pid, score);
+                if(sc.hasNextInt()) {
+                    int score = sc.nextInt();
+                    System.out.println(score);
+
+                    playerResult.put(pid, score);
+                }
+                else if(sc.hasNext())
+                {
+                    System.out.println(sc.next());
+                    playerResult.put(pid, 100);
+
+                }
             }
         }
         token.Data = playerResult;
