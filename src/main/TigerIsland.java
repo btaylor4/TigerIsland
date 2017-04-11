@@ -70,9 +70,9 @@ public class TigerIsland {
                         message = client.getNextMessageFromServer();
                         if(message.HasProtocolEnded() || message.HasForfeited()) //TODO: check if received a forfeit message
                         {
-                            if (message.GetGameId().equals(g1.gameID)){
+                            if (g1 != null && message.GetGameId().equals(g1.gameID)){
                                 game1.join();
-                            } else if (message.GetGameId().equals(g2.gameID)){
+                            } else if (g2 != null && message.GetGameId().equals(g2.gameID)){
                                 game2.join();
                             }
 
