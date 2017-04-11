@@ -61,14 +61,15 @@ public class GameThread implements Runnable{
 //TODO: maybe add while loop that only breaks when we have a tile
             if(isMyTurn){
 
-                //while(currentMessage == null) {
+                while(true) {
                     try {
                         System.out.println("Game " + gameID + ": " + "Its my turn! I'm going to sleep until client gives me a tile");
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         Thread.interrupted();
+                        break;
                     }
-                //}
+                }
                 System.out.println("Game " + gameID + ": " + "Received message time to make a move");
                 try {
                     moveNumber = currentMessage.GetMoveId();
