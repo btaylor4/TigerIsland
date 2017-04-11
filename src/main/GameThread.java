@@ -66,7 +66,7 @@ public class GameThread implements Runnable{
                         System.out.println("Game " + gameID + ": " + "Its my turn! I'm going to sleep until client gives me a tile");
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
-
+                        Thread.interrupted();
                     }
                 //}
                 System.out.println("Game " + gameID + ": " + "Received message time to make a move");
@@ -83,6 +83,7 @@ public class GameThread implements Runnable{
                         System.out.println("Game " + gameID + ": " +"Its NOT my turn! I'm going to sleep until opponent makes move");
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
+                        Thread.interrupted();
                         if(currentMessage != null && !currentMessage.GetPlayerId().equals(ourPlayerID)) { //null pointers
                             System.out.println("Game " + gameID + ": " +"Simulating Opponents move");
                             break;
