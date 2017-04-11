@@ -20,7 +20,7 @@ public class GameThread implements Runnable{
     NetServerMsg currentMessage = null;
 
     String gameID;
-    String ourPlayerID = TigerIsland.PID;
+    String ourPlayerID = TigerIsland.AIPID;
 
     int moveNumber;
     boolean isMyTurn;
@@ -58,7 +58,7 @@ public class GameThread implements Runnable{
         while (!gameOver) {
             System.out.println("Game " + gameID +": " + (isMyTurn ? "AI":"Opponent") + "'s turn");
 
-
+//TODO: maybe add while loop that only breaks when we have a tile
             if(isMyTurn){
                 try {
                     System.out.println("Game " + gameID +": " +"Its my turn! I'm going to sleep until client gives me a tile");
