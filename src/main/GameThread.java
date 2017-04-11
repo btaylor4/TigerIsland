@@ -68,7 +68,7 @@ public class GameThread implements Runnable{
                 }
 
                 try {
-                    makeAIMove();
+                    AIMainMethod();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -101,7 +101,7 @@ public class GameThread implements Runnable{
         }
     }
 
-    private void makeAIMove() throws IOException {
+    private void AIMainMethod() throws IOException {
         Tile tileFromServer = new Tile();
         TerrainType A;
         TerrainType B;
