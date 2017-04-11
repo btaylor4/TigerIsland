@@ -115,13 +115,61 @@ public class BryanAI extends Player {
             return;
         }
 
-        for (SettlePointPair mySets : playerSettlements.values())
+        if(totoro != 0)
         {
-            //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
-            //check if I can place a totoro
-            if (mySets.settlement.totoroSanctuaries == 0)
+            for (SettlePointPair mySets : playerSettlements.values())
             {
-                if(mySets.settlement.size >= 5)
+                //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
+                //check if I can place a totoro
+                if (mySets.settlement.totoroSanctuaries == 0)
+                {
+                    if(mySets.settlement.size >= 5)
+                    {
+                        Point point = mySets.settlement.findEndPoints();
+
+                        for (int i = 0; i < SIDES_IN_HEX; i++)
+                        {
+                            row = point.row + ROW_ADDS[i];
+                            column = point.column + COLUMN_ADDS[i];
+
+                            if (game.board[row][column] != null)
+                            {
+                                if(!game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                    continue;
+
+                                else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                {
+                                    if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
+                                    {
+                                        point = new Point(row, column);
+                                        break;
+                                    }
+
+                                    else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                        point = new Point(row, column);
+                                }
+                            }
+                        }
+
+                        if(game.isValidTotoroPosition(point, mySets.settlement))
+                        {
+                            buildDecision = BuildOptions.TOTORO_SANCTUARY;
+                            buildPoint = point;
+                            placeTotoro(point, mySets.settlement);
+                            System.out.println("Totoro has been fucking placed motherfucker! Score: " + score);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(tigers != 0)
+        {
+            for (SettlePointPair mySets : playerSettlements.values())
+            {
+                //check if I can place a tiger
+                if (mySets.settlement.tigerPlaygrounds == 0)
                 {
                     Point point = mySets.settlement.findEndPoints();
 
@@ -132,10 +180,10 @@ public class BryanAI extends Player {
 
                         if (game.board[row][column] != null)
                         {
-                            if(!game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                            if(!game.isValidTigerPosition(new Point(row, column), mySets.settlement))
                                 continue;
 
-                            else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                            else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
                             {
                                 if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
                                 {
@@ -143,62 +191,20 @@ public class BryanAI extends Player {
                                     break;
                                 }
 
-                                else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
                                     point = new Point(row, column);
                             }
                         }
                     }
 
-                    if(game.isValidTotoroPosition(point, mySets.settlement))
+                    if(game.isValidTigerPosition(point, mySets.settlement))
                     {
-                        buildDecision = BuildOptions.TOTORO_SANCTUARY;
+                        System.out.println("Placed TIGER!");
+                        buildDecision = BuildOptions.TIGER_PLAYGROUND;
                         buildPoint = point;
-                        placeTotoro(point, mySets.settlement);
-                        System.out.println("Totoro has been fucking placed motherfucker! Score: " + score);
+                        placeTiger(point, mySets.settlement);
                         return;
                     }
-                }
-            }
-        }
-
-        for (SettlePointPair mySets : playerSettlements.values())
-        {
-            //check if I can place a tiger
-            if (mySets.settlement.tigerPlaygrounds == 0)
-            {
-                Point point = mySets.settlement.findEndPoints();
-
-                for (int i = 0; i < SIDES_IN_HEX; i++)
-                {
-                    row = point.row + ROW_ADDS[i];
-                    column = point.column + COLUMN_ADDS[i];
-
-                    if (game.board[row][column] != null)
-                    {
-                        if(!game.isValidTigerPosition(new Point(row, column), mySets.settlement))
-                            continue;
-
-                        else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
-                        {
-                            if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
-                            {
-                                point = new Point(row, column);
-                                break;
-                            }
-
-                            else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
-                                point = new Point(row, column);
-                        }
-                    }
-                }
-
-                if(game.isValidTigerPosition(point, mySets.settlement))
-                {
-                    System.out.println("Placed TIGER!");
-                    buildDecision = BuildOptions.TIGER_PLAYGROUND;
-                    buildPoint = point;
-                    placeTiger(point, mySets.settlement);
-                    return;
                 }
             }
         }
@@ -464,15 +470,20 @@ public class BryanAI extends Player {
             {
                 if(mySet.settlement.totoroSanctuaries == 1)
                 {
-                    tileHeld.setRotation(determineRotationForNukingAI(mySet.settlement));
-                    projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
-                    projection.projectedLevel = game.getProjectedHexLevel(projection);
+                    int nukingRotation = determineRotationForNukingAI(mySet.settlement);
 
-                    if(game.isValidTilePlacement(projection))
+                    if(nukingRotation != 0)
                     {
-                        game.setTile(tileHeld, projection);
-                        tileHeld.serverPoint = projection.volcano;
-                        return tileHeld;
+                        tileHeld.setRotation(determineRotationForNukingAI(mySet.settlement));
+                        projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
+                        projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+                        if(game.isValidTilePlacement(projection))
+                        {
+                            game.setTile(tileHeld, projection);
+                            tileHeld.serverPoint = projection.volcano;
+                            return tileHeld;
+                        }
                     }
                 }
             }
@@ -481,14 +492,19 @@ public class BryanAI extends Player {
             {
                 if(mySet.settlement.tigerPlaygrounds == 1)
                 {
-                    tileHeld.setRotation(determineRotationForNukingAI(mySet.settlement));
-                    projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
-                    projection.projectedLevel = game.getProjectedHexLevel(projection);
+                    int nukingRotation = determineRotationForNukingAI(mySet.settlement);
 
-                    if(game.isValidTilePlacement(projection)) {
-                        game.setTile(tileHeld, projection);
-                        tileHeld.serverPoint = projection.volcano;
-                        return tileHeld;
+                    if(nukingRotation != 0)
+                    {
+                        tileHeld.setRotation(determineRotationForNukingAI(mySet.settlement));
+                        projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
+                        projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+                        if(game.isValidTilePlacement(projection)) {
+                            game.setTile(tileHeld, projection);
+                            tileHeld.serverPoint = projection.volcano;
+                            return tileHeld;
+                        }
                     }
                 }
             }
