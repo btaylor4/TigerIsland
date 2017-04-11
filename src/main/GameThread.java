@@ -71,6 +71,7 @@ public class GameThread implements Runnable{
                 //}
                 System.out.println("Game " + gameID + ": " + "Received message time to make a move");
                 try {
+                    moveNumber = currentMessage.GetMoveId();
                     AIMainMethod();
                 } catch (IOException e) {
                     e.printStackTrace();
