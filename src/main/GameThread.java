@@ -60,13 +60,16 @@ public class GameThread implements Runnable{
 
 //TODO: maybe add while loop that only breaks when we have a tile
             if(isMyTurn){
-                try {
-                    System.out.println("Game " + gameID +": " +"Its my turn! I'm going to sleep until client gives me a tile");
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
 
+                while(currentMessage == null) {
+                    try {
+                        System.out.println("Game " + gameID + ": " + "Its my turn! I'm going to sleep until client gives me a tile");
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+
+                    }
                 }
-
+                System.out.println("Game " + gameID + ": " + "Received Tile time to make a move");
                 try {
                     AIMainMethod();
                 } catch (IOException e) {
@@ -94,8 +97,10 @@ public class GameThread implements Runnable{
 
             }
 
-            //game.printBoard();
+            //discard old message
+            currentMessage = null;
 
+            //alternate turn
             isMyTurn = !isMyTurn;
 
         }
