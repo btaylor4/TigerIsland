@@ -43,10 +43,10 @@ public class GameThread implements Runnable{
         isMyTurn = weGoFirst;
 
         if(weGoFirst){
-            moveNumber = 1;
+            moveNumber = 0;
         }
         else{
-            moveNumber = 2;
+            moveNumber = 1;
         }
 
     }
