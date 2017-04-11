@@ -47,7 +47,7 @@ public class TigerIsland {
                         g1 = new GameThread(message.GetGameId(), true, client);
                         game1 = new Thread(g1);
                         game1.start();
-                        System.out.println("starting game1");
+                        System.out.println("starting gameA"+ message.GetGameId());
                         g1.currentMessage = message;
                         game1.interrupt();
 
@@ -56,7 +56,7 @@ public class TigerIsland {
                         g2 = new GameThread(message.GetGameId(), false, client);
                         game2 = new Thread(g2);
                         game2.start();
-                        System.out.println("starting game2");
+                        System.out.println("starting game" + message.GetGameId());
                         g2.currentMessage = message;
                         game2.interrupt();
                     }
@@ -76,23 +76,23 @@ public class TigerIsland {
                             g1 = new GameThread(message.GetGameId(), false, client);
                             game1 = new Thread(g1);
                             game1.start();
-                            System.out.println("starting gameA");
+                            System.out.println("starting game" + message.GetGameId());
                             g1.currentMessage = message;
                         }
                         else if (game2 == null && !message.GetGameId().equals(g1.gameID)) {
                             g2 = new GameThread(message.GetGameId(), true, client);
                             game2 = new Thread(g2);
                             game2.start();
-                            System.out.println("starting gameB");
+                            System.out.println("starting game"+ message.GetGameId());
                             g2.currentMessage = message;
                         }
                         else if (message.GetGameId().equals(g1.gameID)) {
-                            System.out.println("received message for gameA");
+                            System.out.println("received message for game"+ message.GetGameId());
                             g1.currentMessage = message;
                             game1.interrupt();
                         }
                         else if (message.GetGameId().equals(g2.gameID)) {
-                            System.out.println("received message for gameB");
+                            System.out.println("received message for game"+ message.GetGameId());
                             g2.currentMessage = message;
                             game2.interrupt();
                         }
@@ -171,7 +171,7 @@ public class TigerIsland {
     }
 
     private static void TournamentAndAuthenticationProtocol(String[] args) throws IOException {
-        client = new NetClient("10.136.15.159", 6969); //IP , port
+        client = new NetClient("10.136.11.88", 6969); //IP , port
         client.getNextMessageFromServer();  //receive welcome message
         client.Send(msg.FormatAuthenticationForTournament("heygang"));
         client.getNextMessageFromServer(); //more bs
