@@ -29,7 +29,7 @@ public class TigerIsland {
         GameThread g1 = null;
         GameThread g2 = null;
 
-        try {
+        try{
             TournamentAndAuthenticationProtocol(args);
 
             while(true) {
@@ -50,6 +50,7 @@ public class TigerIsland {
                         System.out.println("starting game1");
                         g1.currentMessage = message;
                         game1.interrupt();
+
                     } else { //we go second
                         message = client.getNextMessageFromServer();
                         g2 = new GameThread(message.GetGameId(), false, client);
@@ -62,58 +63,63 @@ public class TigerIsland {
 
                     while (!hasProtocolEnded) {
                         message = client.getNextMessageFromServer();
-                        if(message.HasProtocolEnded())
+                        if(message.HasProtocolEnded() || message.HasForfeited()) //TODO: check if received a forfeit message
                         {
-                            break;
+                            if (message.GetGameId().equals(g1.gameID)){
+                                game1.join();
+                            } else if (message.GetGameId().equals(g2.gameID)){
+                                game2.join();
+                            }
                         }
                         //in case other thread has not been started
                         if (game1 == null && !message.GetGameId().equals(g2.gameID)) {
                             g1 = new GameThread(message.GetGameId(), false, client);
                             game1 = new Thread(g1);
                             game1.start();
-                            System.out.println("starting game1");
+                            System.out.println("starting gameA");
                             g1.currentMessage = message;
                         }
                         else if (game2 == null && !message.GetGameId().equals(g1.gameID)) {
                             g2 = new GameThread(message.GetGameId(), true, client);
                             game2 = new Thread(g2);
                             game2.start();
-                            System.out.println("starting game2");
+                            System.out.println("starting gameB");
                             g2.currentMessage = message;
                         }
                         else if (message.GetGameId().equals(g1.gameID)) {
-                            System.out.println("received message for game1");
+                            System.out.println("received message for gameA");
                             g1.currentMessage = message;
                             game1.interrupt();
                         }
                         else if (message.GetGameId().equals(g2.gameID)) {
-                            System.out.println("received message for game2");
+                            System.out.println("received message for gameB");
                             g2.currentMessage = message;
                             game2.interrupt();
                         }
                         else if(message.GetGameResults() != null) {
                             if (message.GetGameId().equals(g1.gameID)) {
+                                System.out.println("Ending Thread 1");
                                 game1.join();
                             } else if (message.GetGameId().equals(g2.gameID)) {
+                                System.out.println("Ending Thread 2");
                                 game2.join();
                             }
                         }
-                        //unrecognized gid
-                        else {
+                        else {//unrecognized gid
                             System.err.printf("unrecognized game id:" + message.GetGameId());
                         }
                     }
-                    ////**********Move Protocol End**********
 
+                    ////**********Move Protocol End**********
                     message = client.getNextMessageFromServer();
                     if (message.HasProtocolEnded()){
+                        System.out.println("protocol has ended 2");
                         break;
                     }
                 }
             }
-
-
-        } catch (IOException | NullPointerException | InterruptedException e) {
+        }
+        catch (IOException | NullPointerException | InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -129,6 +135,7 @@ public class TigerIsland {
         Server: GAME <gid> OVER PLAYER <pid> <score> PLAYER <pid> <score>
         Server: GAME <gid> OVER PLAYER <pid> <score> PLAYER <pid> <score>
      */
+
     private static void matchProtocolEnd() throws IOException {
 
     }
@@ -168,7 +175,7 @@ public class TigerIsland {
         client.getNextMessageFromServer();  //receive welcome message
         client.Send(msg.FormatAuthenticationForTournament("heygang"));
         client.getNextMessageFromServer(); //more bs
-        client.Send(msg.FormatAuthenticationPlayer("M", "M")); // I Am User Password
+        client.Send(msg.FormatAuthenticationPlayer("Y", "Y")); // I Am User Password
         message = client.getNextMessageFromServer(); //get the pid here
         PID = message.GetPlayerId();
     }

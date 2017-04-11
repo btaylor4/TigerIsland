@@ -1,6 +1,7 @@
 package unitTests;
 
 
+import net.NetServerMsg;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 public class TestServerMsg
 {
-    /*
+
     NetServerMsg msg;
 
     @Before
@@ -53,5 +54,5 @@ public class TestServerMsg
         assertTrue(cid.equals("NEW_ONE"));
         assertTrue(totalMatches == 2);
     }
-*/
+
 }
