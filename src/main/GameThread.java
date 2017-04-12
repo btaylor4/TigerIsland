@@ -88,11 +88,11 @@ public class GameThread implements Runnable{
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         Thread.interrupted();
-                        if(currentMessage != null && !currentMessage.GetPlayerId().equals(ourPlayerID) && currentMessage.GetTileTerrains() != null) { //null pointers
+                        if(currentMessage != null && currentMessage.GetPlayerId() != null &&!currentMessage.GetPlayerId().equals(ourPlayerID) && currentMessage.GetTileTerrains() != null) { //null pointers
                             System.out.println("Game " + gameID + ": " +"Simulating Opponents move");
                             break;
                         }
-                        else if (currentMessage != null && currentMessage.GetPlayerId().equals(ourPlayerID)){
+                        else if (currentMessage != null && currentMessage.GetPlayerId() != null && currentMessage.GetPlayerId().equals(ourPlayerID)){
                             System.out.println("Game " + gameID + ": " + "Ignoring Broadcast of our own move");
                         }
                     }

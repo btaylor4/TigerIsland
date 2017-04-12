@@ -27,7 +27,7 @@ public class TigerIsland {
         Thread game1 = null;
         Thread game2 = null;
         GameThread g1 = null;
-        //GameThread g2 = null;
+        GameThread g2 = null;
 
         try{
             TournamentAndAuthenticationProtocol(args);
@@ -54,18 +54,18 @@ public class TigerIsland {
                         game1.interrupt();
 
                     }
-//                    else { //we go second in Game2
-//
-//
-//                        message = client.getNextMessageFromServer();
-//                        g2 = new GameThread(message.GetGameId(), false, client);
-//                        game2 = new Thread(g2);
-//                        game2.start();
-//                        System.out.println("starting game" + message.GetGameId());
-//                        g2.currentMessage = message;
-//                        game2.interrupt();
-//
-//                    }
+                    else { //we go second in Game2
+
+
+                        message = client.getNextMessageFromServer();
+                        g2 = new GameThread(message.GetGameId(), false, client);
+                        game2 = new Thread(g2);
+                        game2.start();
+                        System.out.println("starting game" + message.GetGameId());
+                        g2.currentMessage = message;
+                        game2.interrupt();
+
+                    }
 
                     while (!hasProtocolEnded) { //TODO: find out when this loop should end. is it on a FORFEIT or GAME <gid> OVER message??
                         message = client.getNextMessageFromServer();
@@ -73,12 +73,14 @@ public class TigerIsland {
                         {
                             if (g1 != null && message.GetGameId().equals(g1.gameID)){
                                 g1.gameOver = true;
+                                game1.interrupt();
                                 game1.join();
                             }
-//                            else if (g2 != null && message.GetGameId().equals(g2.gameID)){
-//                                g2.gameOver = true;
-//                                game2.join();
-//                            }
+                            else if (g2 != null && message.GetGameId().equals(g2.gameID)){
+                                g2.gameOver = true;
+                                game2.interrupt();
+                                game2.join();
+                            }
 
                             /*if((!game1.isAlive() && !game2.isAlive())){ //if both threads are dead then its match is over IDK if we need this
                                 break;
@@ -95,40 +97,42 @@ public class TigerIsland {
                             game1.interrupt();
 
                         }
-//                        else if (game2 == null && !message.GetGameId().equals(g1.gameID)) {
-//
-//                            g2 = new GameThread(message.GetGameId(), true, client);
-//                            game2 = new Thread(g2);
-//                            game2.start();
-//                            System.out.println("starting game"+ message.GetGameId());
-//                            g2.currentMessage = message;
-//                            game2.interrupt();
-//
-//                        }
+                        else if (game2 == null && !message.GetGameId().equals(g1.gameID)) {
+
+                            g2 = new GameThread(message.GetGameId(), true, client);
+                            game2 = new Thread(g2);
+                            game2.start();
+                            System.out.println("starting game"+ message.GetGameId());
+                            g2.currentMessage = message;
+                            game2.interrupt();
+
+                        }
                         else if (message.GetGameId().equals(g1.gameID) && message.GetTileTerrains() != null) {
                             System.out.println("Received message for game"+ message.GetGameId());
                             g1.currentMessage = message;
                             game1.interrupt();
                         }
-//                        else if (message.GetGameId().equals(g2.gameID)&& message.GetTileTerrains() != null) {
-//                            System.out.println("Received message for game"+ message.GetGameId());
-//                            g2.currentMessage = message;
-//                            game2.interrupt();
-//                        }
+                        else if (message.GetGameId().equals(g2.gameID)&& message.GetTileTerrains() != null) {
+                            System.out.println("Received message for game"+ message.GetGameId());
+                            g2.currentMessage = message;
+                            game2.interrupt();
+                        }
                         else if(message.GetGameResults() != null) {
                             if (message.GetGameId().equals(g1.gameID)) {
                                 System.out.println("Ending Thread 1");
                                 g1.gameOver = true;
+                                game1.interrupt();
                                 game1.join();
                             }
-//                            else if (message.GetGameId().equals(g2.gameID)) {
-//                                System.out.println("Ending Thread 2");
-//                                g2.gameOver = true;
-//                                game2.join();
-//                            }
+                            else if (message.GetGameId().equals(g2.gameID)) {
+                                System.out.println("Ending Thread 2");
+                                g2.gameOver = true;
+                                game2.interrupt();
+                                game2.join();
+                            }
                         }
                         else {//unrecognized gid
-                            System.err.printf("IDK what to do with this packet:" + message.GetGameId() + ":" + message);
+                            //System.err.printf("IDK what to do with this packet:" + message.GetGameId() + ":" + message);
                         }
                     }
 
