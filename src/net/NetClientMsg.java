@@ -53,7 +53,7 @@ public class NetClientMsg {
     public String FormatBuildAction(String action, String target, Point point){
         XYZ cubePoint = new XYZ(point);
 
-        return String.format("%1$s %2$s %3$d %4$d %5$d", target, "AT",
+        return String.format("%1$s %2$s %3$d %4$d %5$d %6$d", action, target, "AT",
                 cubePoint.x, cubePoint.y, cubePoint.z);
     }
 
