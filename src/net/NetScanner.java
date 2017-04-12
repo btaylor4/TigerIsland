@@ -327,9 +327,11 @@ public class NetScanner {
                 }
                 else if(sc.hasNext())
                 {
-                    System.out.println(sc.next());
-                    playerResult.put(pid, 100);
-
+                    String data = sc.next();
+                    if(data.equals("FORFEITED") || data.equals("WIN"))
+                    {
+                        playerResult.put(pid, -1);
+                    }
                 }
             }
         }

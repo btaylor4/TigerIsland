@@ -294,7 +294,7 @@ public class NetServerMsg {
     //Server: GAME <gid> OVER PLAYER <pid> <score> PLAYER <pid> <score>
     public boolean isGameOverMessage()
     {
-        if(GetGameId() != null && GetPlayerId() != null && GetGameResults() != null)
+        if(GetGameId() != null && GetGameResults() != null)
             return true;
         else
             return false;

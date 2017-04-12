@@ -107,6 +107,9 @@ public class BryanAI extends Player {
                     freshSettlement.beginNewSettlement(point);
                     setData.put(freshSettlement, new SettlementData(freshSettlement, game));
                     game.setSettlement(point, freshSettlement);
+                    getMySettlements();
+                    updateSettlementCounts();
+                    getMySettlements();
                     placeMeeple(point, freshSettlement);
                     firstBuild = true;
                     buildDecision = BuildOptions.FOUND_SETTLEMENT;
@@ -160,6 +163,9 @@ public class BryanAI extends Player {
                             buildPoint = point;
                             placeTotoro(point, mySets.settlement);
                             System.out.println("Totoro has been fucking placed motherfucker! Score: " + score);
+                            getMySettlements();
+                            updateSettlementCounts();
+                            getMySettlements();
                             return;
                         }
                     }
@@ -206,6 +212,9 @@ public class BryanAI extends Player {
                         buildDecision = BuildOptions.TIGER_PLAYGROUND;
                         buildPoint = point;
                         placeTiger(point, mySets.settlement);
+                        getMySettlements();
+                        updateSettlementCounts();
+                        getMySettlements();
                         return;
                     }
                 }
@@ -234,6 +243,9 @@ public class BryanAI extends Player {
                     mySets.settlement.expand(TerrainType.GRASS);
                     game.expandSettlement(buildPoint, expansionAction);
                     mySets.settlement.mergeSettlements();
+                    getMySettlements();
+                    updateSettlementCounts();
+                    getMySettlements();
                     return;
                 }
             }
@@ -254,6 +266,9 @@ public class BryanAI extends Player {
                     mySets.settlement.expand(TerrainType.LAKE);
                     game.expandSettlement(buildPoint, expansionAction);
                     mySets.settlement.mergeSettlements();
+                    getMySettlements();
+                    updateSettlementCounts();
+                    getMySettlements();
                     return;
                 }
             }
@@ -274,6 +289,9 @@ public class BryanAI extends Player {
                     mySets.settlement.expand(TerrainType.JUNGLE);
                     game.expandSettlement(buildPoint, expansionAction);
                     mySets.settlement.mergeSettlements();
+                    getMySettlements();
+                    updateSettlementCounts();
+                    getMySettlements();
                     return;
                 }
             }
@@ -294,6 +312,9 @@ public class BryanAI extends Player {
                     mySets.settlement.expand(TerrainType.ROCK);
                     game.expandSettlement(buildPoint, expansionAction);
                     mySets.settlement.mergeSettlements();
+                    getMySettlements();
+                    updateSettlementCounts();
+                    getMySettlements();
                     return;
                 }
             }
@@ -319,6 +340,9 @@ public class BryanAI extends Player {
                 freshSettlement.beginNewSettlement(firstPoint);
                 setData.put(freshSettlement, new SettlementData(freshSettlement, game));
                 game.setSettlement(firstPoint, freshSettlement);
+                getMySettlements();
+                updateSettlementCounts();
+                getMySettlements();
                 placeMeeple(firstPoint, freshSettlement);
                 buildDecision = BuildOptions.FOUND_SETTLEMENT;
                 buildPoint = firstPoint;
@@ -339,6 +363,9 @@ public class BryanAI extends Player {
                     setData.put(freshSettlement, new SettlementData(freshSettlement, game));
                     game.setSettlement(point, freshSettlement);
                     placeMeeple(point, freshSettlement);
+                    getMySettlements();
+                    updateSettlementCounts();
+                    getMySettlements();
                     buildDecision = BuildOptions.FOUND_SETTLEMENT;
                     buildPoint = point;
                     freshSettlement.mergeSettlements();
