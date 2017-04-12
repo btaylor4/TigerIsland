@@ -37,8 +37,8 @@ public class GameThread implements Runnable{
         gameID = gameNumber;
         gameOver = false;
 
-        AI = new BryanAI(game,1);
-        Opponent = new Player(game,2);
+        AI = new BryanAI(game,Integer.parseInt(TigerIsland.AIPID));
+        Opponent = new Player(game,Integer.parseInt(TigerIsland.opponentPID));
 
         isMyTurn = weGoFirst;
 
