@@ -99,6 +99,9 @@ public class TigerIsland {
                     //match has ended
                 }
 
+                if(client.message.contains("THANK YOU FOR PLAYING! GOODBYE"))
+                    break;
+
                 if(client.getNextMessageFromServer().isEndChallengeMessage()){
                     //challenge has ended
                     break;
