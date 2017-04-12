@@ -162,7 +162,10 @@ public class GameThread {
         twoDimensionalPoint = xyzTo2DConverter.get2DTranslation();
 
         //place the tile
-        game.setTile(tile,new ProjectionPack(twoDimensionalPoint));
+        ProjectionPack opponentProjections = new ProjectionPack(twoDimensionalPoint);
+        opponentProjections.projectedLevel = game.getProjectedHexLevel(opponentProjections);
+
+        game.setTile(tile, opponentProjections);
 
         //parse build action
         opponentPlacement = opponentsMove.GetBuildLocation();
