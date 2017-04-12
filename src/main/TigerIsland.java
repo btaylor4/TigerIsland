@@ -54,7 +54,13 @@ public class TigerIsland {
                             gameB.processMessage(message);
                         }
                         else if(!message.isGameOverMessage()) {
-                            if ((gameA.gameID.equals(message.GetGameId()) && message.isMakeMoveMessage() ||
+                            if(client.message.contains("END OF ROUND"))
+                            {
+                                System.out.println("Match Over");
+                                break;
+                            }
+
+                            else if ((gameA.gameID.equals(message.GetGameId()) && message.isMakeMoveMessage() ||
                                     (!gameA.gameID.equals(message.GetGameId()) && message.isUpdateMessage()))) {
                                 System.out.println("Game" + gameA.gameID + ": message received");
                                 gameA.processMessage(message);
@@ -126,9 +132,9 @@ public class TigerIsland {
     }
 
     private static void TournamentAndAuthenticationProtocol(String[] args) throws IOException {
-        client = new NetClient("10.138.60.102"/*args[1]*/, 1000/*Integer.parseInt(args[2])*/); //IP , port
+        client = new NetClient(args[0], Integer.parseInt(args[1])); //IP , port
         client.getNextMessageFromServer();  //WELCOME TO ANOTHER EDITION OF THUNDERDOME!
-        client.Send(msg.FormatAuthenticationForTournament("heygang"/*args[3]*/));
+        client.Send(msg.FormatAuthenticationForTournament(args[2]));
         client.getNextMessageFromServer(); //TWO SHALL ENTER, ONE SHALL LEAVE
         client.Send(msg.FormatAuthenticationPlayer("A", "A")); // I Am User Password
         message = client.getNextMessageFromServer(); //WAIT FOR THE TOURNAMENT TO BEGIN <pid>
