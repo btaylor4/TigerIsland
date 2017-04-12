@@ -25,31 +25,32 @@ public class GameThread implements Runnable{
     String ourPlayerID = TigerIsland.AIPID;
 
     int moveNumber;
-    boolean isMyTurn;
+    private boolean isMyTurn;
     boolean gameOver;
 
-    BryanAI AI;
-    Player Opponent;
+    private BryanAI AI;
+    private Player Opponent;
 
-    public GameThread(String gameNumber, boolean weGoFirst, NetClient c){
+    public GameThread(NetServerMsg message){
         game = new GameBoard();
 
-        client = c;
-
-        gameID = gameNumber;
+        gameID = message.GetGameId();
         gameOver = false;
+
+        currentMessage = message;
+
+        if(currentMessage.isMakeMoveMessage()){
+            isMyTurn = true;
+        } else if (currentMessage.isUpdateMessage()){
+            isMyTurn = false;
+        }
 
         AI = new BryanAI(game,Integer.parseInt(TigerIsland.AIPID));
         Opponent = new Player(game,Integer.parseInt(TigerIsland.opponentPID));
 
-        isMyTurn = weGoFirst;
+    }
 
-        if(weGoFirst){
-            moveNumber = 0;
-        }
-        else{
-            moveNumber = 1;
-        }
+    public void processMessage(){
 
     }
 
