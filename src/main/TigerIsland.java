@@ -52,11 +52,13 @@ public class TigerIsland {
                             gameB = new GameThread(message);
                         }
                         else if(!message.isGameOverMessage()) {
-                            if (gameA.gameID.equals(message.GetGameId()) && message.isMakeMoveMessage()) {
+                            if ((gameA.gameID.equals(message.GetGameId()) && message.isMakeMoveMessage() ||
+                                    (!gameA.gameID.equals(message.GetGameId()) && message.isUpdateMessage()))) {
                                 System.out.println("Game" + gameA.gameID + ": message received");
                                 gameA.processMessage(message);
                             }
-                            else if (gameB.gameID.equals(message.GetGameId()) && message.isMakeMoveMessage()) {
+                            else if (gameB.gameID.equals(message.GetGameId()) && message.isMakeMoveMessage() ||
+                                    (!gameB.gameID.equals(message.GetGameId()) && message.isUpdateMessage())) {
                                 System.out.println("Game" + gameB.gameID + ": message received");
                                 gameB.processMessage(message);
                             }
