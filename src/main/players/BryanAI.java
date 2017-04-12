@@ -103,8 +103,6 @@ public class BryanAI extends Player {
                     setData.put(freshSettlement, new SettlementData(freshSettlement, game));
                     game.setSettlement(point, freshSettlement);
                     placeMeeple(point, freshSettlement);
-                    playerSettlements.put(coordinatesToKey(point.row, point.column),
-                            new SettlePointPair(freshSettlement, point));
                     firstBuild = true;
                     buildDecision = BuildOptions.FOUND_SETTLEMENT;
                     buildPoint = point;
@@ -310,8 +308,6 @@ public class BryanAI extends Player {
                 freshSettlement.beginNewSettlement(firstPoint);
                 game.setSettlement(firstPoint, freshSettlement);
                 placeMeeple(firstPoint, freshSettlement);
-                playerSettlements.put(coordinatesToKey(firstPoint.row, firstPoint.column),
-                        new SettlePointPair(freshSettlement, firstPoint));
                 buildDecision = BuildOptions.FOUND_SETTLEMENT;
                 buildPoint = firstPoint;
                 return;
@@ -330,8 +326,6 @@ public class BryanAI extends Player {
                     freshSettlement.beginNewSettlement(point);
                     game.setSettlement(point, freshSettlement);
                     placeMeeple(point, freshSettlement);
-                    playerSettlements.put(coordinatesToKey(point.row, point.column),
-                            new SettlePointPair(freshSettlement, point));
                     buildDecision = BuildOptions.FOUND_SETTLEMENT;
                     buildPoint = point;
                     freshSettlement.mergeSettlements();
