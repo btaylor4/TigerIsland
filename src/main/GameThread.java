@@ -3,7 +3,6 @@ package main;
 import main.enums.BuildOptions;
 import main.enums.TerrainType;
 import main.players.BryanAI;
-import main.utils.SettlePointPair;
 import main.utils.XYZ;
 import net.*;
 
@@ -12,9 +11,8 @@ import java.io.IOException;
 import static main.utils.constants.COLUMN_ADDS;
 import static main.utils.constants.ROW_ADDS;
 import static main.utils.constants.SIDES_IN_HEX;
-import static main.utils.formulas.coordinatesToKey;
 
-public class GameThread implements Runnable{
+public class GameThread {
 
     GameBoard game;
 
@@ -63,66 +61,6 @@ public class GameThread implements Runnable{
 
         else{
             replicateOpponentMove();
-        }
-    }
-
-    @Override
-    public void run() {
-
-        //server will tell us when game is over
-        while (!gameOver) {
-            System.out.println("Game " + gameID +": " + (isMyTurn ? "AI":"Opponent") + "'s turn");
-
-//TODO: maybe add while loop that only breaks when we have a tile
-            if(isMyTurn){
-
-                while(true) {
-                    try {
-                        System.out.println("Game " + gameID + ": " + "Its my turn! I'm going to sleep until client gives me a tile");
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        Thread.interrupted();
-                        if(currentMessage.GetMoveTimeLimit() != -1) {
-                            break;
-                        }
-                    }
-                }
-                System.out.println("Game " + gameID + ": " + "Received message time to make a move");
-                try {
-                    moveNumber = currentMessage.GetMoveId();
-                    AIMainMethod();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            else { //its opponents turn
-
-                while (!isMyTurn) {
-                    try {
-                        System.out.println("Game " + gameID + ": " +"Its NOT my turn! I'm going to sleep until opponent makes move");
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        Thread.interrupted();
-                        if(currentMessage != null && currentMessage.GetPlayerId() != null &&!currentMessage.GetPlayerId().equals(ourPlayerID) && currentMessage.GetTileTerrains() != null) { //null pointers
-                            System.out.println("Game " + gameID + ": " +"Simulating Opponents move");
-                            break;
-                        }
-                        else if (currentMessage != null && currentMessage.GetPlayerId() != null && currentMessage.GetPlayerId().equals(ourPlayerID)){
-                            System.out.println("Game " + gameID + ": " + "Ignoring Broadcast of our own move");
-                        }
-                    }
-                }
-                //simulate opponents move
-                replicateOpponentMove();
-
-            }
-
-            //discard old message
-            currentMessage = null;
-
-            //alternate turn
-            isMyTurn = !isMyTurn;
-
         }
     }
 
