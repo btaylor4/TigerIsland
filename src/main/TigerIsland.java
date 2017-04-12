@@ -48,7 +48,7 @@ public class TigerIsland {
                             gameA = new GameThread(message);
                             gameA.processMessage(message);
                         }
-                        else if (gameB == null){
+                        else if (gameB == null && !message.GetGameId().equals(gameA.gameID)){
                             System.out.println("Starting gameB");
                             gameB = new GameThread(message);
                             gameB.processMessage(message);
