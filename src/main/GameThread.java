@@ -122,7 +122,7 @@ public class GameThread {
                     break;
 
                 case FOUND_SETTLEMENT:
-                    clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
+                    clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("",
                             buildDecision.toString(), p));
                     client.Send(clientMsg);
                     break;
