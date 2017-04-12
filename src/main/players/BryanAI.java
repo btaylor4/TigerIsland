@@ -343,27 +343,11 @@ public class BryanAI extends Player {
         {
             for(int j = game.leftLimit -2 ; j < game.rightLimit+2; j++)
             {
-                if(game.board[i][j] != null)
-                {
-                    if(game.board[i][j].level != 1)
-                        continue;
+                if(game.isValidSettlementPosition(new Point(i, j)))
+                    foundableSpots.put(coordinatesToKey(i, j), new Point(i, j));
+                else
+                    foundableSpots.remove(coordinatesToKey(i, j));
 
-                    else if(game.board[i][j].occupant != null && game.board[i][j].occupant == OccupantType.NONE)
-                        continue;
-
-                    else if(game.board[i][j].settlementPointer == null && game.board[i][j].terrain != TerrainType.VOLCANO)
-                    {
-                        foundableSpots.put(coordinatesToKey(i, j), new Point(i, j));
-                    }
-
-                    else if(game.board[i][j].settlementPointer != null)
-                    {
-                        if(foundableSpots.containsKey(coordinatesToKey(i, j)))
-                        {
-                            foundableSpots.remove(coordinatesToKey(i, j));
-                        }
-                    }
-                }
             }
         }
     }
