@@ -287,9 +287,6 @@ public class NetServerMsg {
         if(GetChallengeId() != null && GetMoveId() != -1 && GetPlayerId() != null)
             return true;
 
-        else if(GetChallengeId() != null && GetMoveId() != -1 && GetPlayerId() != null && HasForfeited())
-            return true;
-
         else
             return false;
     }
@@ -332,6 +329,7 @@ public class NetServerMsg {
 
     //TODO: Server: END OF CHALLENGES
     public boolean isEndChallengeMessage(){
+
         return false;
     }
 
