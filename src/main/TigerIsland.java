@@ -24,11 +24,6 @@ public class TigerIsland {
 
     public static void main(String[] args) {
 
-        Thread game1 = null;
-        Thread game2 = null;
-        GameThread g1 = null;
-        GameThread g2 = null;
-
         GameThread gameA = null;
         GameThread gameB = null;
 
@@ -44,149 +39,59 @@ public class TigerIsland {
                     matchProtocolBegin();
 
                     //**********Move Protocol Begin**********
-                    message = client.getNextMessageFromServer(); //this message will start one of the GameThreads
-
                     while(true){
+
+                        message = client.getNextMessageFromServer(); //this message will start one of the GameThreads
+
                         if(gameA == null){
+                            System.out.println("Starting gameA");
                             gameA = new GameThread(message);
                         }
                         else if (gameB == null){
+                            System.out.println("Starting gameB");
                             gameB = new GameThread(message);
                         }
                         else if(!message.isGameOverMessage()) {
-                            if (gameA.gameID.equals(message.GetGameId())) {
-                                gameA.processMessage();
-                            } else if (gameB.gameID.equals(message.GetGameId())) {
-                                gameB.processMessage();
+                            if (gameA.gameID.equals(message.GetGameId()) && message.isMakeMoveMessage()) {
+                                System.out.println("Game" + gameA.gameID + ": message received");
+                                gameA.processMessage(message);
+                            }
+                            else if (gameB.gameID.equals(message.GetGameId()) && message.isMakeMoveMessage()) {
+                                System.out.println("Game" + gameB.gameID + ": message received");
+                                gameB.processMessage(message);
                             }
                         }
                         else if(message.isGameOverMessage()){
-                            if(message.GetGameId()){
-
+                            if(gameA.gameID.equals(message.GetGameId())){
+                                gameA.gameOver = true;
+                                System.out.println("Game" + gameA.gameID + ": ending");
                             }
-                            else if (){
+                            else if (gameB.gameID.equals(message.GetGameId())){
+                                gameB.gameOver = true;
+                                System.out.println("Game" + gameB.gameID + ": ending");
+                            }
 
+                            if (gameA.gameOver && gameB.gameOver){
+                                System.out.println("Match Over");
+                                break;
                             }
                         }
                         else{
-                            System.err.println("Unrecognized message" + message);
+                            System.err.println("Unrecognized message: " + message);
                         }
                     }
-
-
-
-
-
-
-
-
-
-
-
-                    //////////***********************************************////////////////
-                    if (message.GetPlayerId() == null) { //we go first in Game1
-
-                        g1 = new GameThread(message.GetGameId(), true, client);
-                        game1 = new Thread(g1);
-                        game1.start();
-                        System.out.println("starting gameA"+ message.GetGameId());
-                        g1.currentMessage = message;
-                        game1.interrupt();
-
-                    }
-                    else { //we go second in Game2
-
-                        message = client.getNextMessageFromServer();
-                        g2 = new GameThread(message.GetGameId(), false, client);
-                        game2 = new Thread(g2);
-                        game2.start();
-                        System.out.println("starting game" + message.GetGameId());
-                        g2.currentMessage = message;
-                        game2.interrupt();
-
-                    }
-
-                    while (!hasProtocolEnded) { //TODO: find out when this loop should end. is it on a FORFEIT or GAME <gid> OVER message??
-                        message = client.getNextMessageFromServer();
-                        if(message.HasProtocolEnded() || message.HasForfeited()) //TODO: check if received a forfeit message
-                        {
-                            if (g1 != null && message.GetGameId().equals(g1.gameID)){
-                                g1.gameOver = true;
-                                game1.interrupt();
-                                game1.join();
-                            }
-                            else if (g2 != null && message.GetGameId().equals(g2.gameID)){
-                                g2.gameOver = true;
-                                game2.interrupt();
-                                game2.join();
-                            }
-
-                            /*if((!game1.isAlive() && !game2.isAlive())){ //if both threads are dead then its match is over IDK if we need this
-                                break;
-                            }*/
-                        }
-                        //if one thread is null and the message gid doesn't match other thread's gid == time to start null thread
-                        if (game1 == null && !message.GetGameId().equals(g2.gameID)) {
-
-                            g1 = new GameThread(message.GetGameId(), false, client);
-                            game1 = new Thread(g1);
-                            game1.start();
-                            System.out.println("starting game" + message.GetGameId());
-                            g1.currentMessage = message;
-                            game1.interrupt();
-
-                        }
-                        else if (game2 == null && !message.GetGameId().equals(g1.gameID)) {
-
-                            g2 = new GameThread(message.GetGameId(), true, client);
-                            game2 = new Thread(g2);
-                            game2.start();
-                            System.out.println("starting game"+ message.GetGameId());
-                            g2.currentMessage = message;
-                            game2.interrupt();
-
-                        }
-                        else if (message.GetGameId().equals(g1.gameID) && message.GetTileTerrains() != null) {
-                            System.out.println("Received message for game"+ message.GetGameId());
-                            g1.currentMessage = message;
-                            game1.interrupt();
-                        }
-                        else if (message.GetGameId().equals(g2.gameID)&& message.GetTileTerrains() != null) {
-                            System.out.println("Received message for game"+ message.GetGameId());
-                            g2.currentMessage = message;
-                            game2.interrupt();
-                        }
-                        else if(message.GetGameResults() != null) {
-                            if (message.GetGameId().equals(g1.gameID)) {
-                                System.out.println("Ending Thread 1");
-                                g1.gameOver = true;
-                                game1.interrupt();
-                                game1.join();
-                            }
-                            else if (message.GetGameId().equals(g2.gameID)) {
-                                System.out.println("Ending Thread 2");
-                                g2.gameOver = true;
-                                game2.interrupt();
-                                game2.join();
-                            }
-                        }
-                        else {//unrecognized gid
-                            //System.err.printf("IDK what to do with this packet:" + message.GetGameId() + ":" + message);
-                        }
-                    }
-
-                    //At this point both threads should be done
-
-                    ////**********Move Protocol End**********
+                    //match has ended
                     message = client.getNextMessageFromServer();
-                    if (message.HasProtocolEnded()){
-                        System.out.println("protocol has ended 2");
-                        break;
-                    }
+
+                    /*TODO:Server: END OF ROUND <rid> OF <rounds>
+                        or
+                        Server: END OF ROUND <rid> OF <rounds> WAIT FOR THE NEXT MATCH
+                    */
+
                 }
             }
         }
-        catch (IOException | NullPointerException | InterruptedException e) {
+        catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
 
