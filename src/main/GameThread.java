@@ -3,6 +3,7 @@ package main;
 import main.enums.BuildOptions;
 import main.enums.TerrainType;
 import main.players.BryanAI;
+import main.utils.SettlePointPair;
 import main.utils.XYZ;
 import net.*;
 
@@ -11,6 +12,7 @@ import java.io.IOException;
 import static main.utils.constants.COLUMN_ADDS;
 import static main.utils.constants.ROW_ADDS;
 import static main.utils.constants.SIDES_IN_HEX;
+import static main.utils.formulas.coordinatesToKey;
 
 public class GameThread implements Runnable{
 
@@ -224,8 +226,11 @@ public class GameThread implements Runnable{
                 buildOption = BuildOptions.FOUND_SETTLEMENT;
                 Settlement foundMe = new Settlement(game);
                 foundMe.owner = Opponent;
+                foundMe.ownerNumber = Integer.parseInt(TigerIsland.opponentPID);
                 foundMe.beginNewSettlement(twoDimensionalPoint);
                 game.setSettlement(twoDimensionalPoint,foundMe);
+                Opponent.playerSettlements.put(coordinatesToKey(twoDimensionalPoint.row, twoDimensionalPoint.column),
+                        new SettlePointPair(foundMe, twoDimensionalPoint));
                 Opponent.placeMeeple(twoDimensionalPoint,foundMe);
                 break;
             case BUILT:
