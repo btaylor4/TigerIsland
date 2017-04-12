@@ -3,7 +3,6 @@ package main;
 import main.enums.BuildOptions;
 import main.enums.TerrainType;
 import main.players.BryanAI;
-import main.utils.SettlePointPair;
 import main.utils.XYZ;
 import net.*;
 
@@ -12,9 +11,8 @@ import java.io.IOException;
 import static main.utils.constants.COLUMN_ADDS;
 import static main.utils.constants.ROW_ADDS;
 import static main.utils.constants.SIDES_IN_HEX;
-import static main.utils.formulas.coordinatesToKey;
 
-public class GameThread implements Runnable{
+public class GameThread {
 
     GameBoard game;
 
@@ -25,91 +23,44 @@ public class GameThread implements Runnable{
     String ourPlayerID = TigerIsland.AIPID;
 
     int moveNumber;
-    boolean isMyTurn;
+    private boolean isMyTurn;
     boolean gameOver;
 
-    BryanAI AI;
-    Player Opponent;
+    private BryanAI AI;
+    private Player Opponent;
 
-    public GameThread(String gameNumber, boolean weGoFirst, NetClient c){
+    public GameThread(NetServerMsg message){
         game = new GameBoard();
 
-        client = c;
-
-        gameID = gameNumber;
+        gameID = message.GetGameId();
         gameOver = false;
+
+        currentMessage = message;
+
+        if(currentMessage.isMakeMoveMessage()){
+            isMyTurn = true;
+        } else if (currentMessage.isUpdateMessage()){
+            isMyTurn = false;
+        }
 
         AI = new BryanAI(game,Integer.parseInt(TigerIsland.AIPID));
         Opponent = new Player(game,Integer.parseInt(TigerIsland.opponentPID));
 
-        isMyTurn = weGoFirst;
-
-        if(weGoFirst){
-            moveNumber = 0;
-        }
-        else{
-            moveNumber = 1;
-        }
-
     }
 
-    @Override
-    public void run() {
-
-        //server will tell us when game is over
-        while (!gameOver) {
-            System.out.println("Game " + gameID +": " + (isMyTurn ? "AI":"Opponent") + "'s turn");
-
-//TODO: maybe add while loop that only breaks when we have a tile
-            if(isMyTurn){
-
-                while(true) {
-                    try {
-                        System.out.println("Game " + gameID + ": " + "Its my turn! I'm going to sleep until client gives me a tile");
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        Thread.interrupted();
-                        if(currentMessage.GetMoveTimeLimit() != -1) {
-                            break;
-                        }
-                    }
-                }
-                System.out.println("Game " + gameID + ": " + "Received message time to make a move");
-                try {
-                    moveNumber = currentMessage.GetMoveId();
-                    AIMainMethod();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            else { //its opponents turn
-
-                while (!isMyTurn) {
-                    try {
-                        System.out.println("Game " + gameID + ": " +"Its NOT my turn! I'm going to sleep until opponent makes move");
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        Thread.interrupted();
-                        if(currentMessage != null && currentMessage.GetPlayerId() != null &&!currentMessage.GetPlayerId().equals(ourPlayerID) && currentMessage.GetTileTerrains() != null) { //null pointers
-                            System.out.println("Game " + gameID + ": " +"Simulating Opponents move");
-                            break;
-                        }
-                        else if (currentMessage != null && currentMessage.GetPlayerId() != null && currentMessage.GetPlayerId().equals(ourPlayerID)){
-                            System.out.println("Game " + gameID + ": " + "Ignoring Broadcast of our own move");
-                        }
-                    }
-                }
-                //simulate opponents move
-                replicateOpponentMove();
-
+    public void processMessage(NetServerMsg protocol){
+        if(protocol.isMakeMoveMessage())
+        {
+            try {
+                AIMainMethod();
             }
 
-            //discard old message
-            currentMessage = null;
+            catch(Exception e)
+            {}
+        }
 
-            //alternate turn
-            isMyTurn = !isMyTurn;
-
+        else{
+            replicateOpponentMove();
         }
     }
 
@@ -228,10 +179,8 @@ public class GameThread implements Runnable{
                 foundMe.owner = Opponent;
                 foundMe.ownerNumber = Integer.parseInt(TigerIsland.opponentPID);
                 foundMe.beginNewSettlement(twoDimensionalPoint);
-                game.setSettlement(twoDimensionalPoint,foundMe);
-                Opponent.playerSettlements.put(coordinatesToKey(twoDimensionalPoint.row, twoDimensionalPoint.column),
-                        new SettlePointPair(foundMe, twoDimensionalPoint));
                 Opponent.placeMeeple(twoDimensionalPoint,foundMe);
+                game.setSettlement(twoDimensionalPoint,foundMe);
                 break;
             case BUILT:
                 buildOption = opponentsMove.GetSettlement();
