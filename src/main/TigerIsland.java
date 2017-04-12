@@ -45,7 +45,6 @@ public class TigerIsland {
 
                     if (message.GetPlayerId() == null) { //we go first in Game1
 
-                        //initializeAndStartGameThread(game1,g1,true);
                         g1 = new GameThread(message.GetGameId(), true, client);
                         game1 = new Thread(g1);
                         game1.start();
@@ -55,7 +54,6 @@ public class TigerIsland {
 
                     }
                     else { //we go second in Game2
-
 
                         message = client.getNextMessageFromServer();
                         g2 = new GameThread(message.GetGameId(), false, client);
@@ -87,7 +85,7 @@ public class TigerIsland {
                             }*/
                         }
                         //if one thread is null and the message gid doesn't match other thread's gid == time to start null thread
-                        if (game1 == null /*&& !message.GetGameId().equals(g2.gameID)*/) {
+                        if (game1 == null && !message.GetGameId().equals(g2.gameID)) {
 
                             g1 = new GameThread(message.GetGameId(), false, client);
                             game1 = new Thread(g1);
