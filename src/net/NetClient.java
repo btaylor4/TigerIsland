@@ -3,6 +3,7 @@ package net;
 import jdk.internal.org.objectweb.asm.Handle;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -52,7 +53,7 @@ public class NetClient {
     }
 
     public void Start() throws IOException {
-        reader = new Scanner(socket.getInputStream());
+        reader = new Scanner(new InputStreamReader(socket.getInputStream())); // changed this line to see if it worked
     }
 
     public void Listen() throws IOException {
@@ -71,6 +72,7 @@ public class NetClient {
         String message ;
         if ((message = reader.nextLine()) != null) {
             if(!message.isEmpty()) {
+                System.out.println("This is the message" + message);
                 HandleMessage(message);
                 this.message = message;
                 return msg;

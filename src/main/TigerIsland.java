@@ -59,12 +59,14 @@ public class TigerIsland {
                             }
 
                             else if ((gameA.gameID.equals(message.GetGameId()) && message.isMakeMoveMessage() ||
-                                    (!gameA.gameID.equals(message.GetGameId()) && message.isUpdateMessage()))) {
+                                    (!gameA.gameID.equals(message.GetGameId()) && message.isUpdateMessage() &&
+                                            !gameA.ourPlayerID.equals(message.GetPlayerId())))) {
                                 System.out.println("Game" + gameA.gameID + ": message received");
                                 gameA.processMessage(message);
                             }
                             else if (gameB != null && gameB.gameID.equals(message.GetGameId()) && message.isMakeMoveMessage() ||
-                                    (gameB != null && !gameB.gameID.equals(message.GetGameId()) && message.isUpdateMessage())) {
+                                    (gameB != null && !gameB.gameID.equals(message.GetGameId()) && message.isUpdateMessage())
+                                            && !gameB.ourPlayerID.equals(message.GetPlayerId())) {
                                 System.out.println("Game" + gameB.gameID + ": message received");
                                 gameB.processMessage(message);
                             }
