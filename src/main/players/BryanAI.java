@@ -209,11 +209,11 @@ public class BryanAI extends Player {
 
         for (SettlePointPair mySets : playerSettlements.values())
         {
-            setData.get(mySets).compileSettlementData();
+            setData.get(mySets.settlement).compileSettlementData();
 
             if (mySets.settlement.size + mySets.settlement.grasslands.size() > 1 && meeples > mySets.settlement.grasslands.size())
             {
-                if(setData.get(mySets).afterGrass > meeples)
+                if(setData.get(mySets.settlement).afterGrass > meeples)
                 {
                     break;
                 }
@@ -232,7 +232,7 @@ public class BryanAI extends Player {
 
             else if (mySets.settlement.size + mySets.settlement.lakes.size() > 1 && meeples > mySets.settlement.lakes.size())
             {
-                if(setData.get(mySets).afterLake > meeples)
+                if(setData.get(mySets.settlement).afterLake > meeples)
                 {
                     break;
                 }
@@ -251,7 +251,7 @@ public class BryanAI extends Player {
 
             else if (mySets.settlement.size + mySets.settlement.jungles.size() > 1 && meeples > mySets.settlement.jungles.size())
             {
-                if(setData.get(mySets).afterJungle > meeples)
+                if(setData.get(mySets.settlement).afterJungle > meeples)
                 {
                     break;
                 }
@@ -270,7 +270,7 @@ public class BryanAI extends Player {
 
             else if (mySets.settlement.size + mySets.settlement.rocky.size() > 1 && meeples > mySets.settlement.rocky.size())
             {
-                if(setData.get(mySets).afterRocky > meeples)
+                if(setData.get(mySets.settlement).afterRocky > meeples)
                 {
                     break;
                 }
@@ -306,6 +306,7 @@ public class BryanAI extends Player {
                 freshSettlement.owner = this ;
                 freshSettlement.ownerNumber = designator ;
                 freshSettlement.beginNewSettlement(firstPoint);
+                setData.put(freshSettlement, new SettlementData(freshSettlement, game));
                 game.setSettlement(firstPoint, freshSettlement);
                 placeMeeple(firstPoint, freshSettlement);
                 buildDecision = BuildOptions.FOUND_SETTLEMENT;
@@ -324,6 +325,7 @@ public class BryanAI extends Player {
                     freshSettlement.owner = this ;
                     freshSettlement.ownerNumber = designator ;
                     freshSettlement.beginNewSettlement(point);
+                    setData.put(freshSettlement, new SettlementData(freshSettlement, game));
                     game.setSettlement(point, freshSettlement);
                     placeMeeple(point, freshSettlement);
                     buildDecision = BuildOptions.FOUND_SETTLEMENT;
