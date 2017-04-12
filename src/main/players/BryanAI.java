@@ -437,7 +437,7 @@ public class BryanAI extends Player {
                         projection = projectTilePlacement(tileHeld, point);
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        if(game.isValidTilePlacement(projection))
+                        if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
                         {
                             game.setTile(tileHeld, projection);
                             tileHeld.serverPoint = projection.volcano;
@@ -754,7 +754,8 @@ public class BryanAI extends Player {
                             }
                         }
 
-                        else if(projection.projectedLevel > 1 && game.isValidOverlap(projection)){
+                        else if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
+                        {
                             if(!checkForAdjacaentVolcanoes(projection))
                             {
                                 volcanoPlacement = new Point(row, column);
