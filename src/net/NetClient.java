@@ -21,6 +21,7 @@ public class NetClient {
     private NetServerMsg msg;
     private Scanner reader;
     private PrintStream output;
+    public String message = "";
 
     public NetClient() throws IOException
     {
@@ -71,6 +72,7 @@ public class NetClient {
         if ((message = reader.nextLine()) != null) {
             if(!message.isEmpty()) {
                 HandleMessage(message);
+                this.message = message;
                 return msg;
             }
         }

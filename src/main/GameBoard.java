@@ -57,7 +57,7 @@ public class GameBoard {
 
         for(int i = 0; i < NUM_TILES; i++){
             tileBeingSwapped = tileStack[i] ;
-            random_index = r.nextInt(NUM_TILES) ;
+            random_index = (int)(Math.random() * NUM_TILES);
             tileStack[i] = tileStack[random_index] ;
             tileStack[random_index] = tileBeingSwapped ;
         }
