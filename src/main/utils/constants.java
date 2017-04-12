@@ -13,4 +13,8 @@ public class constants {
 
     public static final int rowOneAway[] = {2, 1, 0, -1, -2, -2, -2, -1, 0, 1};
     public static final int columnOneAway[] = {-2, -2, -2, -1, 0, 1, 2, 2, 2, 1};
+
+    public static final int TRAVERSE_ROW_ADDS[] = {-1, 0, 1, 1, 0, -1};
+    public static final int TRAVERSE_COLUMN_ADDS[] = {1, 1, 0, -1, -1, 0};
+
 }

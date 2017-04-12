@@ -1,36 +1,42 @@
 package main.players;
 
-import main.GameBoard;
-import main.Player;
-import main.Point;
+import main.*;
 import main.enums.BuildOptions;
-import main.players.AIUtils.Objective;
+import main.enums.OccupantType;
+import main.enums.TerrainType;
+
 import main.players.AIUtils.SettlementData;
 import main.players.AIUtils.TileOptions;
 import main.utils.SettlePointPair;
 
 import java.util.ArrayList;
 
+import static main.utils.constants.*;
+
 
 public class JPAI extends Player {
 
     public int moveNumber ;
-
-    private Objective currentGoal ;
     private TileOptions tilePlayStrat ;
     private BuildOptions buildPlayStrat ;
+
+    private int extensionPossibleTilePlacement ;
+    private ProjectionPack projectionPossibleTilePlacement ;
+    private int projectedLoss ;
+
+    private ArrayList<SettlementData> mySettlementData ;
+    private ArrayList<SettlePointPair> totoroPossibilities ;
+    private ArrayList<SettlePointPair> tigerPossibilities ;
+    private ArrayList<Settlement> settlementsWithTotoro;
 
     private Player other;
     private int opponentMeeples, opponentTotoro, opponentTigers, opponentScore ;
 
-    private ArrayList<SettlePointPair> totoroPossibilities ;
-    private ArrayList<SettlePointPair> tigerPossibilities ;
-
+    private ArrayList<Settlement> nukeTargets ;
+    private ArrayList<Point> totoroPreventionSpots;
+    private ArrayList<Point> tigerPreventionSpots;
     private ArrayList<SettlementData> opponentSet ;
-    private ArrayList<SettlementData> mySettlementData ;
 
-    private ArrayList<Point> totoroPreventionHits;
-    private ArrayList<Point> tigerPreventionHits;
 
     public JPAI(GameBoard gamePointer, int designator, Player opponent){
         super(gamePointer, designator);
@@ -38,19 +44,24 @@ public class JPAI extends Player {
         moveNumber = 0 ;
         tilePlayStrat = TileOptions.FLATBUILD ;
         buildPlayStrat = BuildOptions.FOUND_SETTLEMENT ;
-        currentGoal = Objective.EXPAND ;
 
         totoroPossibilities = new ArrayList<>();
         tigerPossibilities = new ArrayList<>();
+        settlementsWithTotoro = new ArrayList<>();
 
         opponentSet = new ArrayList<>() ;
         mySettlementData = new ArrayList<>() ;
 
-        totoroPreventionHits = new ArrayList<>() ;
-        tigerPreventionHits = new ArrayList<>() ;
+        nukeTargets = new ArrayList<>() ;
+        totoroPreventionSpots = new ArrayList<>() ;
+        tigerPreventionSpots = new ArrayList<>() ;
     }
 
     private void prepareDecisionData(){
+        extensionPossibleTilePlacement = BOARD_CENTER-2 ;
+        projectionPossibleTilePlacement = null ;
+        projectedLoss = 0 ;
+
         getOpponentPieces();
         getOpponentSettlements();
         getMySettlements();
@@ -63,6 +74,7 @@ public class JPAI extends Player {
 
         gatherAvailableTotoroPlacement();
         gatherAvailableTigerPlacement();
+        gatherTotoroToDetach();
 
         makeTotoroHitlist();
         makeTigerHitlist();
@@ -119,11 +131,20 @@ public class JPAI extends Player {
         }
     }
 
+    private void gatherTotoroToDetach(){
+        for(SettlementData sd : mySettlementData){
+            if(sd.settle.totoroSanctuaries > 0 && sd.size > 4){
+                settlementsWithTotoro.add(sd.settle) ;
+            }
+        }
+    }
+
     private void makeTotoroHitlist(){
         for(SettlementData sd : opponentSet){
             if(sd.size > 4 && sd.settle.totoroSanctuaries == 0){
+                nukeTargets.add(sd.settle) ;
                 for(Point pt : sd.nonFloodAdjacencies.values()){
-                    totoroPreventionHits.add(pt);
+                    totoroPreventionSpots.add(pt);
                 }
             }
         }
@@ -133,7 +154,7 @@ public class JPAI extends Player {
         for(SettlementData sd : opponentSet){
             if(sd.settle.tigerPlaygrounds == 0) {
                 for (Point pt : sd.level3Adjacencies.values()) {
-                    tigerPreventionHits.add(pt);
+                    tigerPreventionSpots.add(pt);
                 }
             }
         }
@@ -145,39 +166,27 @@ public class JPAI extends Player {
 
         totoroPossibilities.clear();
         tigerPossibilities.clear();
+        settlementsWithTotoro.clear();
 
-        totoroPreventionHits.clear();
-        tigerPreventionHits.clear();
+        nukeTargets.clear();
+        totoroPreventionSpots.clear();
+        tigerPreventionSpots.clear();
     }
 
     @Override
     protected void determineTilePlacement(){
-        // Ai determined by algorithm
         prepareDecisionData();
         decideTileOption();
         determineTilePosition();
-    }
-
-    private void decideBuildOption(){
-        if(mySettlementData.isEmpty())
-            currentGoal = Objective.MAKE_SETTLEMENT;
-        else if(!totoroPossibilities.isEmpty() && totoro > 0) {
-            currentGoal = Objective.TOTORO_PLACEMENT ;
-        }
-        else if(!tigerPossibilities.isEmpty() && tigers > 0){
-            currentGoal = Objective.TIGER_PLACEMENT ;
-        }
-        else if(mySettlementData.size() > 0){
-            currentGoal = Objective.EXPAND ;
-        }
-        else{
-            currentGoal = Objective.MAKE_SETTLEMENT;
-        }
+        clearDataLists();
     }
 
     private void decideTileOption(){
-        if(!tigerPreventionHits.isEmpty() || !totoroPreventionHits.isEmpty()){
+        if(!nukeTargets.isEmpty()){
             tilePlayStrat = TileOptions.OFFENSIVE ;
+        }
+        else if(!settlementsWithTotoro.isEmpty()){
+            tilePlayStrat = TileOptions.SELFNUKE ;
         }
         else{
             tilePlayStrat = TileOptions.FLATBUILD ;
@@ -187,66 +196,227 @@ public class JPAI extends Player {
     private void determineTilePosition(){
         switch(tilePlayStrat){
             case OFFENSIVE:
-                //offensiveTilePlacement();
+                offensiveTilePlacement();
+                break;
+
+            case SELFNUKE:
+                selfNukeTilePlacement();
                 break;
 
             case FLATBUILD:
-                //flatTilePlacement();
+                flatTilePlacement();
                 break;
 
             default:
-                //flatTilePlacement();
+                flatTilePlacement();
                 break;
         }
     }
 
-    /*
-    private void offensiveTilePlacement(){
-        int row, column, rotation ;
-
-        tilePlacement = determineTilePosition();
-        tileProjection = projectTilePlacement(tileHeld, tilePlacement);
-        tileProjection.projectedLevel = game.getProjectedHexLevel(tileProjection) ;
-        game.isValidTilePlacement(tileProjection);
-    }
-
     private void flatTilePlacement(){
-        int row, column, rotation ;
-
-        tilePlacement = determineTilePosition();
-        tileProjection = projectTilePlacement(tileHeld, tilePlacement);
-        tileProjection.projectedLevel = game.getProjectedHexLevel(tileProjection) ;
-        game.isValidTilePlacement(tileProjection);
+        if(mySettlementData.isEmpty())
+            setFlatTilePlacement(new Point(BOARD_CENTER, BOARD_CENTER));
+        else {
+            for (SettlementData data : mySettlementData) {
+                for (Point pt : data.settle.occupantPositions.values())
+                    setFlatTilePlacement(pt);
+            }
+        }
     }
+
+    private void setFlatTilePlacement(Point origin){
+        // origin is where a settlement member is then we go around it
+        Point seeker = new Point(0, 0);
+        boolean found = false ;
+
+        for(int displacement = 2; (displacement < BOARD_CENTER-2) && !found; displacement++){
+            if(displacement > extensionPossibleTilePlacement) break ;
+
+            seeker.row = origin.row - displacement;
+            seeker.column = origin.column ;
+
+            if(checkAllRotations_Flat(seeker)){
+                found = true ;
+                if(displacement < extensionPossibleTilePlacement){
+                    tileProjection = projectionPossibleTilePlacement;
+                    tilePlacement = seeker;
+                }
+            }
+
+            for(int side = 0 ; (side < SIDES_IN_HEX) && !found; side++) {
+                for (int moves = 0; (moves < displacement) && !found; moves++) {
+                    seeker.row += TRAVERSE_ROW_ADDS[side] ;
+                    seeker.column += TRAVERSE_COLUMN_ADDS[side] ;
+
+                    if(checkAllRotations_Flat(seeker)){
+                        found = true ;
+                        if(displacement < extensionPossibleTilePlacement){
+                            tileProjection = projectionPossibleTilePlacement;
+                            tilePlacement = seeker;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean checkAllRotations_Flat(Point point){
+        for(int i = 0 ; i < SIDES_IN_HEX; i++){
+            tileHeld.setRotation(i + 1) ;
+            projectionPossibleTilePlacement = projectTilePlacement(tileHeld, point) ;
+            projectionPossibleTilePlacement.projectedLevel = game.getProjectedHexLevel(projectionPossibleTilePlacement);
+            if(game.isValidTilePlacement(projectionPossibleTilePlacement) && projectionPossibleTilePlacement.projectedLevel == 1)
+                return true;
+        }
+        return false ;
+    }
+
+    private void offensiveTilePlacement(){
+        // try to prevent tigers before preventing totoro
+        totoroPreventionNuke();
+
+        if(projectedLoss == 0) { // cant nuke
+            flatTilePlacement();
+        }
+    }
+
+    private void totoroPreventionNuke(){
+        int victims = 0 ;
+
+        for(Settlement tgt : nukeTargets){
+            for(Point volcano : tgt.volcanoes.values()){
+                // try to nuke two from this volcano
+                if(victims != 2) victims = checkAllRotations_Nuke(volcano, tgt) ;
+            }
+        }
+    }
+
+    private int checkAllRotations_Nuke(Point point, Settlement settle){
+        int victims = 0 ;
+
+        for(int i = 0 ; i < SIDES_IN_HEX; i++){
+            victims = 0;
+            tileHeld.setRotation(i + 1) ;
+            projectionPossibleTilePlacement = projectTilePlacement(tileHeld, point) ;
+            projectionPossibleTilePlacement.projectedLevel = game.getProjectedHexLevel(projectionPossibleTilePlacement);
+
+            if((projectionPossibleTilePlacement.projectedLevel > 1) && game.isValidOverlap(projectionPossibleTilePlacement)){
+                if(game.board[projectionPossibleTilePlacement.hex_a.row][projectionPossibleTilePlacement.hex_a.column].settlementPointer == settle)
+                    victims++ ;
+
+                if(game.board[projectionPossibleTilePlacement.hex_b.row][projectionPossibleTilePlacement.hex_b.column].settlementPointer == settle)
+                    victims++ ;
+
+                if(victims > projectedLoss){
+                    projectedLoss = victims ;
+                    tileProjection = projectionPossibleTilePlacement ;
+                    tilePlacement = point ;
+                }
+
+                if(victims == 2) return victims;
+            }
+        }
+
+        return victims ;
+    }
+
+    private void selfNukeTilePlacement(){
+        Point totoroPosition ;
+        boolean nukeSucceeded = false ;
+
+        for(Settlement set : settlementsWithTotoro) {
+            totoroPosition = findTheTotoro(set);
+            if (totoroPosition.row != 0 && totoroPosition.column != 0) {
+                nukeSucceeded = nukeAroundTotoro(totoroPosition);
+            }
+        }
+
+        if(!nukeSucceeded) flatTilePlacement();
+    }
+
+    private Point findTheTotoro(Settlement settlement){
+        for(Point pt : settlement.occupantPositions.values()){
+            if(game.board[pt.row][pt.column].occupant == OccupantType.TOTORO)
+                return pt ;
+        }
+        return new Point(0,0);
+    }
+
+    private boolean nukeAroundTotoro(Point pt){
+        Point seeker = new Point(pt.row-1, pt.column);
+        if(attemptValidNuke(seeker)) return true ;
+
+        for(int i = 0 ; i < SIDES_IN_HEX; i++){
+            seeker.row += TRAVERSE_ROW_ADDS[i] ;
+            seeker.column += TRAVERSE_COLUMN_ADDS[i] ;
+
+            if(attemptValidNuke(seeker)) return true ;
+        }
+
+        return false ;
+    }
+
+    private boolean attemptValidNuke(Point pt){
+        for(int j = 0; j < SIDES_IN_HEX; j++){
+            tileHeld.setRotation(j + 1);
+            projectionPossibleTilePlacement = projectTilePlacement(tileHeld, pt);
+            projectionPossibleTilePlacement.projectedLevel = game.getProjectedHexLevel(projectionPossibleTilePlacement);
+
+            if((projectionPossibleTilePlacement.projectedLevel > 1) && game.isValidOverlap(projectionPossibleTilePlacement)){
+                tileProjection = projectionPossibleTilePlacement;
+                tilePlacement = pt;
+                return true;
+            }
+        }
+
+        return false ;
+    }
+
 
     @Override
     protected void determineBuildOption(){
-        // Ai determined by algorithm
+        prepareDecisionData();
+        decideBuildOption();
         selectBuildOption();
-
         clearDataLists();
     }
 
-    private void selectBuildOption(){
+    private void decideBuildOption(){
+        if(mySettlementData.isEmpty())
+            buildPlayStrat = BuildOptions.FOUND_SETTLEMENT ;
+        else if(!totoroPossibilities.isEmpty() && totoro > 0) {
+            buildPlayStrat = BuildOptions.TOTORO_SANCTUARY ;
+        }
+        else if(!tigerPossibilities.isEmpty() && tigers > 0){
+            buildPlayStrat = BuildOptions.TIGER_PLAYGROUND ;
+        }
+        else if(mySettlementData.size() > 0){
+            buildPlayStrat = BuildOptions.EXPAND ;
+        }
+        else{
+            buildPlayStrat = BuildOptions.FOUND_SETTLEMENT;
+        }
+    }
 
-        switch(buildOption) {
-            case 1:
+    private void selectBuildOption(){
+        switch(buildPlayStrat) {
+            case FOUND_SETTLEMENT:
                 buildDecision = BuildOptions.FOUND_SETTLEMENT ;
-                determineSettlementPosition();
-                System.out.println("Successfully Founded");
+                buildPoint = determineSettlementPosition();
+                System.out.println("Successfully new settlement at: " + buildPoint.row + " " + buildPoint.column);
                 break;
 
-            case 2:
+            case EXPAND:
                 buildDecision = BuildOptions.EXPAND ;
                 determineSettlementExpansion();
                 break;
 
-            case 3:
+            case TOTORO_SANCTUARY:
                 buildDecision = BuildOptions.TOTORO_SANCTUARY ;
                 determineTotoroPlacement();
                 break;
 
-            case 4:
+            case TIGER_PLAYGROUND:
                 buildDecision = BuildOptions.TIGER_PLAYGROUND ;
                 determineTigerPlaygroundPlacement();
                 break;
@@ -256,28 +426,139 @@ public class JPAI extends Player {
         }
     }
 
+    private Point determineSettlementPosition(){
+        Point seeker = new Point(0, 0);
+
+        for(int displacement = 1; (displacement < BOARD_CENTER-2); displacement++){
+            seeker.row = BOARD_CENTER - displacement;
+            seeker.column = BOARD_CENTER ;
+
+            for(int side = 0 ; (side < SIDES_IN_HEX) ; side++) {
+                for (int moves = 0; (moves < displacement) ; moves++) {
+                    seeker.row += TRAVERSE_ROW_ADDS[side] ;
+                    seeker.column += TRAVERSE_COLUMN_ADDS[side] ;
+
+                    if(game.isValidSettlementPosition(seeker));
+                        return seeker ;
+                }
+            }
+        }
+
+        System.out.println("Settlement position not found!");
+        return seeker ;
+    }
+
     private void determineSettlementExpansion(){
-        buildPoint = chooseSettlementToExpand();
-        terrainSelection = chooseTerrainToExpandOn();
+        buildPoint = findSettlementToExpand();
+        if(buildPoint == null){
+            buildPlayStrat = BuildOptions.FOUND_SETTLEMENT ;
+            buildPoint = determineSettlementPosition();
+        }
+    }
+
+    private Point findSettlementToExpand(){
+        int sizeAfter = 0, meepleCost = 20;
+        boolean goForTotoro = false ;
+        Point selectedPoint = null ;
+
+        for(SettlementData sd : mySettlementData){
+            if((sd.afterGrass > 4) && (sd.grassCost < meepleCost) && (sd.grassCost < meeples)){
+                meepleCost = sd.grassCost ;
+                terrainSelection = TerrainType.GRASS ;
+                selectedPoint = sd.settlePoint ;
+                goForTotoro = true ;
+            }
+
+            if((sd.afterLake > 4) && (sd.lakeCost < meepleCost) && (sd.lakeCost < meeples)){
+                meepleCost = sd.lakeCost ;
+                terrainSelection = TerrainType.LAKE ;
+                selectedPoint = sd.settlePoint ;
+                goForTotoro = true ;
+            }
+
+            if((sd.afterRocky > 4) && (sd.rockyCost < meepleCost) && (sd.rockyCost < meeples)){
+                meepleCost = sd.rockyCost ;
+                terrainSelection = TerrainType.ROCK ;
+                selectedPoint = sd.settlePoint ;
+                goForTotoro = true ;
+            }
+
+            if((sd.afterJungle > 4) && (sd.jungleCost < meepleCost) && (sd.jungleCost < meeples)){
+                meepleCost = sd.jungleCost ;
+                terrainSelection = TerrainType.JUNGLE ;
+                selectedPoint = sd.settlePoint ;
+                goForTotoro = true ;
+            }
+        }
+
+        if(goForTotoro) return selectedPoint ;
+
+        for(SettlementData sd : mySettlementData){
+            if((sd.afterGrass >= sizeAfter) && (sd.grassCost < meepleCost) && (sd.grassCost < meeples)){
+                meepleCost = sd.grassCost ;
+                sizeAfter = sd.afterGrass ;
+                terrainSelection = TerrainType.GRASS ;
+                selectedPoint = sd.settlePoint ;
+            }
+
+            if((sd.afterLake >= sizeAfter) && (sd.lakeCost < meepleCost) && (sd.lakeCost < meeples)){
+                meepleCost = sd.lakeCost ;
+                sizeAfter = sd.afterLake ;
+                terrainSelection = TerrainType.LAKE ;
+                selectedPoint = sd.settlePoint ;
+            }
+
+            if((sd.afterRocky >= sizeAfter) && (sd.rockyCost < meepleCost) && (sd.rockyCost < meeples)){
+                meepleCost = sd.rockyCost ;
+                sizeAfter = sd.afterRocky ;
+                terrainSelection = TerrainType.ROCK ;
+                selectedPoint = sd.settlePoint ;
+            }
+
+            if((sd.afterJungle >= sizeAfter) && (sd.jungleCost < meepleCost) && (sd.jungleCost < meeples)){
+                meepleCost = sd.jungleCost ;
+                sizeAfter = sd.afterJungle ;
+                terrainSelection = TerrainType.JUNGLE ;
+                selectedPoint = sd.settlePoint ;
+            }
+        }
+
+        return selectedPoint ;
     }
 
     private void determineTotoroPlacement(){
-        Point finder ;
-        finder = chooseSettlementForTotoro();
-        selectedSettlement = game.board[finder.row][finder.column].settlementPointer ;
-        buildPoint = chooseTotoroPosition() ;
+        boolean spotFound = false ;
 
-        !game.isValidTotoroPosition(buildPoint, selectedSettlement));
+        for(SettlePointPair sp : totoroPossibilities){
+            if(game.isValidTotoroPosition(sp.point, sp.settlement)){
+                buildPoint = sp.point ;
+                selectedSettlement = sp.settlement ;
+                spotFound = true ;
+                break;
+            }
+        }
+
+        if(!spotFound){
+            buildPlayStrat = BuildOptions.FOUND_SETTLEMENT ;
+            buildPoint = determineSettlementPosition();
+        }
     }
 
     private void determineTigerPlaygroundPlacement(){
-        Point finder ;
+        boolean spotFound = false ;
 
-        finder = chooseSettlementForTiger();
-        selectedSettlement = game.board[finder.row][finder.column].settlementPointer ;
-        buildPoint = chooseTigerPosition() ;
-        game.isValidTigerPosition(buildPoint, selectedSettlement);
+        for(SettlePointPair sp : tigerPossibilities){
+            if(game.isValidTigerPosition(sp.point, sp.settlement)){
+                buildPoint = sp.point ;
+                selectedSettlement = sp.settlement ;
+                spotFound = true ;
+                break;
+            }
+        }
+
+        if(!spotFound){
+            buildPlayStrat = BuildOptions.FOUND_SETTLEMENT ;
+            buildPoint = determineSettlementPosition();
+        }
     }
-
-*/
 }

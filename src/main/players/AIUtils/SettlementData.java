@@ -9,11 +9,11 @@ import java.util.HashMap;
 
 public class SettlementData {
     public int size ;
-
     public int grassCost, lakeCost, jungleCost, rockyCost ;
     public int afterGrass, afterLake, afterJungle, afterRocky ;
 
     public Settlement settle;
+    public Point settlePoint ;
     public GameBoard game ;
 
     private HashMap<Integer, Integer> countedTerrain;
@@ -28,6 +28,7 @@ public class SettlementData {
 
     public SettlementData(Settlement ptr, GameBoard game){
         settle = ptr ;
+        settlePoint = null ;
         this.game = game ;
 
         countedTerrain = new HashMap<>() ;
@@ -47,6 +48,8 @@ public class SettlementData {
         greaterLevelAdjacencies.clear();
         nonFloodAdjacencies.clear();
 
+        getOneOccupantPoint();
+
         gatherLevelDwellers();
 
         settle.countSettlementMembers();
@@ -55,19 +58,19 @@ public class SettlementData {
 
         helper = gatherExpansionCosts(settle.grasslands) ;
         grassCost = helper.cost ;
-        afterGrass = size + helper.size;
+        afterGrass = helper.size;
 
         helper = gatherExpansionCosts(settle.jungles) ;
         jungleCost = helper.cost ;
-        afterJungle = size + helper.size;
+        afterJungle = helper.size;
 
         helper = gatherExpansionCosts(settle.lakes) ;
         lakeCost = helper.cost ;
-        afterLake = size + helper.size;
+        afterLake = helper.size;
 
         helper = gatherExpansionCosts(settle.rocky) ;
         rockyCost = helper.cost ;
-        afterRocky = size + helper.size;
+        afterRocky = helper.size;
     }
 
     private SizeCostPair gatherExpansionCosts(HashMap<Integer,Point> adjacents){
@@ -127,6 +130,13 @@ public class SettlementData {
             else if(game.board[pt.row][pt.column].level > 2){
                 greaterLevelOccupants.put(game.board[pt.row][pt.column].key, pt) ;
             }
+        }
+    }
+
+    private void getOneOccupantPoint(){
+        for(Point pt : settle.occupantPositions.values()) {
+            settlePoint = pt ;
+            break;
         }
     }
 
