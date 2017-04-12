@@ -9,7 +9,7 @@ public class TigerIsland {
 
 
     static String AIPID;
-    static String opponentPID; //should not really be needed
+    static String opponentPID;
     static String challengeID;
 
     static boolean hasProtocolEnded = false;
@@ -29,6 +29,9 @@ public class TigerIsland {
         GameThread g1 = null;
         GameThread g2 = null;
 
+        GameThread gameA = null;
+        GameThread gameB = null;
+
         try{
             TournamentAndAuthenticationProtocol(args);
 
@@ -43,6 +46,44 @@ public class TigerIsland {
                     //**********Move Protocol Begin**********
                     message = client.getNextMessageFromServer(); //this message will start one of the GameThreads
 
+                    while(true){
+                        if(gameA == null){
+                            gameA = new GameThread(message);
+                        }
+                        else if (gameB == null){
+                            gameB = new GameThread(message);
+                        }
+                        else if(!message.isGameOverMessage()) {
+                            if (gameA.gameID.equals(message.GetGameId())) {
+                                gameA.processMessage();
+                            } else if (gameB.gameID.equals(message.GetGameId())) {
+                                gameB.processMessage();
+                            }
+                        }
+                        else if(message.isGameOverMessage()){
+                            if(message.GetGameId()){
+
+                            }
+                            else if (){
+
+                            }
+                        }
+                        else{
+                            System.err.println("Unrecognized message" + message);
+                        }
+                    }
+
+
+
+
+
+
+
+
+
+
+
+                    //////////***********************************************////////////////
                     if (message.GetPlayerId() == null) { //we go first in Game1
 
                         g1 = new GameThread(message.GetGameId(), true, client);

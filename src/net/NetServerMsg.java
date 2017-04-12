@@ -269,4 +269,27 @@ public class NetServerMsg {
         return null;
     }
 
+    //Server: MAKE YOUR MOVE IN GAME <gid> WITHIN <timemove> SECOND: MOVE <#> PLACE <tile>
+    public boolean isMakeMoveMessage(){
+        return false;
+    }
+
+    /* Server: GAME <gid> MOVE <#> PLAYER <pid> <move>
+         or
+        Server: GAME <gid> MOVE <#> PLAYER <pid> FORFEITED: ILLEGAL TILE PLACEMENT
+    */
+    public boolean isUpdateMessage(){
+        return false;
+    }
+
+    //Server: GAME <gid> OVER PLAYER <pid> <score> PLAYER <pid> <score>
+    public boolean isGameOverMessage(){
+        return false;
+    }
+
+    //Server: END OF ROUND <rid> OF <rounds>
+    public boolean isRoundOverMessage(){
+        return false;
+    }
+
 }
