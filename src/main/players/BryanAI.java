@@ -447,7 +447,7 @@ public class BryanAI extends Player {
                         projection = projectTilePlacement(tileHeld, point);
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        if(game.isValidTilePlacement(projection))
+                        if(game.isValidTilePlacement(projection) && game.isValidOverlap(projection))
                         {
                             game.setTile(tileHeld, projection);
                             tileHeld.serverPoint = projection.volcano;
@@ -474,7 +474,7 @@ public class BryanAI extends Player {
                         projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        if(game.isValidTilePlacement(projection))
+                        if(game.isValidTilePlacement(projection) && game.isValidOverlap(projection))
                         {
                             game.setTile(tileHeld, projection);
                             tileHeld.serverPoint = projection.volcano;
@@ -496,7 +496,7 @@ public class BryanAI extends Player {
                         projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        if(game.isValidTilePlacement(projection)) {
+                        if(game.isValidTilePlacement(projection) && game.isValidOverlap(projection)) {
                             game.setTile(tileHeld, projection);
                             tileHeld.serverPoint = projection.volcano;
                             return tileHeld;
@@ -509,9 +509,6 @@ public class BryanAI extends Player {
             {
                 //check if I can place a tile that will add to one of the adjacency lists to make expansion better
                 //and away from volcanoes
-                if(tileHeld == null)
-                    return tileHeld;
-
                 if(determineTilePlacementForExpansion(mySet, tileHeld.hexA.terrain))
                     return tileHeld;
 
@@ -534,7 +531,7 @@ public class BryanAI extends Player {
                 projection = projectTilePlacement(tileHeld, determineTilePlacementForPlacingAI(settlementChoice));
                 projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                if(game.isValidTilePlacement(projection))
+                if(game.isValidTilePlacement(projection) && game.isValidOverlap(projection))
                 {
                     game.setTile(tileHeld, projection);
                     tileHeld.serverPoint = projection.volcano;
@@ -552,7 +549,7 @@ public class BryanAI extends Player {
                         projection = projectTilePlacement(tileHeld, point);
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        if(game.isValidTilePlacement(projection))
+                        if(game.isValidTilePlacement(projection) && game.isValidOverlap(projection))
                         {
                             game.setTile(tileHeld, projection);
                             tileHeld.serverPoint = projection.volcano;
@@ -584,7 +581,7 @@ public class BryanAI extends Player {
                             projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                            if(game.isValidTilePlacement(projection))
+                            if(game.isValidTilePlacement(projection) && game.isValidOverlap(projection))
                             {
                                 tileHeld.serverPoint = projection.volcano;
                                 game.setTile(tileHeld, projection);
@@ -606,7 +603,7 @@ public class BryanAI extends Player {
                             projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                            if(game.isValidTilePlacement(projection))
+                            if(game.isValidTilePlacement(projection) && game.isValidOverlap(projection))
                             {
                                 tileHeld.serverPoint = projection.volcano;
                                 game.setTile(tileHeld, projection);
@@ -628,7 +625,7 @@ public class BryanAI extends Player {
                             projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                            if(game.isValidTilePlacement(projection))
+                            if(game.isValidTilePlacement(projection) && game.isValidOverlap(projection))
                             {
                                 tileHeld.serverPoint = projection.volcano;
                                 game.setTile(tileHeld, projection);
@@ -650,7 +647,7 @@ public class BryanAI extends Player {
                             projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                            if(game.isValidTilePlacement(projection))
+                            if(game.isValidTilePlacement(projection) && game.isValidOverlap(projection))
                             {
                                 tileHeld.serverPoint = projection.volcano;
                                 game.setTile(tileHeld, projection);
@@ -694,7 +691,7 @@ public class BryanAI extends Player {
                         projection = projectTilePlacement(tileHeld, new Point(row, column));
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        if(game.isValidTilePlacement(projection))
+                        if(game.isValidTilePlacement(projection) && game.isValidOverlap(projection))
                         {
                             if(!checkForAdjacaentVolcanoes(projection))
                             {
