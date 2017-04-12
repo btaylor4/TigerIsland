@@ -270,26 +270,66 @@ public class NetServerMsg {
     }
 
     //Server: MAKE YOUR MOVE IN GAME <gid> WITHIN <timemove> SECOND: MOVE <#> PLACE <tile>
-    public boolean isMakeMoveMessage(){
-        return false;
+    public boolean isMakeMoveMessage()
+    {
+        if (GetMoveTimeLimit() != -1)
+            return true;
+        else
+            return false;
     }
 
     /* Server: GAME <gid> MOVE <#> PLAYER <pid> <move>
          or
         Server: GAME <gid> MOVE <#> PLAYER <pid> FORFEITED: ILLEGAL TILE PLACEMENT
     */
-    public boolean isUpdateMessage(){
-        return false;
+    public boolean isUpdateMessage()
+    {
+        if(GetChallengeId() != null && GetMoveId() != -1 && GetPlayerId() != null)
+            return true;
+
+        else if(GetChallengeId() != null && GetMoveId() != -1 && GetPlayerId() != null && HasForfeited())
+            return true;
+
+        else
+            return false;
     }
 
     //Server: GAME <gid> OVER PLAYER <pid> <score> PLAYER <pid> <score>
-    public boolean isGameOverMessage(){
-        return false;
+    public boolean isGameOverMessage()
+    {
+        if(GetGameId() != null && GetPlayerId() != null && GetGameResults() != null)
+            return true;
+        else
+            return false;
     }
 
     //Server: END OF ROUND <rid> OF <rounds>
-    public boolean isRoundOverMessage(){
-        return false;
+    public boolean isRoundOverMessage()
+    {
+        if(GetRoundId() != -1 && GetTotalRounds() != -1)
+            return true;
+        else
+            return false;
     }
+
+    //Server: BEGIN ROUND <rid> OF <rounds>
+    public boolean isBeginRound()
+    {
+        if(GetRoundId() != -1 && GetTotalRounds() != -1)
+            return true;
+        else
+            return false;
+    }
+
+    //Server: NEW MATCH BEGINNING NOW YOUR OPPONENT IS PLAYER <pid>
+    public boolean isNewMatch()
+    {
+        if(GetPlayerId() != null)
+            return true;
+        else
+            return false;
+    }
+
+    //Server: END OF CHALLENGES
 
 }
