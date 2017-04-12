@@ -204,17 +204,21 @@ public class Player {
         switch(buildDecision){
             case FOUND_SETTLEMENT:
                 foundNewSettlement(buildPoint);
+                System.out.println("New settlement at: " + buildPoint.row + " " + buildPoint.column);
                 break;
 
             case EXPAND:
+                System.out.println("Expanding " + terrainSelection + " at: " + buildPoint.row + " " + buildPoint.column);
                 expandSettlementMeeple(buildPoint, terrainSelection);
                 break;
 
             case TOTORO_SANCTUARY:
+                System.out.println("Totoro at: " + buildPoint.row + " " + buildPoint.column + " " + selectedSettlement);
                 placeTotoro(buildPoint, selectedSettlement);
                 break;
 
             case TIGER_PLAYGROUND:
+                System.out.println("Tiger at: " + buildPoint.row + " " + buildPoint.column + " " + selectedSettlement);
                 placeTiger(buildPoint, selectedSettlement);
                 break;
 

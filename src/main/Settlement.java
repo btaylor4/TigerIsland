@@ -289,8 +289,9 @@ public class Settlement {
         tigerPlaygrounds = 0 ;
 
         for(Point pt : occupantPositions.values()){
-
+            System.out.println("Member at: " + pt.row + " " + pt.column);
             size++ ;
+
             switch(game.board[pt.row][pt.column].occupant){
                 case TOTORO:
                     totoroSanctuaries++ ;

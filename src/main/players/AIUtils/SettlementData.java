@@ -13,7 +13,6 @@ public class SettlementData {
     public int afterGrass, afterLake, afterJungle, afterRocky ;
 
     public Settlement settle;
-    public Point settlePoint ;
     public GameBoard game ;
 
     private HashMap<Integer, Integer> countedTerrain;
@@ -28,7 +27,6 @@ public class SettlementData {
 
     public SettlementData(Settlement ptr, GameBoard game){
         settle = ptr ;
-        settlePoint = null ;
         this.game = game ;
 
         countedTerrain = new HashMap<>() ;
@@ -47,8 +45,6 @@ public class SettlementData {
         level3Adjacencies.clear();
         greaterLevelAdjacencies.clear();
         nonFloodAdjacencies.clear();
-
-        getOneOccupantPoint();
 
         gatherLevelDwellers();
 
@@ -130,13 +126,6 @@ public class SettlementData {
             else if(game.board[pt.row][pt.column].level > 2){
                 greaterLevelOccupants.put(game.board[pt.row][pt.column].key, pt) ;
             }
-        }
-    }
-
-    private void getOneOccupantPoint(){
-        for(Point pt : settle.occupantPositions.values()) {
-            settlePoint = pt ;
-            break;
         }
     }
 

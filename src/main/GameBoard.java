@@ -393,8 +393,8 @@ public class GameBoard {
         newSettlement.addAdjacentTerrains(desiredPosition);
         newSettlement.addAdjacentSettlementsForMerge(desiredPosition);
         newSettlement.mergeSettlements();
-        newSettlement.countSettlementMembers();
         board[desiredPosition.row][desiredPosition.column].settlementPointer = newSettlement ;
+        newSettlement.countSettlementMembers();
     }
 
     public void expandSettlement(Point settlementPoint, TerrainType terrainChoice){
