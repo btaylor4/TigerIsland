@@ -7,6 +7,7 @@ import main.enums.TerrainType;
 import main.players.AIUtils.SettlementData;
 import main.utils.SettlePointPair;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static main.utils.constants.*;
@@ -24,6 +25,7 @@ public class BryanAI extends Player {
     public Point buildPoint ;
     public TerrainType expansionAction;
     public HashMap<Settlement, SettlementData> setData;
+    public ArrayList<SettlementData> mySettlementData;
 
     public BryanAI(GameBoard gamePointer, int designator){
         super(gamePointer, designator);
@@ -36,7 +38,7 @@ public class BryanAI extends Player {
         buildPoint = null;
         expansionAction = TerrainType.GRASS;
         setData = new HashMap<>();
-
+        mySettlementData = new ArrayList<>();
     }
 
     public void setTile(Tile tile)
@@ -83,7 +85,10 @@ public class BryanAI extends Player {
 
     public void determineBuildByAI()
     {
+        getMySettlements();
+        updateSettlementCounts();
         updateFoundPositions();
+        getMySettlements();
         //Priority list
         int row = 0;
         int column = 0;
@@ -215,8 +220,11 @@ public class BryanAI extends Player {
             {
                 if(setData.get(mySets.settlement).afterGrass > meeples)
                 {
-                    break;
+                    continue;
                 }
+
+                else if(mySets.settlement.grassExpansions <= 0)
+                    continue;
 
                 else if(mySets.settlement.grasslands.size() > 0)
                 {
@@ -233,11 +241,12 @@ public class BryanAI extends Player {
             else if (mySets.settlement.size + mySets.settlement.lakes.size() > 1 && meeples > mySets.settlement.lakes.size())
             {
                 if(setData.get(mySets.settlement).afterLake > meeples)
-                {
-                    break;
-                }
+                    continue;
 
-                if(mySets.settlement.lakes.size() > 0)
+                else if(mySets.settlement.grassExpansions <= 0)
+                    continue;
+
+                else if(mySets.settlement.lakes.size() > 0)
                 {
                     buildDecision = BuildOptions.EXPAND;
                     buildPoint = mySets.point;
@@ -252,11 +261,12 @@ public class BryanAI extends Player {
             else if (mySets.settlement.size + mySets.settlement.jungles.size() > 1 && meeples > mySets.settlement.jungles.size())
             {
                 if(setData.get(mySets.settlement).afterJungle > meeples)
-                {
-                    break;
-                }
+                    continue;
 
-                if(mySets.settlement.jungles.size() > 0)
+                else if(mySets.settlement.grassExpansions <= 0)
+                    continue;
+
+                else if(mySets.settlement.jungles.size() > 0)
                 {
                     buildDecision = BuildOptions.EXPAND;
                     buildPoint = mySets.point;
@@ -271,11 +281,12 @@ public class BryanAI extends Player {
             else if (mySets.settlement.size + mySets.settlement.rocky.size() > 1 && meeples > mySets.settlement.rocky.size())
             {
                 if(setData.get(mySets.settlement).afterRocky > meeples)
-                {
-                    break;
-                }
+                    continue;
 
-                if(mySets.settlement.rocky.size() > 0)
+                else if(mySets.settlement.grassExpansions <= 0)
+                    continue;
+
+                else if(mySets.settlement.rocky.size() > 0)
                 {
                     buildDecision = BuildOptions.EXPAND;
                     buildPoint = mySets.point;
@@ -343,27 +354,11 @@ public class BryanAI extends Player {
         {
             for(int j = game.leftLimit -2 ; j < game.rightLimit+2; j++)
             {
-                if(game.board[i][j] != null)
-                {
-                    if(game.board[i][j].level != 1)
-                        continue;
+                if(game.isValidSettlementPosition(new Point(i, j)))
+                    foundableSpots.put(coordinatesToKey(i, j), new Point(i, j));
+                else
+                    foundableSpots.remove(coordinatesToKey(i, j));
 
-                    else if(game.board[i][j].occupant != null && game.board[i][j].occupant == OccupantType.NONE)
-                        continue;
-
-                    else if(game.board[i][j].settlementPointer == null && game.board[i][j].terrain != TerrainType.VOLCANO)
-                    {
-                        foundableSpots.put(coordinatesToKey(i, j), new Point(i, j));
-                    }
-
-                    else if(game.board[i][j].settlementPointer != null)
-                    {
-                        if(foundableSpots.containsKey(coordinatesToKey(i, j)))
-                        {
-                            foundableSpots.remove(coordinatesToKey(i, j));
-                        }
-                    }
-                }
             }
         }
     }
@@ -382,6 +377,14 @@ public class BryanAI extends Player {
             {
                 switch (tileHeld.hexA.terrain) {
                     case ROCK:
+                        selectedPoint = new Point(108, 103);
+                        tileHeld.setRotation(2);
+                        projection = projectTilePlacement(tileHeld, selectedPoint);
+                        projection.projectedLevel = game.getProjectedHexLevel(projection);
+                        game.setTile(tileHeld, projection);
+                        tileHeld.serverPoint = projection.volcano;
+                        firstPlay = true;
+                        return tileHeld;
 
                     case GRASS:
                         //set orientation to 2
@@ -414,6 +417,14 @@ public class BryanAI extends Player {
                 switch (tileHeld.hexA.terrain)
                 {
                     case ROCK:
+                        selectedPoint = new Point(108, 103);
+                        tileHeld.setRotation(2);
+                        projection = projectTilePlacement(tileHeld, selectedPoint);
+                        projection.projectedLevel = game.getProjectedHexLevel(projection);
+                        game.setTile(tileHeld, projection);
+                        tileHeld.serverPoint = projection.volcano;
+                        firstPlay = true;
+                        return tileHeld;
 
                     case GRASS:
                         selectedPoint = new Point(108, 103);
@@ -426,6 +437,14 @@ public class BryanAI extends Player {
                         return tileHeld;
 
                     case LAKE:
+                        selectedPoint = new Point(102, 106);
+                        tileHeld.setRotation(3);
+                        projection = projectTilePlacement(tileHeld, selectedPoint);
+                        projection.projectedLevel = game.getProjectedHexLevel(projection);
+                        game.setTile(tileHeld, projection);
+                        tileHeld.serverPoint = projection.volcano;
+                        firstPlay = true;
+                        return tileHeld;
 
                     case JUNGLE:
                         //set orientation to 5
@@ -453,7 +472,7 @@ public class BryanAI extends Player {
                         projection = projectTilePlacement(tileHeld, point);
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        if(game.isValidTilePlacement(projection))
+                        if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
                         {
                             game.setTile(tileHeld, projection);
                             tileHeld.serverPoint = projection.volcano;
@@ -770,7 +789,8 @@ public class BryanAI extends Player {
                             }
                         }
 
-                        else if(projection.projectedLevel > 1 && game.isValidOverlap(projection)){
+                        else if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
+                        {
                             if(!checkForAdjacaentVolcanoes(projection))
                             {
                                 volcanoPlacement = new Point(row, column);
@@ -796,6 +816,19 @@ public class BryanAI extends Player {
         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
         return volcanoPlacement;
+    }
+
+    private void getMySettlements(){
+        for(SettlePointPair pair: playerSettlements.values()){
+            uniqueSettlements.put(pair.settlement, pair.point);
+        }
+
+        for(Point point : uniqueSettlements.values()){
+            setData.put(game.board[point.row][point.column].settlementPointer, new SettlementData(game.board[point.row][point.column].settlementPointer, game));
+            //mySettlementData.add(new SettlementData(game.board[point.row][point.column].settlementPointer, game));
+        }
+
+        uniqueSettlements.clear();
     }
 
     public boolean checkForAdjacaentVolcanoes(ProjectionPack projection)

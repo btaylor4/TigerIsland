@@ -122,7 +122,7 @@ public class GameThread {
                     break;
 
                 case FOUND_SETTLEMENT:
-                    clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("BUILD",
+                    clientMsg = msg.FormatGameMove(gameID, moveNumber, msg.FormatPlaceAction(tile), msg.FormatBuildAction("",
                             buildDecision.toString(), p));
                     client.Send(clientMsg);
                     break;
@@ -147,8 +147,6 @@ public class GameThread {
 
         XYZ xyzTo2DConverter;
         Point twoDimensionalPoint;
-
-        moveNumber = opponentsMove.GetMoveId() + 1;
 
         //parse tile placement
         tile = new Tile();
@@ -177,32 +175,37 @@ public class GameThread {
             case NONE:
                 break;
             case EXPANDED:
+                Opponent.buildDecision = BuildOptions.EXPAND ;
+                Opponent.selectedSettlement = game.board[twoDimensionalPoint.row][twoDimensionalPoint.column].settlementPointer ;
                 A = opponentPlacement.GetTerrainType();
-                game.board[twoDimensionalPoint.row][twoDimensionalPoint.column].settlementPointer.expand(A);
+                Opponent.terrainSelection = A ;
+                Opponent.buildPoint = twoDimensionalPoint ;
+                Opponent.playBuildPhase();
                 break;
+
             case FOUNDED:
-                buildOption = BuildOptions.FOUND_SETTLEMENT;
-                Settlement foundMe = new Settlement(game);
-                foundMe.owner = Opponent;
-                foundMe.ownerNumber = Integer.parseInt(TigerIsland.opponentPID);
-                foundMe.beginNewSettlement(twoDimensionalPoint);
-                Opponent.placeMeeple(twoDimensionalPoint,foundMe);
-                game.setSettlement(twoDimensionalPoint,foundMe);
+                Opponent.buildPoint = twoDimensionalPoint ;
+                Opponent.buildDecision = BuildOptions.FOUND_SETTLEMENT;
+                Opponent.playBuildPhase();
                 break;
+
             case BUILT:
+
                 buildOption = opponentsMove.GetSettlement();
-                Settlement addTotoroOrTigerToMe = null;
+                Settlement selected = null ;
+
                 for (int j=0; j<SIDES_IN_HEX; j++){
                     if (game.board[twoDimensionalPoint.row+ROW_ADDS[j]][twoDimensionalPoint.column+COLUMN_ADDS[j]].settlementPointer.owner == Opponent){
-                        addTotoroOrTigerToMe = game.board[twoDimensionalPoint.row+ROW_ADDS[j]][twoDimensionalPoint.column+COLUMN_ADDS[j]].settlementPointer;
+                        selected = game.board[twoDimensionalPoint.row+ROW_ADDS[j]][twoDimensionalPoint.column+COLUMN_ADDS[j]].settlementPointer;
+                        break;
                     }
                 }
 
-                if(buildOption == BuildOptions.TIGER_PLAYGROUND){
-                    Opponent.placeTiger(twoDimensionalPoint,addTotoroOrTigerToMe);
-                } else if (buildOption == BuildOptions.TOTORO_SANCTUARY) {
-                    Opponent.placeTotoro(twoDimensionalPoint,addTotoroOrTigerToMe);
-                }
+                Opponent.buildDecision = buildOption ;
+                Opponent.buildPoint = twoDimensionalPoint ;
+                Opponent.selectedSettlement = selected ;
+
+                Opponent.playBuildPhase();
 
                 break;
         }
