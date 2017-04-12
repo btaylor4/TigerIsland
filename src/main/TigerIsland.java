@@ -71,8 +71,10 @@ public class TigerIsland {
                         if(message.HasProtocolEnded() || message.HasForfeited()) //TODO: check if received a forfeit message
                         {
                             if (g1 != null && message.GetGameId().equals(g1.gameID)){
+                                g1.gameOver = true;
                                 game1.join();
                             } else if (g2 != null && message.GetGameId().equals(g2.gameID)){
+                                g1.gameOver = true;
                                 game2.join();
                             }
 
@@ -101,12 +103,12 @@ public class TigerIsland {
                             game2.interrupt();
 
                         }
-                        else if (message.GetGameId().equals(g1.gameID)) {
+                        else if (message.GetGameId().equals(g1.gameID) && message.GetTileTerrains() != null) {
                             System.out.println("Received message for game"+ message.GetGameId());
                             g1.currentMessage = message;
                             game1.interrupt();
                         }
-                        else if (message.GetGameId().equals(g2.gameID)) {
+                        else if (message.GetGameId().equals(g2.gameID)&& message.GetTileTerrains() != null) {
                             System.out.println("Received message for game"+ message.GetGameId());
                             g2.currentMessage = message;
                             game2.interrupt();
@@ -114,14 +116,16 @@ public class TigerIsland {
                         else if(message.GetGameResults() != null) {
                             if (message.GetGameId().equals(g1.gameID)) {
                                 System.out.println("Ending Thread 1");
+                                g1.gameOver = true;
                                 game1.join();
                             } else if (message.GetGameId().equals(g2.gameID)) {
                                 System.out.println("Ending Thread 2");
+                                g1.gameOver = true;
                                 game2.join();
                             }
                         }
                         else {//unrecognized gid
-                            System.err.printf("Unrecognized Game id:" + message.GetGameId());
+                            System.err.printf("IDK what to do with this packet:" + message.GetGameId() + ":" + message);
                         }
                     }
 
@@ -195,7 +199,7 @@ public class TigerIsland {
     }
 
     private static void TournamentAndAuthenticationProtocol(String[] args) throws IOException {
-        client = new NetClient("10.136.5.17"/*args[1]*/, 6969/*Integer.parseInt(args[2])*/); //IP , port
+        client = new NetClient("10.136.18.24"/*args[1]*/, 6969/*Integer.parseInt(args[2])*/); //IP , port
         client.getNextMessageFromServer();  //WELCOME TO ANOTHER EDITION OF THUNDERDOME!
         client.Send(msg.FormatAuthenticationForTournament("heygang"/*args[3]*/));
         client.getNextMessageFromServer(); //TWO SHALL ENTER, ONE SHALL LEAVE
@@ -204,3 +208,6 @@ public class TigerIsland {
         AIPID = message.GetPlayerId();
     }
 }
+
+//128.227.205.151
+//10.136.18.24
