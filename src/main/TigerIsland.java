@@ -59,8 +59,8 @@ public class TigerIsland {
                                 System.out.println("Game" + gameA.gameID + ": message received");
                                 gameA.processMessage(message);
                             }
-                            else if (gameB.gameID.equals(message.GetGameId()) && message.isMakeMoveMessage() ||
-                                    (!gameB.gameID.equals(message.GetGameId()) && message.isUpdateMessage())) {
+                            else if (gameB != null && gameB.gameID.equals(message.GetGameId()) && message.isMakeMoveMessage() ||
+                                    (gameB != null && !gameB.gameID.equals(message.GetGameId()) && message.isUpdateMessage())) {
                                 System.out.println("Game" + gameB.gameID + ": message received");
                                 gameB.processMessage(message);
                             }
@@ -70,12 +70,12 @@ public class TigerIsland {
                                 gameA.gameOver = true;
                                 System.out.println("Game" + gameA.gameID + ": ending");
                             }
-                            else if (gameB.gameID.equals(message.GetGameId())){
+                            else if (gameB != null && gameB.gameID.equals(message.GetGameId())){
                                 gameB.gameOver = true;
                                 System.out.println("Game" + gameB.gameID + ": ending");
                             }
 
-                            if (gameA.gameOver && gameB.gameOver){
+                            if (gameA.gameOver && gameB != null && gameB.gameOver){
                                 System.out.println("Match Over");
                                 break;
                             }
