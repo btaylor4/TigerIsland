@@ -12,7 +12,7 @@ import static main.utils.constants.COLUMN_ADDS;
 import static main.utils.constants.ROW_ADDS;
 import static main.utils.constants.SIDES_IN_HEX;
 
-public class GameThread implements Runnable{
+public class GameThread {
 
     GameBoard game;
 
@@ -20,84 +20,52 @@ public class GameThread implements Runnable{
     NetServerMsg currentMessage = null;
 
     String gameID;
-    String ourPlayerID = TigerIsland.PID;
+    String ourPlayerID = TigerIsland.AIPID;
 
     int moveNumber;
-    boolean isMyTurn;
+    private boolean isMyTurn;
     boolean gameOver;
 
-    BryanAI AI;
-    Player Opponent;
+    private BryanAI AI;
+    private Player Opponent;
 
-    public GameThread(String gameNumber, boolean weGoFirst, NetClient c){
+    public GameThread(NetServerMsg message, NetClient c){
         game = new GameBoard();
+
+        gameID = message.GetGameId();
+        gameOver = false;
 
         client = c;
 
-        gameID = gameNumber;
-        gameOver = false;
+        currentMessage = message;
 
-        AI = new BryanAI(game,1);
-        Opponent = new Player(game,2);
-
-        isMyTurn = weGoFirst;
-
-        if(weGoFirst){
-            moveNumber = 1;
+        if(currentMessage.isMakeMoveMessage()){
+            isMyTurn = true;
+        } else if (currentMessage.isUpdateMessage()){
+            isMyTurn = false;
         }
-        else{
-            moveNumber = 2;
-        }
+
+        AI = new BryanAI(game,Integer.parseInt(TigerIsland.AIPID));
+        Opponent = new Player(game,Integer.parseInt(TigerIsland.opponentPID));
 
     }
 
-    @Override
-    public void run() {
-
-        //server will tell us when game is over
-        while (!gameOver) {
-            System.out.println("Game " + gameID +": " + (isMyTurn ? "AI":"Opponent") + "'s turn");
-
-
-            if(isMyTurn){
-                try {
-                    System.out.println("Game " + gameID +": " +"Its my turn! I'm going to sleep until client gives me a tile");
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-
-                }
-
-                try {
-                    AIMainMethod();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            else { //its opponents turn
-
-                while (!isMyTurn) {
-                    try {
-                        System.out.println("Game " + gameID + ": " +"Its NOT my turn! I'm going to sleep until opponent makes move");
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        if(currentMessage != null && !currentMessage.GetPlayerId().equals(ourPlayerID)) { //null pointers
-                            System.out.println("Game " + gameID + ": " +"Simulating Opponents move");
-                            break;
-                        }
-                        else if (currentMessage != null && currentMessage.GetPlayerId().equals(ourPlayerID)){
-                            System.out.println("Game " + gameID + ": " + "Ignoring Broadcast of our own move");
-                        }
-                    }
-                }
-                //simulate opponents move
-                replicateOpponentMove();
-
+    public void processMessage(NetServerMsg protocol){
+        if(protocol.isMakeMoveMessage())
+        {
+            try {
+                moveNumber = protocol.GetMoveId();
+                AIMainMethod();
             }
 
-            //game.printBoard();
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
 
-            isMyTurn = !isMyTurn;
-
+        else{
+            replicateOpponentMove();
         }
     }
 
@@ -194,8 +162,10 @@ public class GameThread implements Runnable{
         xyzTo2DConverter = new XYZ(opponentPlacement.GetX(),opponentPlacement.GetY(),opponentPlacement.GetZ());
         twoDimensionalPoint = xyzTo2DConverter.get2DTranslation();
 
-        //place the tile
-        game.setTile(tile,new ProjectionPack(twoDimensionalPoint));
+        Opponent.tileHeld = tile;
+        Opponent.tileProjection = Opponent.projectTilePlacement(tile, twoDimensionalPoint);
+        Opponent.tileProjection.projectedLevel = game.getProjectedHexLevel(Opponent.tileProjection);
+        Opponent.placeTile();
 
         //parse build action
         opponentPlacement = opponentsMove.GetBuildLocation();
@@ -214,9 +184,10 @@ public class GameThread implements Runnable{
                 buildOption = BuildOptions.FOUND_SETTLEMENT;
                 Settlement foundMe = new Settlement(game);
                 foundMe.owner = Opponent;
+                foundMe.ownerNumber = Integer.parseInt(TigerIsland.opponentPID);
                 foundMe.beginNewSettlement(twoDimensionalPoint);
-                game.setSettlement(twoDimensionalPoint,foundMe);
                 Opponent.placeMeeple(twoDimensionalPoint,foundMe);
+                game.setSettlement(twoDimensionalPoint,foundMe);
                 break;
             case BUILT:
                 buildOption = opponentsMove.GetSettlement();

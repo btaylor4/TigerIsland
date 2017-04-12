@@ -53,7 +53,7 @@ public class NetClientMsg {
     public String FormatBuildAction(String action, String target, Point point){
         XYZ cubePoint = new XYZ(point);
 
-        return String.format("%1$s %2$s %3$s %4$d %5$d %6$d", action, target, "AT",
+        return String.format("%1$s %2$s %3$d %4$d %5$d", target, "AT",
                 cubePoint.x, cubePoint.y, cubePoint.z);
     }
 
@@ -104,7 +104,7 @@ public class NetClientMsg {
         Hexagon hexA = tile.hexA;
         Hexagon hexB = tile.hexB;
 
-        return String.format("%1$s %2$s %3$s+%4$s %5$s %6$d %7$d %8$d %9$d", "PLACE", "TILE", hexA.terrain.toString(), hexB.terrain.toString(),
+        return String.format("%1$s %2$s+%3$s %4$s %5$d %6$d %7$d %8$d", "PLACE", hexA.terrain.toString(), hexB.terrain.toString(),
                 "AT", cubePoint.x, cubePoint.y, cubePoint.z, tile.rotation);
     }
 

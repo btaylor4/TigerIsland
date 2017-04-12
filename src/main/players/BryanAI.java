@@ -103,8 +103,6 @@ public class BryanAI extends Player {
                     setData.put(freshSettlement, new SettlementData(freshSettlement, game));
                     game.setSettlement(point, freshSettlement);
                     placeMeeple(point, freshSettlement);
-                    playerSettlements.put(coordinatesToKey(point.row, point.column),
-                            new SettlePointPair(freshSettlement, point));
                     firstBuild = true;
                     buildDecision = BuildOptions.FOUND_SETTLEMENT;
                     buildPoint = point;
@@ -115,13 +113,61 @@ public class BryanAI extends Player {
             return;
         }
 
-        for (SettlePointPair mySets : playerSettlements.values())
+        if(totoro != 0)
         {
-            //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
-            //check if I can place a totoro
-            if (mySets.settlement.totoroSanctuaries == 0)
+            for (SettlePointPair mySets : playerSettlements.values())
             {
-                if(mySets.settlement.size >= 5)
+                //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
+                //check if I can place a totoro
+                if (mySets.settlement.totoroSanctuaries == 0)
+                {
+                    if(mySets.settlement.size >= 5)
+                    {
+                        Point point = mySets.settlement.findEndPoints();
+
+                        for (int i = 0; i < SIDES_IN_HEX; i++)
+                        {
+                            row = point.row + ROW_ADDS[i];
+                            column = point.column + COLUMN_ADDS[i];
+
+                            if (game.board[row][column] != null)
+                            {
+                                if(!game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                    continue;
+
+                                else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                {
+                                    if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
+                                    {
+                                        point = new Point(row, column);
+                                        break;
+                                    }
+
+                                    else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                        point = new Point(row, column);
+                                }
+                            }
+                        }
+
+                        if(game.isValidTotoroPosition(point, mySets.settlement))
+                        {
+                            buildDecision = BuildOptions.TOTORO_SANCTUARY;
+                            buildPoint = point;
+                            placeTotoro(point, mySets.settlement);
+                            System.out.println("Totoro has been fucking placed motherfucker! Score: " + score);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(tigers != 0)
+        {
+            for (SettlePointPair mySets : playerSettlements.values())
+            {
+                //check if I can place a tiger
+                if (mySets.settlement.tigerPlaygrounds == 0)
                 {
                     Point point = mySets.settlement.findEndPoints();
 
@@ -132,10 +178,10 @@ public class BryanAI extends Player {
 
                         if (game.board[row][column] != null)
                         {
-                            if(!game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                            if(!game.isValidTigerPosition(new Point(row, column), mySets.settlement))
                                 continue;
 
-                            else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                            else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
                             {
                                 if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
                                 {
@@ -143,18 +189,18 @@ public class BryanAI extends Player {
                                     break;
                                 }
 
-                                else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
                                     point = new Point(row, column);
                             }
                         }
                     }
 
-                    if(game.isValidTotoroPosition(point, mySets.settlement))
+                    if(game.isValidTigerPosition(point, mySets.settlement))
                     {
-                        buildDecision = BuildOptions.TOTORO_SANCTUARY;
+                        System.out.println("Placed TIGER!");
+                        buildDecision = BuildOptions.TIGER_PLAYGROUND;
                         buildPoint = point;
-                        placeTotoro(point, mySets.settlement);
-                        System.out.println("Totoro has been fucking placed motherfucker! Score: " + score);
+                        placeTiger(point, mySets.settlement);
                         return;
                     }
                 }
@@ -163,53 +209,11 @@ public class BryanAI extends Player {
 
         for (SettlePointPair mySets : playerSettlements.values())
         {
-            //check if I can place a tiger
-            if (mySets.settlement.tigerPlaygrounds == 0)
-            {
-                Point point = mySets.settlement.findEndPoints();
-
-                for (int i = 0; i < SIDES_IN_HEX; i++)
-                {
-                    row = point.row + ROW_ADDS[i];
-                    column = point.column + COLUMN_ADDS[i];
-
-                    if (game.board[row][column] != null)
-                    {
-                        if(!game.isValidTigerPosition(new Point(row, column), mySets.settlement))
-                            continue;
-
-                        else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
-                        {
-                            if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
-                            {
-                                point = new Point(row, column);
-                                break;
-                            }
-
-                            else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
-                                point = new Point(row, column);
-                        }
-                    }
-                }
-
-                if(game.isValidTigerPosition(point, mySets.settlement))
-                {
-                    System.out.println("Placed TIGER!");
-                    buildDecision = BuildOptions.TIGER_PLAYGROUND;
-                    buildPoint = point;
-                    placeTiger(point, mySets.settlement);
-                    return;
-                }
-            }
-        }
-
-        for (SettlePointPair mySets : playerSettlements.values())
-        {
-            setData.get(mySets).compileSettlementData();
+            setData.get(mySets.settlement).compileSettlementData();
 
             if (mySets.settlement.size + mySets.settlement.grasslands.size() > 1 && meeples > mySets.settlement.grasslands.size())
             {
-                if(setData.get(mySets).afterGrass > meeples)
+                if(setData.get(mySets.settlement).afterGrass > meeples)
                 {
                     break;
                 }
@@ -228,7 +232,7 @@ public class BryanAI extends Player {
 
             else if (mySets.settlement.size + mySets.settlement.lakes.size() > 1 && meeples > mySets.settlement.lakes.size())
             {
-                if(setData.get(mySets).afterLake > meeples)
+                if(setData.get(mySets.settlement).afterLake > meeples)
                 {
                     break;
                 }
@@ -247,7 +251,7 @@ public class BryanAI extends Player {
 
             else if (mySets.settlement.size + mySets.settlement.jungles.size() > 1 && meeples > mySets.settlement.jungles.size())
             {
-                if(setData.get(mySets).afterJungle > meeples)
+                if(setData.get(mySets.settlement).afterJungle > meeples)
                 {
                     break;
                 }
@@ -266,7 +270,7 @@ public class BryanAI extends Player {
 
             else if (mySets.settlement.size + mySets.settlement.rocky.size() > 1 && meeples > mySets.settlement.rocky.size())
             {
-                if(setData.get(mySets).afterRocky > meeples)
+                if(setData.get(mySets.settlement).afterRocky > meeples)
                 {
                     break;
                 }
@@ -302,10 +306,9 @@ public class BryanAI extends Player {
                 freshSettlement.owner = this ;
                 freshSettlement.ownerNumber = designator ;
                 freshSettlement.beginNewSettlement(firstPoint);
+                setData.put(freshSettlement, new SettlementData(freshSettlement, game));
                 game.setSettlement(firstPoint, freshSettlement);
                 placeMeeple(firstPoint, freshSettlement);
-                playerSettlements.put(coordinatesToKey(firstPoint.row, firstPoint.column),
-                        new SettlePointPair(freshSettlement, firstPoint));
                 buildDecision = BuildOptions.FOUND_SETTLEMENT;
                 buildPoint = firstPoint;
                 return;
@@ -322,10 +325,9 @@ public class BryanAI extends Player {
                     freshSettlement.owner = this ;
                     freshSettlement.ownerNumber = designator ;
                     freshSettlement.beginNewSettlement(point);
+                    setData.put(freshSettlement, new SettlementData(freshSettlement, game));
                     game.setSettlement(point, freshSettlement);
                     placeMeeple(point, freshSettlement);
-                    playerSettlements.put(coordinatesToKey(point.row, point.column),
-                            new SettlePointPair(freshSettlement, point));
                     buildDecision = BuildOptions.FOUND_SETTLEMENT;
                     buildPoint = point;
                     freshSettlement.mergeSettlements();
@@ -343,7 +345,13 @@ public class BryanAI extends Player {
             {
                 if(game.board[i][j] != null)
                 {
-                    if(game.board[i][j].settlementPointer == null && game.board[i][j].terrain != TerrainType.VOLCANO)
+                    if(game.board[i][j].level != 1)
+                        continue;
+
+                    else if(game.board[i][j].occupant != null && game.board[i][j].occupant == OccupantType.NONE)
+                        continue;
+
+                    else if(game.board[i][j].settlementPointer == null && game.board[i][j].terrain != TerrainType.VOLCANO)
                     {
                         foundableSpots.put(coordinatesToKey(i, j), new Point(i, j));
                     }
@@ -464,15 +472,26 @@ public class BryanAI extends Player {
             {
                 if(mySet.settlement.totoroSanctuaries == 1)
                 {
-                    tileHeld.setRotation(determineRotationForNukingAI(mySet.settlement));
-                    projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
-                    projection.projectedLevel = game.getProjectedHexLevel(projection);
+                    int nukingRotation = determineRotationForNukingAI(mySet.settlement);
 
-                    if(game.isValidTilePlacement(projection))
+                    if(nukingRotation != 0)
                     {
-                        game.setTile(tileHeld, projection);
-                        tileHeld.serverPoint = projection.volcano;
-                        return tileHeld;
+                        tileHeld.setRotation(determineRotationForNukingAI(mySet.settlement));
+                        projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
+                        projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+                        if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1) {
+                            game.setTile(tileHeld, projection);
+                            tileHeld.serverPoint = projection.volcano;
+                            return tileHeld;
+                        }
+
+                        else if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
+                        {
+                            tileHeld.serverPoint = projection.volcano;
+                            game.setTile(tileHeld, projection);
+                            return tileHeld;
+                        }
                     }
                 }
             }
@@ -481,14 +500,26 @@ public class BryanAI extends Player {
             {
                 if(mySet.settlement.tigerPlaygrounds == 1)
                 {
-                    tileHeld.setRotation(determineRotationForNukingAI(mySet.settlement));
-                    projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
-                    projection.projectedLevel = game.getProjectedHexLevel(projection);
+                    int nukingRotation = determineRotationForNukingAI(mySet.settlement);
 
-                    if(game.isValidTilePlacement(projection)) {
-                        game.setTile(tileHeld, projection);
-                        tileHeld.serverPoint = projection.volcano;
-                        return tileHeld;
+                    if(nukingRotation != 0)
+                    {
+                        tileHeld.setRotation(determineRotationForNukingAI(mySet.settlement));
+                        projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
+                        projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+                        if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1) {
+                            game.setTile(tileHeld, projection);
+                            tileHeld.serverPoint = projection.volcano;
+                            return tileHeld;
+                        }
+
+                        else if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
+                        {
+                            tileHeld.serverPoint = projection.volcano;
+                            game.setTile(tileHeld, projection);
+                            return tileHeld;
+                        }
                     }
                 }
             }
@@ -497,9 +528,6 @@ public class BryanAI extends Player {
             {
                 //check if I can place a tile that will add to one of the adjacency lists to make expansion better
                 //and away from volcanoes
-                if(tileHeld == null)
-                    return tileHeld;
-
                 if(determineTilePlacementForExpansion(mySet, tileHeld.hexA.terrain))
                     return tileHeld;
 
@@ -522,10 +550,17 @@ public class BryanAI extends Player {
                 projection = projectTilePlacement(tileHeld, determineTilePlacementForPlacingAI(settlementChoice));
                 projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                if(game.isValidTilePlacement(projection))
+                if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
                 {
                     game.setTile(tileHeld, projection);
                     tileHeld.serverPoint = projection.volcano;
+                    return tileHeld;
+                }
+
+                if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
+                {
+                    tileHeld.serverPoint = projection.volcano;
+                    game.setTile(tileHeld, projection);
                     return tileHeld;
                 }
             }
@@ -540,10 +575,17 @@ public class BryanAI extends Player {
                         projection = projectTilePlacement(tileHeld, point);
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        if(game.isValidTilePlacement(projection))
+                        if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
                         {
                             game.setTile(tileHeld, projection);
                             tileHeld.serverPoint = projection.volcano;
+                            return tileHeld;
+                        }
+
+                        else if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
+                        {
+                            tileHeld.serverPoint = projection.volcano;
+                            game.setTile(tileHeld, projection);
                             return tileHeld;
                         }
                     }
@@ -572,7 +614,14 @@ public class BryanAI extends Player {
                             projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                            if(game.isValidTilePlacement(projection))
+                            if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
+                            {
+                                tileHeld.serverPoint = projection.volcano;
+                                game.setTile(tileHeld, projection);
+                                return true;
+                            }
+
+                            else if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
                             {
                                 tileHeld.serverPoint = projection.volcano;
                                 game.setTile(tileHeld, projection);
@@ -594,7 +643,14 @@ public class BryanAI extends Player {
                             projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                            if(game.isValidTilePlacement(projection))
+                            if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
+                            {
+                                tileHeld.serverPoint = projection.volcano;
+                                game.setTile(tileHeld, projection);
+                                return true;
+                            }
+
+                            else if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
                             {
                                 tileHeld.serverPoint = projection.volcano;
                                 game.setTile(tileHeld, projection);
@@ -616,7 +672,14 @@ public class BryanAI extends Player {
                             projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                            if(game.isValidTilePlacement(projection))
+                            if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
+                            {
+                                tileHeld.serverPoint = projection.volcano;
+                                game.setTile(tileHeld, projection);
+                                return true;
+                            }
+
+                            else if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
                             {
                                 tileHeld.serverPoint = projection.volcano;
                                 game.setTile(tileHeld, projection);
@@ -638,7 +701,14 @@ public class BryanAI extends Player {
                             projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
                             projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                            if(game.isValidTilePlacement(projection))
+                            if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
+                            {
+                                tileHeld.serverPoint = projection.volcano;
+                                game.setTile(tileHeld, projection);
+                                return true;
+                            }
+
+                            else if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
                             {
                                 tileHeld.serverPoint = projection.volcano;
                                 game.setTile(tileHeld, projection);
@@ -682,8 +752,25 @@ public class BryanAI extends Player {
                         projection = projectTilePlacement(tileHeld, new Point(row, column));
                         projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        if(game.isValidTilePlacement(projection))
+                        if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
                         {
+                            if(!checkForAdjacaentVolcanoes(projection))
+                            {
+                                volcanoPlacement = new Point(row, column);
+                                tileHeld.setRotation(j);
+                                projection = projectTilePlacement(tileHeld, new Point(row, column));
+                                projection.projectedLevel = game.getProjectedHexLevel(projection);
+                                return volcanoPlacement;
+                            }
+
+                            else
+                            {
+                                defaultRotation = j;
+                                volcanoPlacement = new Point(row, column);
+                            }
+                        }
+
+                        else if(projection.projectedLevel > 1 && game.isValidOverlap(projection)){
                             if(!checkForAdjacaentVolcanoes(projection))
                             {
                                 volcanoPlacement = new Point(row, column);
