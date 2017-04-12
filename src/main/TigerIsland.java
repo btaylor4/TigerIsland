@@ -83,12 +83,10 @@ public class TigerIsland {
                     //match has ended
                     message = client.getNextMessageFromServer();
 
-                    /*TODO:Server: END OF ROUND <rid> OF <rounds>
-                        or
-                        Server: END OF ROUND <rid> OF <rounds> WAIT FOR THE NEXT MATCH
-                    */
+                    //TODO:Server: END OF ROUND <rid> OF <rounds> or Server: END OF ROUND <rid> OF <rounds> WAIT FOR THE NEXT MATCH
 
                 }
+                //TODO: break if message == Server: END OF CHALLENGES  else repeat
             }
         }
         catch (IOException | NullPointerException e) {
