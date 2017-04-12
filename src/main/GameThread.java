@@ -54,6 +54,7 @@ public class GameThread {
         if(protocol.isMakeMoveMessage())
         {
             try {
+                moveNumber = protocol.GetMoveId();
                 AIMainMethod();
             }
 
