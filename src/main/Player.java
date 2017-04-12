@@ -182,7 +182,7 @@ public class Player {
         placeBuildDecision();
     }
 
-    private void updateSettlementCounts(){
+    public void updateSettlementCounts(){
         for(SettlePointPair pair: playerSettlements.values()){
             uniqueSettlements.put(pair.settlement, pair.point);
         }
