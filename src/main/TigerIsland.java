@@ -46,10 +46,12 @@ public class TigerIsland {
                         if(gameA == null){
                             System.out.println("Starting gameA");
                             gameA = new GameThread(message);
+                            gameA.processMessage(message);
                         }
                         else if (gameB == null){
                             System.out.println("Starting gameB");
                             gameB = new GameThread(message);
+                            gameB.processMessage(message);
                         }
                         else if(!message.isGameOverMessage()) {
                             if ((gameA.gameID.equals(message.GetGameId()) && message.isMakeMoveMessage() ||
@@ -116,11 +118,11 @@ public class TigerIsland {
     }
 
     private static void TournamentAndAuthenticationProtocol(String[] args) throws IOException {
-        client = new NetClient("10.136.18.24"/*args[1]*/, 6969/*Integer.parseInt(args[2])*/); //IP , port
+        client = new NetClient("10.136.18.24"/*args[1]*/, 1000/*Integer.parseInt(args[2])*/); //IP , port
         client.getNextMessageFromServer();  //WELCOME TO ANOTHER EDITION OF THUNDERDOME!
         client.Send(msg.FormatAuthenticationForTournament("heygang"/*args[3]*/));
         client.getNextMessageFromServer(); //TWO SHALL ENTER, ONE SHALL LEAVE
-        client.Send(msg.FormatAuthenticationPlayer("A", "A")); // I Am User Password
+        client.Send(msg.FormatAuthenticationPlayer("M", "M")); // I Am User Password
         message = client.getNextMessageFromServer(); //WAIT FOR THE TOURNAMENT TO BEGIN <pid>
         AIPID = message.GetPlayerId();
     }
@@ -128,3 +130,4 @@ public class TigerIsland {
 
 //128.227.205.151
 //10.136.18.24
+//10.192.246.253
