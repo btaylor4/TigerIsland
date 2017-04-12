@@ -30,7 +30,7 @@ public class JPAI extends Player {
     private ArrayList<Settlement> settlementsWithTotoro;
 
     private Player other;
-    private int opponentMeeples, opponentTotoro, opponentTigers, opponentScore ;
+    //private int opponentMeeples, opponentTotoro, opponentTigers, opponentScore ;
 
     private ArrayList<Settlement> nukeTargets ;
     private ArrayList<Point> totoroPreventionSpots;
@@ -38,9 +38,10 @@ public class JPAI extends Player {
     private ArrayList<SettlementData> opponentSet ;
 
 
-    public JPAI(GameBoard gamePointer, int designator, Player opponent){
+    public JPAI(GameBoard gamePointer, int designator){
         super(gamePointer, designator);
-        this.other = opponent ;
+        this.other = null ;
+
         moveNumber = 0 ;
         tilePlayStrat = TileOptions.FLATBUILD ;
         buildPlayStrat = BuildOptions.FOUND_SETTLEMENT ;
@@ -57,12 +58,15 @@ public class JPAI extends Player {
         tigerPreventionSpots = new ArrayList<>() ;
     }
 
+    public void setOpponent(Player opponent){
+        this.other = opponent ;
+    }
+
     private void prepareDecisionData(){
         extensionPossibleTilePlacement = BOARD_CENTER-2 ;
         projectionPossibleTilePlacement = null ;
         projectedLoss = 0 ;
 
-        getOpponentPieces();
         getOpponentSettlements();
         getMySettlements();
 
@@ -78,13 +82,6 @@ public class JPAI extends Player {
 
         makeTotoroHitlist();
         makeTigerHitlist();
-    }
-
-    private void getOpponentPieces(){
-        opponentMeeples = other.meeples ;
-        opponentTotoro = other.totoro ;
-        opponentTigers = other.tigers ;
-        opponentScore = other.score ;
     }
 
     private void getOpponentSettlements(){
@@ -107,8 +104,6 @@ public class JPAI extends Player {
         for(Point point : uniqueSettlements.values()){
             mySettlementData.add(new SettlementData(game.board[point.row][point.column].settlementPointer, game));
         }
-
-        uniqueSettlements.clear();
     }
 
     private void gatherAvailableTotoroPlacement(){
@@ -171,6 +166,8 @@ public class JPAI extends Player {
         nukeTargets.clear();
         totoroPreventionSpots.clear();
         tigerPreventionSpots.clear();
+
+        uniqueSettlements.clear();
     }
 
     @Override
@@ -403,12 +400,12 @@ public class JPAI extends Player {
             case FOUND_SETTLEMENT:
                 buildDecision = BuildOptions.FOUND_SETTLEMENT ;
                 buildPoint = determineSettlementPosition();
-                System.out.println("Successfully new settlement at: " + buildPoint.row + " " + buildPoint.column);
                 break;
 
             case EXPAND:
                 buildDecision = BuildOptions.EXPAND ;
                 determineSettlementExpansion();
+
                 break;
 
             case TOTORO_SANCTUARY:
@@ -438,8 +435,9 @@ public class JPAI extends Player {
                     seeker.row += TRAVERSE_ROW_ADDS[side] ;
                     seeker.column += TRAVERSE_COLUMN_ADDS[side] ;
 
-                    if(game.isValidSettlementPosition(seeker));
-                        return seeker ;
+                    if(game.isValidSettlementPosition(seeker)) {
+                        return seeker;
+                    }
                 }
             }
         }
@@ -451,7 +449,7 @@ public class JPAI extends Player {
     private void determineSettlementExpansion(){
         buildPoint = findSettlementToExpand();
         if(buildPoint == null){
-            buildPlayStrat = BuildOptions.FOUND_SETTLEMENT ;
+            buildDecision = BuildOptions.FOUND_SETTLEMENT ;
             buildPoint = determineSettlementPosition();
         }
     }
@@ -465,28 +463,28 @@ public class JPAI extends Player {
             if((sd.afterGrass > 4) && (sd.grassCost < meepleCost) && (sd.grassCost < meeples)){
                 meepleCost = sd.grassCost ;
                 terrainSelection = TerrainType.GRASS ;
-                selectedPoint = sd.settlePoint ;
+                selectedPoint = uniqueSettlements.get(sd.settle) ;
                 goForTotoro = true ;
             }
 
             if((sd.afterLake > 4) && (sd.lakeCost < meepleCost) && (sd.lakeCost < meeples)){
                 meepleCost = sd.lakeCost ;
                 terrainSelection = TerrainType.LAKE ;
-                selectedPoint = sd.settlePoint ;
+                selectedPoint = uniqueSettlements.get(sd.settle) ;
                 goForTotoro = true ;
             }
 
             if((sd.afterRocky > 4) && (sd.rockyCost < meepleCost) && (sd.rockyCost < meeples)){
                 meepleCost = sd.rockyCost ;
                 terrainSelection = TerrainType.ROCK ;
-                selectedPoint = sd.settlePoint ;
+                selectedPoint = uniqueSettlements.get(sd.settle) ;
                 goForTotoro = true ;
             }
 
             if((sd.afterJungle > 4) && (sd.jungleCost < meepleCost) && (sd.jungleCost < meeples)){
                 meepleCost = sd.jungleCost ;
                 terrainSelection = TerrainType.JUNGLE ;
-                selectedPoint = sd.settlePoint ;
+                selectedPoint = uniqueSettlements.get(sd.settle) ;
                 goForTotoro = true ;
             }
         }
@@ -498,30 +496,32 @@ public class JPAI extends Player {
                 meepleCost = sd.grassCost ;
                 sizeAfter = sd.afterGrass ;
                 terrainSelection = TerrainType.GRASS ;
-                selectedPoint = sd.settlePoint ;
+                selectedPoint = uniqueSettlements.get(sd.settle) ;
             }
 
             if((sd.afterLake >= sizeAfter) && (sd.lakeCost < meepleCost) && (sd.lakeCost < meeples)){
                 meepleCost = sd.lakeCost ;
                 sizeAfter = sd.afterLake ;
                 terrainSelection = TerrainType.LAKE ;
-                selectedPoint = sd.settlePoint ;
+                selectedPoint = uniqueSettlements.get(sd.settle) ;
             }
 
             if((sd.afterRocky >= sizeAfter) && (sd.rockyCost < meepleCost) && (sd.rockyCost < meeples)){
                 meepleCost = sd.rockyCost ;
                 sizeAfter = sd.afterRocky ;
                 terrainSelection = TerrainType.ROCK ;
-                selectedPoint = sd.settlePoint ;
+                selectedPoint = uniqueSettlements.get(sd.settle) ;
             }
 
             if((sd.afterJungle >= sizeAfter) && (sd.jungleCost < meepleCost) && (sd.jungleCost < meeples)){
                 meepleCost = sd.jungleCost ;
                 sizeAfter = sd.afterJungle ;
                 terrainSelection = TerrainType.JUNGLE ;
-                selectedPoint = sd.settlePoint ;
+                selectedPoint = uniqueSettlements.get(sd.settle) ;
             }
         }
+
+        if(sizeAfter == 0) return null ;
 
         return selectedPoint ;
     }
@@ -539,7 +539,7 @@ public class JPAI extends Player {
         }
 
         if(!spotFound){
-            buildPlayStrat = BuildOptions.FOUND_SETTLEMENT ;
+            buildDecision = BuildOptions.FOUND_SETTLEMENT ;
             buildPoint = determineSettlementPosition();
         }
     }
@@ -557,7 +557,7 @@ public class JPAI extends Player {
         }
 
         if(!spotFound){
-            buildPlayStrat = BuildOptions.FOUND_SETTLEMENT ;
+            buildDecision = BuildOptions.FOUND_SETTLEMENT ;
             buildPoint = determineSettlementPosition();
         }
     }
