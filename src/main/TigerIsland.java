@@ -81,12 +81,12 @@ public class TigerIsland {
                         }
                     }
                     //match has ended
-                    message = client.getNextMessageFromServer();
-
-                    //TODO:Server: END OF ROUND <rid> OF <rounds> or Server: END OF ROUND <rid> OF <rounds> WAIT FOR THE NEXT MATCH
-
                 }
-                //TODO: break if message == Server: END OF CHALLENGES  else repeat
+
+                if(client.getNextMessageFromServer().isEndChallengeMessage()){
+                    //challenge has ended
+                    break;
+                }
             }
         }
         catch (IOException | NullPointerException e) {
@@ -101,43 +101,16 @@ public class TigerIsland {
         opponentPID = message.GetPlayerId();
     }
 
-    /*TODO: add response for following message from server (page 6 of document under match protocol)
-        Server: GAME <gid> OVER PLAYER <pid> <score> PLAYER <pid> <score>
-        Server: GAME <gid> OVER PLAYER <pid> <score> PLAYER <pid> <score>
-     */
-
-    private static void matchProtocolEnd() throws IOException {
-
-    }
-
     private static void roundProtocolBegin() throws IOException {
         message = client.getNextMessageFromServer(); //Server: BEGIN ROUND <rid> OF <rounds>
         totalRounds = message.GetTotalRounds();
         roundID = message.GetRoundId();
     }
 
-    /*TODO: add response for following message from server (page 5 of document under round protocol)
-        Server: END OF ROUND <rid> OF <rounds>
-        or
-        Server: END OF ROUND <rid> OF <rounds> WAIT FOR THE NEXT MATCH
-     */
-    private static void roundProtocolEnd() throws IOException {
-
-    }
-
     private static void challengeProtocolBegin() throws IOException {
         message = client.getNextMessageFromServer(); //NEW CHALLENGE <cid> YOU WILL PLAY <rounds> MATCH
         challengeID = message.GetChallengeId();
         totalMatches = message.GetNumMatchesToPlay();
-    }
-
-    /*TODO: add response for following message from server (page 5 of document under challenge protocol)
-        Server: END OF CHALLENGES
-        or
-        Server: WAIT FOR THE NEXT CHALLENGE TO BEGIN
-    */
-    private static void challengeProtocolEnd() throws IOException {
-
     }
 
     private static void TournamentAndAuthenticationProtocol(String[] args) throws IOException {

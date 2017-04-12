@@ -330,6 +330,10 @@ public class NetServerMsg {
             return false;
     }
 
-    //Server: END OF CHALLENGES
+    //TODO: Server: END OF CHALLENGES
+    public boolean isEndChallengeMessage(){
+        return false;
+    }
+
 
 }
