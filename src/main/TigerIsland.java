@@ -39,8 +39,6 @@ public class TigerIsland {
                     GameThread gameB = null;
                     //**********Move Protocol Begin**********
                     while(true){
-
-
                         message = client.getNextMessageFromServer(); //this message will start one of the GameThreads
 
                         if(gameA == null){
@@ -136,7 +134,7 @@ public class TigerIsland {
         client.getNextMessageFromServer();  //WELCOME TO ANOTHER EDITION OF THUNDERDOME!
         client.Send(msg.FormatAuthenticationForTournament(args[2]));
         client.getNextMessageFromServer(); //TWO SHALL ENTER, ONE SHALL LEAVE
-        client.Send(msg.FormatAuthenticationPlayer("M", "M")); // I Am User Password
+        client.Send(msg.FormatAuthenticationPlayer("J", "J")); // I Am User Password
         message = client.getNextMessageFromServer(); //WAIT FOR THE TOURNAMENT TO BEGIN <pid>
         AIPID = message.GetPlayerId();
     }

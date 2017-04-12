@@ -10,6 +10,7 @@ import main.players.AIUtils.TileOptions;
 import main.utils.SettlePointPair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static main.utils.constants.*;
 
@@ -25,7 +26,7 @@ public class JPAI extends Player {
     private int projectedLoss ;
 
     private ArrayList<SettlementData> mySettlementData ;
-    private ArrayList<SettlePointPair> totoroPossibilities ;
+    private HashMap<SettlePointPair, Point> totoroPossibilities ;
     private ArrayList<SettlePointPair> tigerPossibilities ;
     private ArrayList<Settlement> settlementsWithTotoro;
 
@@ -46,7 +47,7 @@ public class JPAI extends Player {
         tilePlayStrat = TileOptions.FLATBUILD ;
         buildPlayStrat = BuildOptions.FOUND_SETTLEMENT ;
 
-        totoroPossibilities = new ArrayList<>();
+        totoroPossibilities = new HashMap<>();
         tigerPossibilities = new ArrayList<>();
         settlementsWithTotoro = new ArrayList<>();
 
@@ -107,10 +108,11 @@ public class JPAI extends Player {
     }
 
     private void gatherAvailableTotoroPlacement(){
+        totoroPossibilities.clear();
         for(SettlementData sd : mySettlementData){
             if(sd.size > 4 && sd.settle.totoroSanctuaries == 0){
                 for(Point pt : sd.nonFloodAdjacencies.values()) {
-                    totoroPossibilities.add(new SettlePointPair(sd.settle, pt));
+                    totoroPossibilities.put(new SettlePointPair(sd.settle, pt), pt);
                 }
             }
         }
@@ -369,7 +371,6 @@ public class JPAI extends Player {
         return false ;
     }
 
-
     @Override
     protected void determineBuildOption(){
         prepareDecisionData();
@@ -529,10 +530,10 @@ public class JPAI extends Player {
     private void determineTotoroPlacement(){
         boolean spotFound = false ;
 
-        for(SettlePointPair sp : totoroPossibilities){
-            if(game.isValidTotoroPosition(sp.point, sp.settlement)){
-                buildPoint = sp.point ;
-                selectedSettlement = sp.settlement ;
+        for(Point sp : totoroPossibilities.values()){
+            if(game.isValidTotoroPosition(sp, game.board[sp.row][sp.column].settlementPointer)){
+                buildPoint = sp ;
+                selectedSettlement = game.board[sp.row][sp.column].settlementPointer ;
                 spotFound = true ;
                 break;
             }
@@ -560,5 +561,9 @@ public class JPAI extends Player {
             buildDecision = BuildOptions.FOUND_SETTLEMENT ;
             buildPoint = determineSettlementPosition();
         }
+    }
+
+    public boolean hasPlayerLost(){
+        return (meeples == 0 && totoroPossibilities.isEmpty() && tigerPossibilities.isEmpty()) ;
     }
 }

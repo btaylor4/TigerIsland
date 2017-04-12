@@ -153,15 +153,16 @@ public class Player {
         tileHeld = null ;
     }
 
-    public void playTilePhase(){
-        drawTile();
+    public void playTilePhase(Tile passedIn){
+        drawTile(passedIn);
         determineTilePlacement();
         placeTile();
     }
 
-    public void drawTile() {
+    public void drawTile(Tile fromServer) {
         // tileHeld = game.releaseTopTile() ;
-        getTileFromConsole();
+        //getTileFromConsole();
+        tileHeld = fromServer ;
     }
 
     protected void determineTilePlacement(){
@@ -171,8 +172,8 @@ public class Player {
     }
 
     public void placeTile(){
+        tileHeld.serverPoint = tileProjection.volcano;
         game.setTile(tileHeld, tileProjection);
-        tileHeld = null ;
     }
 
 

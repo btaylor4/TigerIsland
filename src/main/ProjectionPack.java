@@ -44,8 +44,5 @@ public class ProjectionPack {
             default:
                 break;
         }
-
-        System.out.print("V: " + volcano.row + " " + volcano.column + ", ");
-        System.out.println(hexPoint.row + " " + hexPoint.column);
     }
 }

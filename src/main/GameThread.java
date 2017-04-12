@@ -3,6 +3,7 @@ package main;
 import main.enums.BuildOptions;
 import main.enums.TerrainType;
 import main.players.BryanAI;
+import main.players.JPAI;
 import main.utils.XYZ;
 import net.*;
 
@@ -26,7 +27,7 @@ public class GameThread {
     private boolean isMyTurn;
     boolean gameOver;
 
-    private BryanAI AI;
+    private JPAI AI;
     private Player Opponent;
 
     public GameThread(NetServerMsg message, NetClient c){
@@ -45,8 +46,10 @@ public class GameThread {
             isMyTurn = false;
         }
 
-        AI = new BryanAI(game,Integer.parseInt(TigerIsland.AIPID));
+        AI = new JPAI(game,Integer.parseInt(TigerIsland.AIPID));
         Opponent = new Player(game,Integer.parseInt(TigerIsland.opponentPID));
+
+        AI.setOpponent(Opponent);
 
     }
 
@@ -84,8 +87,8 @@ public class GameThread {
         BuildOptions buildDecision;
         Point p;
 
-        AI.setTile(tileFromServer);
-        Tile tile = AI.determineTilePlacementByAI();
+        AI.playTilePhase(tileFromServer);
+        Tile tile = AI.tileHeld ;
 
         if(AI.hasPlayerLost()){
             msg = new NetClientMsg();
@@ -94,10 +97,10 @@ public class GameThread {
             client.Send(clientMsg);
         }
         else {
-            AI.determineBuildByAI();
+            AI.playBuildPhase();
             buildDecision = AI.buildDecision;
             p = AI.buildPoint;
-            tp = AI.expansionAction;
+            tp = AI.terrainSelection;
             msg = new NetClientMsg();
 
             switch (buildDecision) {

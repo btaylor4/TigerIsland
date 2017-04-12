@@ -174,17 +174,13 @@ public class GameBoard {
     }
 
     public boolean isValidTilePlacement(ProjectionPack projection){
-        System.out.println("level is :" + projection.projectedLevel);
         if (checkAdjacency(projection) && (projection.projectedLevel == 1)) {
-            System.out.println("Tile placement OK") ;
             return true ;
         }
         else if((projection.projectedLevel > 1) && (isValidOverlap(projection))){
-            System.out.println("Volcanic eruption OK") ;
             return true ;
         }
         else{
-            System.out.println("Invalid placement requested") ;
             return false ;
         }
     }
