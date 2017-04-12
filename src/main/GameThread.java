@@ -50,8 +50,20 @@ public class GameThread implements Runnable{
 
     }
 
-    public void processMessage(){
+    public void processMessage(NetServerMsg protocol){
+        if(protocol.isMakeMoveMessage())
+        {
+            try {
+                AIMainMethod();
+            }
 
+            catch(Exception e)
+            {}
+        }
+
+        else{
+            replicateOpponentMove();
+        }
     }
 
     @Override
@@ -229,10 +241,8 @@ public class GameThread implements Runnable{
                 foundMe.owner = Opponent;
                 foundMe.ownerNumber = Integer.parseInt(TigerIsland.opponentPID);
                 foundMe.beginNewSettlement(twoDimensionalPoint);
-                game.setSettlement(twoDimensionalPoint,foundMe);
-                Opponent.playerSettlements.put(coordinatesToKey(twoDimensionalPoint.row, twoDimensionalPoint.column),
-                        new SettlePointPair(foundMe, twoDimensionalPoint));
                 Opponent.placeMeeple(twoDimensionalPoint,foundMe);
+                game.setSettlement(twoDimensionalPoint,foundMe);
                 break;
             case BUILT:
                 buildOption = opponentsMove.GetSettlement();
