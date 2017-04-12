@@ -29,11 +29,13 @@ public class GameThread {
     private BryanAI AI;
     private Player Opponent;
 
-    public GameThread(NetServerMsg message){
+    public GameThread(NetServerMsg message, NetClient c){
         game = new GameBoard();
 
         gameID = message.GetGameId();
         gameOver = false;
+
+        client = c;
 
         currentMessage = message;
 
@@ -56,7 +58,9 @@ public class GameThread {
             }
 
             catch(Exception e)
-            {}
+            {
+                e.printStackTrace();
+            }
         }
 
         else{

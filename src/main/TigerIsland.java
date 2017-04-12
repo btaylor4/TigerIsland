@@ -44,12 +44,12 @@ public class TigerIsland {
                         message = client.getNextMessageFromServer(); //this message will start one of the GameThreads
 
                         if(gameA == null){
-                            gameA = new GameThread(message);
+                            gameA = new GameThread(message,client);
                             System.out.println("Starting game" + gameA.gameID);
                             gameA.processMessage(message);
                         }
                         else if (gameB == null && !message.GetGameId().equals(gameA.gameID)){
-                            gameB = new GameThread(message);
+                            gameB = new GameThread(message,client);
                             System.out.println("Starting game" + gameB.gameID);
                             gameB.processMessage(message);
                         }
