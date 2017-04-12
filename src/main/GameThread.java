@@ -67,7 +67,9 @@ public class GameThread implements Runnable{
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         Thread.interrupted();
-                        break;
+                        if(currentMessage.GetMoveTimeLimit() != -1) {
+                            break;
+                        }
                     }
                 }
                 System.out.println("Game " + gameID + ": " + "Received message time to make a move");
@@ -86,7 +88,7 @@ public class GameThread implements Runnable{
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         Thread.interrupted();
-                        if(currentMessage != null && !currentMessage.GetPlayerId().equals(ourPlayerID)) { //null pointers
+                        if(currentMessage != null && !currentMessage.GetPlayerId().equals(ourPlayerID) && currentMessage.GetTileTerrains() != null) { //null pointers
                             System.out.println("Game " + gameID + ": " +"Simulating Opponents move");
                             break;
                         }

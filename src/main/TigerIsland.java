@@ -74,7 +74,7 @@ public class TigerIsland {
                                 g1.gameOver = true;
                                 game1.join();
                             } else if (g2 != null && message.GetGameId().equals(g2.gameID)){
-                                g1.gameOver = true;
+                                g2.gameOver = true;
                                 game2.join();
                             }
 
@@ -120,7 +120,7 @@ public class TigerIsland {
                                 game1.join();
                             } else if (message.GetGameId().equals(g2.gameID)) {
                                 System.out.println("Ending Thread 2");
-                                g1.gameOver = true;
+                                g2.gameOver = true;
                                 game2.join();
                             }
                         }
