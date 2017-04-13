@@ -382,6 +382,7 @@ public class GameBoard {
         board[desiredPosition.row][desiredPosition.column].occupant = piece ;
         board[desiredPosition.row][desiredPosition.column].settlementPointer = settlementPointer ;
         disassociateTerrain(desiredPosition);
+        settlementPointer.countSettlementMembers();
     }
 
     public void setSettlement(Point desiredPosition, Settlement newSettlement){
