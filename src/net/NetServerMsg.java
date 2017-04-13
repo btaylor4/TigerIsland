@@ -284,7 +284,7 @@ public class NetServerMsg {
     */
     public boolean isUpdateMessage()
     {
-        if(GetPlayerId() != null)
+        if(GetChallengeId() != null && GetMoveId() != -1 && GetPlayerId() != null)
             return true;
 
         else
