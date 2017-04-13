@@ -379,9 +379,11 @@ public class GameBoard {
     }
 
     public void setPiece(Point desiredPosition, OccupantType piece, Settlement settlementPointer){
+        settlementPointer.occupantPositions.put(board[desiredPosition.row][desiredPosition.column].key, desiredPosition);
         board[desiredPosition.row][desiredPosition.column].occupant = piece ;
         board[desiredPosition.row][desiredPosition.column].settlementPointer = settlementPointer ;
         disassociateTerrain(desiredPosition);
+        settlementPointer.mergeSettlements();
         settlementPointer.countSettlementMembers();
     }
 
@@ -470,8 +472,10 @@ public class GameBoard {
                     System.out.print("O: " + board[i][j].occupant + " ");
                     System.out.print("S: " + board[i][j].settlementPointer);
                     if(board[i][j].settlementPointer != null){
-                        System.out.print(" P: " + board[i][j].settlementPointer.owner);
+                        System.out.print(" P: " + board[i][j].settlementPointer.owner.designator);
                         System.out.print(" S: " + board[i][j].settlementPointer.size);
+                        System.out.print(" To: " + board[i][j].settlementPointer.totoroSanctuaries);
+                        System.out.print(" Ti: " + board[i][j].settlementPointer.tigerPlaygrounds);
                     }
                     System.out.print('\n');
                 }
