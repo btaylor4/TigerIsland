@@ -28,11 +28,14 @@ public class NetScanner {
     private ArrayList<String> actions;
 
     public NetScanner() {
-        String[] integers = new String[]{"ROUND", "OF", "PLAY", "MOVE"};
+        InitiizeTokenList();
+    }
+    private void InitiizeTokenList()
+    {
+       String[] integers = new String[]{"ROUND", "OF", "PLAY", "MOVE"};
         for (String intVal : integers) {
             hm.put(intVal, ValueType.Int);
         }
-
         String[] tiles = new String[]{"PLACE", "PLACED"};
         for (String tileTok : tiles) {
             hm.put(tileTok, ValueType.Tile);
@@ -48,10 +51,6 @@ public class NetScanner {
         String[] stringVectors = new String[]{"GAME", "PLAYER", "CHALLENGE"};
         for (String vecTok : stringVectors) {
             hm.put(vecTok, ValueType.String);
-        }
-        String[] stringNVectors = new String[]{"BUILT"};
-        for (String vecTok : stringNVectors) {
-            hm.put(vecTok, ValueType.StringN);
         }
         String[] floatVectors = new String[]{"WITHIN"};
         for (String vecTok : floatVectors) {
@@ -77,11 +76,7 @@ public class NetScanner {
         for (String vecTok : waitVectors) {
             hm.put(vecTok, ValueType.Wait);
         }
-        //ArrayList<String> actions = new ArrayList<String>(
-        //      Arrays.asList( "BUILT", "FOUNDED", "EXPANDED", "BUILT"));
-
     }
-
     public void SetBuffer(String buffer) {
         Buffer = buffer.toUpperCase();
         sc = new java.util.Scanner(Buffer);
@@ -89,16 +84,6 @@ public class NetScanner {
 
     public boolean hasNext() {
         return (sc.hasNext());
-    }
-
-    public String next1() {
-        String current = next;
-        next = (sc.hasNext() ? sc.next() : null);
-        return current;
-    }
-
-    public String peek() {
-        return next;
     }
 
     private String CheckString(String input) {
@@ -127,9 +112,6 @@ public class NetScanner {
                 case String:
                     ScanString(sc, token);
                     break;
-                //case StringN:
-                  //  ScanStringN(sc, token);
-                    //break;
                 case Message:
                     ScanMessage(sc, token);
                     break;
@@ -156,8 +138,7 @@ public class NetScanner {
         }
     }
 
-    // need to make a special case for game over with Player pid
-    public Token Scan() {
+]    public Token Scan() {
         String tokenString = CheckString(sc.next());
         Token token = new Token();
         if (tokenString.isEmpty()) {
@@ -207,24 +188,6 @@ public class NetScanner {
                 ScanStringN(sc, token, 1);
                 break;
         }
-        /*
-        int i = 0;
-        String tokenStr = sc.next();
-        String finalStr = tokenStr;
-
-        while(sc.hasNext() )
-        {
-            tokenStr = sc.next();
-            if(!tokenStr.equalsIgnoreCase(ActionTerminator)) {
-                finalStr += " " + tokenStr;
-            }
-            else
-            {
-                break;
-            }
-        }
-        token.Data = finalStr;
-        */
     }
     private void ScanFunction(java.util.Scanner sc, Token token)
     {
@@ -319,8 +282,20 @@ public class NetScanner {
             playerStr = sc.next();
             if(playerStr.equalsIgnoreCase("PLAYER")) {
                 String pid = sc.next();
-                int score = sc.nextInt();
-                playerResult.put(pid, score);
+                if(sc.hasNextInt()) {
+                    int score = sc.nextInt();
+                    System.out.println(score);
+
+                    playerResult.put(pid, score);
+                }
+                else if(sc.hasNext())
+                {
+                    String data = sc.next();
+                    if(data.equals("FORFEITED") || data.equals("WIN"))
+                    {
+                        playerResult.put(pid, -1);
+                    }
+                }
             }
         }
         token.Data = playerResult;

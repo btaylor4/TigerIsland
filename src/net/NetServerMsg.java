@@ -8,7 +8,8 @@ import main.enums.BuildOptions;
 public class NetServerMsg {
 
     NetScanner scanner;
-    ArrayList<Token> tokens ;
+    ArrayList<Token> tokens;
+    
     public void ParseLine(String line)
     {
         scanner = new NetScanner();
@@ -20,8 +21,6 @@ public class NetServerMsg {
         {
             t = scanner.Scan();
             tokens.add(t);
-
-            System.out.println(t.Value);
         }
     }
     public String GetPlayerId()
@@ -62,11 +61,23 @@ public class NetServerMsg {
     }
     public int GetNumMatchesToPlay()
     {
-        return (int)GetTokenByType(TokenType.TOKEN_PLAY).Data;
+        Token token = GetTokenByType(TokenType.TOKEN_PLAY);
+        if(token != null)
+            return (int)token.Data;
+        else {
+
+            return -1;
+        }
     }
     public int GetRoundId()
     {
-        return (int)GetTokenByType(TokenType.TOKEN_ROUND).Data;
+        Token token = GetTokenByType(TokenType.TOKEN_ROUND);
+        if(token != null)
+            return (int)token.Data;
+        else {
+
+            return -1;
+        }
     }
     public ArrayList<String> GetTile()
     {
@@ -120,6 +131,18 @@ public class NetServerMsg {
             if(token != null)
                 return (String)token.Data;
             return null;
+        }
+    }
+    public boolean HasForfeited()
+    {
+        Token token = GetTokenByType(TokenType.TOKEN_LOST);
+        if(token != null)
+            return true;
+        else {
+            token = GetTokenByType(TokenType.TOKEN_FORFEITED);
+            if(token != null)
+                return true;
+            return false;
         }
     }
     public String GetSettlementName()
@@ -245,4 +268,67 @@ public class NetServerMsg {
         return null;
     }
 
+    //Server: MAKE YOUR MOVE IN GAME <gid> WITHIN <timemove> SECOND: MOVE <#> PLACE <tile>
+    public boolean isMakeMoveMessage()
+    {
+        if (GetMoveTimeLimit() != -1)
+            return true;
+        else
+            return false;
+    }
+
+    /* Server: GAME <gid> MOVE <#> PLAYER <pid> <move>
+         or
+        Server: GAME <gid> MOVE <#> PLAYER <pid> FORFEITED: ILLEGAL TILE PLACEMENT
+    */
+    public boolean isUpdateMessage()
+    {
+        if(GetChallengeId() != null && GetMoveId() != -1 && GetPlayerId() != null)
+            return true;
+
+        else
+            return false;
+    }
+
+    //Server: GAME <gid> OVER PLAYER <pid> <score> PLAYER <pid> <score>
+    public boolean isGameOverMessage()
+    {
+        if(GetGameId() != null && GetGameResults() != null)
+            return true;
+        else
+            return false;
+    }
+
+    //Server: END OF ROUND <rid> OF <rounds>
+    public boolean isRoundOverMessage()
+    {
+        if(GetRoundId() != -1 && GetTotalRounds() != -1)
+            return true;
+        else
+            return false;
+    }
+
+    //Server: BEGIN ROUND <rid> OF <rounds>
+    public boolean isBeginRound()
+    {
+        if(GetRoundId() != -1 && GetTotalRounds() != -1)
+            return true;
+        else
+            return false;
+    }
+
+    //Server: NEW MATCH BEGINNING NOW YOUR OPPONENT IS PLAYER <pid>
+    public boolean isNewMatch()
+    {
+        if(GetPlayerId() != null)
+            return true;
+        else
+            return false;
+    }
+
+    //TODO: Server: END OF CHALLENGES
+    public boolean isEndChallengeMessage(){
+
+        return false;
+    }
 }

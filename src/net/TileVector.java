@@ -1,6 +1,5 @@
 package net;
 
-
 import main.enums.TerrainType;
 
 public class TileVector {
@@ -9,21 +8,7 @@ public class TileVector {
     private int z;
     private int orientation;
     private String terrain;
-    public TileVector(int X, int Y, int Z, int Orientation)
-    {
-        x = X;
-        y = Y;
-        z = Z;
-        orientation = Orientation;
-    }
-    public TileVector(int X, int Y, int Z, String Terrain)
-    {
-        x = X;
-        y = Y;
-        z = Z;
-        orientation = -1;
-        terrain = Terrain;
-    }
+
     public TileVector(int X, int Y, int Z)
     {
         x = X;
@@ -31,6 +16,7 @@ public class TileVector {
         z = Z;
         orientation = -1;
     }
+
     public int GetX(){ return x;};
     public int GetY(){ return y;};
     public int GetZ(){ return z;};
@@ -39,7 +25,6 @@ public class TileVector {
     {
         x = X;
     }
-
     public void SetY(int Y)
     {
         y = Y;
@@ -48,6 +33,7 @@ public class TileVector {
     {
         z = Z;
     }
+
     public int GetOrientation() {return orientation;}
     public void SetOrientation(int Orientation)  { orientation = Orientation;}
     public String GetTerrain(){ return terrain;}

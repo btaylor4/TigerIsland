@@ -14,7 +14,6 @@ enum TokenType
     TOKEN_SCORE,
     TOKEN_TERRAIN,
     TOKEN_TILE,
-
     TOKEN_AT,
     TOKEN_ROUND,
     TOKEN_GAME,

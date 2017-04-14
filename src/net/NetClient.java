@@ -3,6 +3,7 @@ package net;
 import jdk.internal.org.objectweb.asm.Handle;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -11,7 +12,7 @@ import java.util.Scanner;
 public class NetClient {
 
     private String IP;
-    public int Port = 1025; //Port of the process you want to communicate with
+    public int Port = 6969; //Port of the process you want to communicate with
 
     public String UserName = "admin";
     public String Password = "password1";
@@ -21,6 +22,7 @@ public class NetClient {
     private NetServerMsg msg;
     private Scanner reader;
     private PrintStream output;
+    public String message = "";
 
     public NetClient() throws IOException
     {
@@ -37,22 +39,24 @@ public class NetClient {
 
     public NetClient(String ip, int port) throws IOException
     {
+        IP = ip;
         Port = port;
         Initialize();
+        Start();
     }
 
     private void Initialize() throws IOException
     {
+        System.out.println("connecting to: " + IP + ":" + Port);
         socket = new Socket(IP, Port);
         msg = new NetServerMsg();
     }
 
-    public void Start() throws IOException
-    {
-        reader = new Scanner(socket.getInputStream());
+    public void Start() throws IOException {
+        reader = new Scanner(new InputStreamReader(socket.getInputStream())); // changed this line to see if it worked
     }
-    public void Listen() throws IOException
-    {
+
+    public void Listen() throws IOException {
         reader = new Scanner(socket.getInputStream());
 
         String message = "";
@@ -63,20 +67,21 @@ public class NetClient {
             }
         }
     }
-    public NetServerMsg getNextMessageFromServer() throws IOException
-    {
-        String message = "";
-        if ((message = reader.nextLine()) != null)
-        {
+
+    public NetServerMsg getNextMessageFromServer() throws IOException {
+        String message ;
+        if ((message = reader.nextLine()) != null) {
             if(!message.isEmpty()) {
+                System.out.println("This is the message" + message);
                 HandleMessage(message);
+                this.message = message;
                 return msg;
             }
         }
         return null;
     }
-    public void Send(String message) throws IOException
-    {
+
+    public void Send(String message) throws IOException {
         output = new PrintStream(socket.getOutputStream(), true);
         output.println(message);
     }
@@ -85,12 +90,13 @@ public class NetClient {
     {
         return socket.isConnected();
     }
-    private void HandleMessage(String message)
-    {
+
+    private void HandleMessage(String message) {
         msg.ParseLine(message);
 
-        //System.out.println(msg.GetPlayerId());
+        System.out.println(message);
     }
+
     public NetServerMsg GetCurrentMessage()
     {
         return msg;
