@@ -34,6 +34,7 @@ public class Settlement {
     private ArrayList<Point> mergingSettlements;
     public ArrayList<Point> markedForExpansion;
     public ArrayList<Point> markedForRemoval;
+    public HashMap<Integer, Integer> checkTerrains;
 
     private HashMap<Integer, Integer> countedTerrain;
 
@@ -64,6 +65,7 @@ public class Settlement {
         countedTerrain = new HashMap<>();
         endPoint = null;
         endPointToNuke = null;
+        checkTerrains = new HashMap<>();
     }
 
     public void beginNewSettlement(Point point) {
@@ -214,6 +216,35 @@ public class Settlement {
         }
     }
 
+    private void checkExpansion(Point target)
+    {
+        checkTerrains.put(game.board[target.row][target.column].key, 1);
+        markedForExpansion.add(target);
+
+        for (HexPointPair adjacent : game.board[target.row][target.column].links.values()){
+            if (!checkTerrains.containsKey(adjacent.hex.key)) {
+                expandPrep(adjacent.point);
+            }
+        }
+    }
+
+    public int checkExpansionCost(HashMap<Integer,Point> expansions)
+    {
+        int numberOfMeeplesLost = 0;
+
+        for(Point point : expansions.values()){
+            checkExpansion(point);
+        }
+
+        for(Point target : markedForExpansion) {
+            numberOfMeeplesLost += game.board[target.row][target.column].level;
+        }
+
+        markedForExpansion.clear();
+        expansions.clear();
+        return numberOfMeeplesLost;
+    }
+
     private void expandThroughTerrain(HashMap<Integer,Point> expansions) {
         for(Point point : expansions.values()){
             expandPrep(point);
@@ -309,9 +340,11 @@ public class Settlement {
     public Point findEndPoints(){
         int min = Integer.MAX_VALUE;
         Point endPoint = null;
+        Point testPoint = null;
 
         for(Point point : occupantPositions.values())
         {
+            testPoint = point;
             int row = point.row;
             int column = point .column;
             int numberOfAdjacencies = 0;
@@ -330,7 +363,7 @@ public class Settlement {
                 }
             }
 
-            if(numberOfAdjacencies < min)
+            if(numberOfAdjacencies < min && numberOfAdjacencies != 0)
             {
                 endPoint = point;
                 min = numberOfAdjacencies;
@@ -338,7 +371,13 @@ public class Settlement {
             }
         }
 
-        return endPoint;
+        if(endPoint == null) {
+            endPointToNuke = testPoint;
+            return testPoint;
+        }
+
+        else
+            return endPoint;
     }
 
     public int checkPieceAdjacencies(Point point){
@@ -381,5 +420,27 @@ public class Settlement {
         volcanoes.remove(key);
         rocky.remove(key);
         lakes.remove(key);
+    }
+
+    public boolean doesSettlementcontainTotoro()
+    {
+        for(Point point : occupantPositions.values())
+        {
+            if(game.board[point.row][point.column].occupant == OccupantType.TOTORO)
+                return false;
+        }
+
+        return true;
+    }
+
+    public boolean doesSettlementcontainTiger()
+    {
+        for(Point point : occupantPositions.values())
+        {
+            if(game.board[point.row][point.column].occupant == OccupantType.TIGER)
+                return true;
+        }
+
+        return false;
     }
 }
