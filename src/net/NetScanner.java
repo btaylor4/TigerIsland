@@ -172,7 +172,6 @@ public class NetScanner {
             }
         }
     }
-    private static String ActionTerminator = "AT";
     private void ScanAction(java.util.Scanner sc, Token token)
     {
         if(!sc.hasNext())
@@ -200,10 +199,6 @@ public class NetScanner {
             {
                 ScanByType(functionId, token);
             }
-            else
-            {
-
-            }
         }
     }
     private void ScanString(java.util.Scanner sc, Token token)
@@ -212,7 +207,6 @@ public class NetScanner {
             token.Data = sc.next();
         }
     }
-    public static int NStringTerminator = 2;
     private void ScanStringN(java.util.Scanner sc, Token token, int terminator)
     {
         int i =0;

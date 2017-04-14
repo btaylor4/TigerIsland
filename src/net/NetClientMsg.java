@@ -8,13 +8,6 @@ import main.ProjectionPack;
 import main.utils.XYZ;
 import main.Point;
 
-class ClientBuild
-{
-    protected Point Point;
-    protected Tile Tile;
-    protected String Action;
-    protected String Target;
-}
 public class NetClientMsg {
 
     private static String ErrorMessage = "UNABLE TO BUILD";
@@ -54,13 +47,6 @@ public class NetClientMsg {
         XYZ cubePoint = new XYZ(point);
 
         return String.format("%1$s %2$s %3$s %4$d %5$d %6$d", action, target, "AT",
-                cubePoint.x, cubePoint.y, cubePoint.z);
-    }
-
-    public String FormatBuildAction(ClientBuild cb) {
-        XYZ cubePoint = new XYZ(cb.Point);
-
-        return String.format("%1$s %2$s %3$s %4$d %5$d %6$d", cb.Action, cb.Target, "AT",
                 cubePoint.x, cubePoint.y, cubePoint.z);
     }
 
