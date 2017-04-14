@@ -6,7 +6,7 @@
 
 ##### To run the program:
 1. Clone the project
-2. To run the program, run "Main.java"
+2. Run "Main.java"
 
 
 
