@@ -86,9 +86,18 @@ public class BryanAI extends Player {
     public void determineBuildByAI()
     {
         updateFoundPositions();
+        getMySettlements();
+        updateSettlementCounts();
+        getMySettlements();
+        //Priority list
+        int row = 0;
+        int column = 0;
+        int mostMeeplesInHex = -1;
+        Settlement settlementChoice = new Settlement(game);
+
         if(!firstBuild)
         {
-            for(Point point : foundableSpots.values())
+            for(Point point: foundableSpots.values())
             {
                 if(game.isValidSettlementPosition(point))
                 {
@@ -99,281 +108,230 @@ public class BryanAI extends Player {
                     setData.put(freshSettlement, new SettlementData(freshSettlement, game));
                     game.setSettlement(point, freshSettlement);
                     placeMeeple(point, freshSettlement);
+                    firstBuild = true;
                     buildDecision = BuildOptions.FOUND_SETTLEMENT;
                     buildPoint = point;
                     return;
                 }
             }
+
+            return;
         }
 
-        else
+        if(totoro != 0)
         {
-            for(Point point : foundableSpots.values())
+            for (SettlePointPair mySets : playerSettlements.values())
             {
-                if(game.isValidSettlementPosition(point))
+                //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
+                //check if I can place a totoro
+                if (mySets.settlement.totoroSanctuaries == 0)
                 {
-                    Settlement freshSettlement = new Settlement(game);
-                    freshSettlement.owner = this ;
-                    freshSettlement.ownerNumber = designator ;
-                    freshSettlement.beginNewSettlement(point);
-                    setData.put(freshSettlement, new SettlementData(freshSettlement, game));
-                    game.setSettlement(point, freshSettlement);
-                    placeMeeple(point, freshSettlement);
-                    buildDecision = BuildOptions.FOUND_SETTLEMENT;
-                    buildPoint = point;
+                    if(mySets.settlement.size >= 5)
+                    {
+                        Point point = mySets.settlement.findEndPoints();
+
+                        for (int i = 0; i < SIDES_IN_HEX; i++)
+                        {
+                            row = point.row + ROW_ADDS[i];
+                            column = point.column + COLUMN_ADDS[i];
+
+                            if (game.board[row][column] != null)
+                            {
+                                if(!game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                    continue;
+
+                                else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                {
+                                    if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
+                                    {
+                                        point = new Point(row, column);
+                                        break;
+                                    }
+
+                                    else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                        point = new Point(row, column);
+                                }
+                            }
+                        }
+
+                        if(game.isValidTotoroPosition(point, mySets.settlement))
+                        {
+                            buildDecision = BuildOptions.TOTORO_SANCTUARY;
+                            buildPoint = point;
+                            placeTotoro(point, mySets.settlement);
+                            System.out.println("Totoro has been fucking placed motherfucker! Score: " + score);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(tigers != 0)
+        {
+            for (SettlePointPair mySets : playerSettlements.values())
+            {
+                //check if I can place a tiger
+                if (mySets.settlement.tigerPlaygrounds == 0)
+                {
+                    Point point = mySets.settlement.findEndPoints();
+
+                    for (int i = 0; i < SIDES_IN_HEX; i++)
+                    {
+                        row = point.row + ROW_ADDS[i];
+                        column = point.column + COLUMN_ADDS[i];
+
+                        if (game.board[row][column] != null)
+                        {
+                            if(!game.isValidTigerPosition(new Point(row, column), mySets.settlement))
+                                continue;
+
+                            else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
+                            {
+                                if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
+                                {
+                                    point = new Point(row, column);
+                                    break;
+                                }
+
+                                else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
+                                    point = new Point(row, column);
+                            }
+                        }
+                    }
+
+                    if(game.isValidTigerPosition(point, mySets.settlement))
+                    {
+                        System.out.println("Placed TIGER!");
+                        buildDecision = BuildOptions.TIGER_PLAYGROUND;
+                        buildPoint = point;
+                        placeTiger(point, mySets.settlement);
+                        return;
+                    }
+                }
+            }
+        }
+
+        for (SettlePointPair mySets : playerSettlements.values())
+        {
+            setData.get(mySets.settlement).compileSettlementData();
+
+            if (mySets.settlement.size + mySets.settlement.grasslands.size() > 1 && meeples > mySets.settlement.grasslands.size())
+            {
+                if(setData.get(mySets.settlement).afterGrass > meeples)
+                {
+                    continue;
+                }
+
+                else if(mySets.settlement.grassExpansions <= 0)
+                    continue;
+
+                else if(mySets.settlement.grasslands.size() > 0)
+                {
+                    buildDecision = BuildOptions.EXPAND;
+                    buildPoint = mySets.settlement.findEndPoints();
+                    expansionAction = TerrainType.GRASS;
+                    game.expandSettlement(buildPoint, expansionAction);
+                    return;
+                }
+            }
+
+            else if (mySets.settlement.size + mySets.settlement.lakes.size() > 1 && meeples > mySets.settlement.lakes.size())
+            {
+                if(setData.get(mySets.settlement).afterLake > meeples)
+                    continue;
+
+                else if(mySets.settlement.grassExpansions <= 0)
+                    continue;
+
+                else if(mySets.settlement.lakes.size() > 0)
+                {
+                    buildDecision = BuildOptions.EXPAND;
+                    buildPoint = mySets.settlement.findEndPoints();
+                    expansionAction = TerrainType.LAKE;
+                    game.expandSettlement(buildPoint, expansionAction);
+                    return;
+                }
+            }
+
+            else if (mySets.settlement.size + mySets.settlement.jungles.size() > 1 && meeples > mySets.settlement.jungles.size())
+            {
+                if(setData.get(mySets.settlement).afterJungle > meeples)
+                    continue;
+
+                else if(mySets.settlement.grassExpansions <= 0)
+                    continue;
+
+                else if(mySets.settlement.jungles.size() > 0)
+                {
+                    buildDecision = BuildOptions.EXPAND;
+                    buildPoint = mySets.settlement.findEndPoints();
+                    expansionAction = TerrainType.JUNGLE;
+                    game.expandSettlement(buildPoint, expansionAction);
+                    return;
+                }
+            }
+
+            else if (mySets.settlement.size + mySets.settlement.rocky.size() > 1 && meeples > mySets.settlement.rocky.size())
+            {
+                if(setData.get(mySets.settlement).afterRocky > meeples)
+                    continue;
+
+                else if(mySets.settlement.grassExpansions <= 0)
+                    continue;
+
+                else if(mySets.settlement.rocky.size() > 0)
+                {
+                    buildDecision = BuildOptions.EXPAND;
+                    buildPoint = mySets.settlement.findEndPoints();
+                    expansionAction = TerrainType.ROCK;
+                    game.expandSettlement(buildPoint, expansionAction);
                     return;
                 }
             }
         }
 
-//        getMySettlements();
-//        updateSettlementCounts();
-//        updateFoundPositions();
-//        getMySettlements();
-//        //Priority list
-//        int row = 0;
-//        int column = 0;
-//        int mostMeeplesInHex = -1;
-//        Settlement settlementChoice = new Settlement(game);
-//
-//
-//        if(!firstBuild)
-//        {
-//            for(Point point: foundableSpots.values())
-//            {
-//                if(game.isValidSettlementPosition(point))
-//                {
-//                    Settlement freshSettlement = new Settlement(game);
-//                    freshSettlement.owner = this ;
-//                    freshSettlement.ownerNumber = designator ;
-//                    freshSettlement.beginNewSettlement(point);
-//                    setData.put(freshSettlement, new SettlementData(freshSettlement, game));
-//                    game.setSettlement(point, freshSettlement);
-//                    placeMeeple(point, freshSettlement);
-//                    firstBuild = true;
-//                    buildDecision = BuildOptions.FOUND_SETTLEMENT;
-//                    buildPoint = point;
-//                    return;
-//                }
-//            }
-//
-//            return;
-//        }
-//
-//        if(totoro != 0)
-//        {
-//            for (SettlePointPair mySets : playerSettlements.values())
-//            {
-//                //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
-//                //check if I can place a totoro
-//                if (mySets.settlement.totoroSanctuaries == 0)
-//                {
-//                    if(mySets.settlement.size >= 5)
-//                    {
-//                        Point point = mySets.settlement.findEndPoints();
-//
-//                        for (int i = 0; i < SIDES_IN_HEX; i++)
-//                        {
-//                            row = point.row + ROW_ADDS[i];
-//                            column = point.column + COLUMN_ADDS[i];
-//
-//                            if (game.board[row][column] != null)
-//                            {
-//                                if(!game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
-//                                    continue;
-//
-//                                else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
-//                                {
-//                                    if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
-//                                    {
-//                                        point = new Point(row, column);
-//                                        break;
-//                                    }
-//
-//                                    else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
-//                                        point = new Point(row, column);
-//                                }
-//                            }
-//                        }
-//
-//                        if(game.isValidTotoroPosition(point, mySets.settlement))
-//                        {
-//                            buildDecision = BuildOptions.TOTORO_SANCTUARY;
-//                            buildPoint = point;
-//                            placeTotoro(point, mySets.settlement);
-//                            System.out.println("Totoro has been fucking placed motherfucker! Score: " + score);
-//                            return;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        if(tigers != 0)
-//        {
-//            for (SettlePointPair mySets : playerSettlements.values())
-//            {
-//                //check if I can place a tiger
-//                if (mySets.settlement.tigerPlaygrounds == 0)
-//                {
-//                    Point point = mySets.settlement.findEndPoints();
-//
-//                    for (int i = 0; i < SIDES_IN_HEX; i++)
-//                    {
-//                        row = point.row + ROW_ADDS[i];
-//                        column = point.column + COLUMN_ADDS[i];
-//
-//                        if (game.board[row][column] != null)
-//                        {
-//                            if(!game.isValidTigerPosition(new Point(row, column), mySets.settlement))
-//                                continue;
-//
-//                            else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
-//                            {
-//                                if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
-//                                {
-//                                    point = new Point(row, column);
-//                                    break;
-//                                }
-//
-//                                else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
-//                                    point = new Point(row, column);
-//                            }
-//                        }
-//                    }
-//
-//                    if(game.isValidTigerPosition(point, mySets.settlement))
-//                    {
-//                        System.out.println("Placed TIGER!");
-//                        buildDecision = BuildOptions.TIGER_PLAYGROUND;
-//                        buildPoint = point;
-//                        placeTiger(point, mySets.settlement);
-//                        return;
-//                    }
-//                }
-//            }
-//        }
-//
-//        for (SettlePointPair mySets : playerSettlements.values())
-//        {
-//            setData.get(mySets.settlement).compileSettlementData();
-//
-//            if (mySets.settlement.size + mySets.settlement.grasslands.size() > 1 && meeples > mySets.settlement.grasslands.size())
-//            {
-//                if(setData.get(mySets.settlement).afterGrass > meeples)
-//                {
-//                    continue;
-//                }
-//
-//                else if(mySets.settlement.grassExpansions <= 0)
-//                    continue;
-//
-//                else if(mySets.settlement.grasslands.size() > 0)
-//                {
-//                    buildDecision = BuildOptions.EXPAND;
-//                    buildPoint = mySets.settlement.findEndPoints();
-//                    expansionAction = TerrainType.GRASS;
-//                    game.expandSettlement(buildPoint, expansionAction);
-//                    return;
-//                }
-//            }
-//
-//            else if (mySets.settlement.size + mySets.settlement.lakes.size() > 1 && meeples > mySets.settlement.lakes.size())
-//            {
-//                if(setData.get(mySets.settlement).afterLake > meeples)
-//                    continue;
-//
-//                else if(mySets.settlement.grassExpansions <= 0)
-//                    continue;
-//
-//                else if(mySets.settlement.lakes.size() > 0)
-//                {
-//                    buildDecision = BuildOptions.EXPAND;
-//                    buildPoint = mySets.settlement.findEndPoints();
-//                    expansionAction = TerrainType.LAKE;
-//                    game.expandSettlement(buildPoint, expansionAction);
-//                    return;
-//                }
-//            }
-//
-//            else if (mySets.settlement.size + mySets.settlement.jungles.size() > 1 && meeples > mySets.settlement.jungles.size())
-//            {
-//                if(setData.get(mySets.settlement).afterJungle > meeples)
-//                    continue;
-//
-//                else if(mySets.settlement.grassExpansions <= 0)
-//                    continue;
-//
-//                else if(mySets.settlement.jungles.size() > 0)
-//                {
-//                    buildDecision = BuildOptions.EXPAND;
-//                    buildPoint = mySets.settlement.findEndPoints();
-//                    expansionAction = TerrainType.JUNGLE;
-//                    game.expandSettlement(buildPoint, expansionAction);
-//                    return;
-//                }
-//            }
-//
-//            else if (mySets.settlement.size + mySets.settlement.rocky.size() > 1 && meeples > mySets.settlement.rocky.size())
-//            {
-//                if(setData.get(mySets.settlement).afterRocky > meeples)
-//                    continue;
-//
-//                else if(mySets.settlement.grassExpansions <= 0)
-//                    continue;
-//
-//                else if(mySets.settlement.rocky.size() > 0)
-//                {
-//                    buildDecision = BuildOptions.EXPAND;
-//                    buildPoint = mySets.settlement.findEndPoints();
-//                    expansionAction = TerrainType.ROCK;
-//                    game.expandSettlement(buildPoint, expansionAction);
-//                    return;
-//                }
-//            }
-//        }
-//
-//        for(SettlePointPair mySet : playerSettlements.values())
-//        {
-//            if(mySet.settlement.size > mostMeeplesInHex)
-//            {
-//                mostMeeplesInHex = mySet.settlement.size;
-//                settlementChoice = mySet.settlement;
-//            }
-//        }
-//
-//        Point PlaceOneAway = placeMeepleOneAway(settlementChoice);
-//
-//        if(PlaceOneAway != null && game.isValidSettlementPosition(PlaceOneAway))
-//        {
-//            Settlement freshSettlement = new Settlement(game);
-//            freshSettlement.owner = this ;
-//            freshSettlement.ownerNumber = designator ;
-//            freshSettlement.beginNewSettlement(PlaceOneAway);
-//            setData.put(freshSettlement, new SettlementData(freshSettlement, game));
-//            game.setSettlement(PlaceOneAway, freshSettlement);
-//            placeMeeple(PlaceOneAway, freshSettlement);
-//            buildDecision = BuildOptions.FOUND_SETTLEMENT;
-//            buildPoint = PlaceOneAway;
-//            return;
-//        }
-//
-//        for(Point point : foundableSpots.values())
-//        {
-//            if(game.isValidSettlementPosition(point))
-//            {
-//                Settlement freshSettlement = new Settlement(game);
-//                freshSettlement.owner = this ;
-//                freshSettlement.ownerNumber = designator ;
-//                freshSettlement.beginNewSettlement(point);
-//                setData.put(freshSettlement, new SettlementData(freshSettlement, game));
-//                game.setSettlement(point, freshSettlement);
-//                placeMeeple(point, freshSettlement);
-//                buildDecision = BuildOptions.FOUND_SETTLEMENT;
-//                buildPoint = point;
-//                return;
-//            }
-//        }
+        for(SettlePointPair mySet : playerSettlements.values())
+        {
+            if(mySet.settlement.size > mostMeeplesInHex)
+            {
+                mostMeeplesInHex = mySet.settlement.size;
+                settlementChoice = mySet.settlement;
+            }
+        }
+
+        Point PlaceOneAway = placeMeepleOneAway(settlementChoice);
+
+        if(PlaceOneAway != null && game.isValidSettlementPosition(PlaceOneAway))
+        {
+            Settlement freshSettlement = new Settlement(game);
+            freshSettlement.owner = this ;
+            freshSettlement.ownerNumber = designator ;
+            freshSettlement.beginNewSettlement(PlaceOneAway);
+            setData.put(freshSettlement, new SettlementData(freshSettlement, game));
+            game.setSettlement(PlaceOneAway, freshSettlement);
+            placeMeeple(PlaceOneAway, freshSettlement);
+            buildDecision = BuildOptions.FOUND_SETTLEMENT;
+            buildPoint = PlaceOneAway;
+            return;
+        }
+
+        for(Point point : foundableSpots.values())
+        {
+            if(game.isValidSettlementPosition(point))
+            {
+                Settlement freshSettlement = new Settlement(game);
+                freshSettlement.owner = this ;
+                freshSettlement.ownerNumber = designator ;
+                freshSettlement.beginNewSettlement(point);
+                setData.put(freshSettlement, new SettlementData(freshSettlement, game));
+                game.setSettlement(point, freshSettlement);
+                placeMeeple(point, freshSettlement);
+                buildDecision = BuildOptions.FOUND_SETTLEMENT;
+                buildPoint = point;
+                return;
+            }
+        }
     }
 
     public void updateFoundPositions()

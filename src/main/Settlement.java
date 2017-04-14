@@ -309,9 +309,11 @@ public class Settlement {
     public Point findEndPoints(){
         int min = Integer.MAX_VALUE;
         Point endPoint = null;
+        Point testPoint = null;
 
         for(Point point : occupantPositions.values())
         {
+            testPoint = point;
             int row = point.row;
             int column = point .column;
             int numberOfAdjacencies = 0;
@@ -330,7 +332,7 @@ public class Settlement {
                 }
             }
 
-            if(numberOfAdjacencies < min)
+            if(numberOfAdjacencies < min && numberOfAdjacencies != 0)
             {
                 endPoint = point;
                 min = numberOfAdjacencies;
@@ -338,7 +340,11 @@ public class Settlement {
             }
         }
 
-        return endPoint;
+        if(endPoint == null)
+            return  testPoint;
+
+        else
+            return endPoint;
     }
 
     public int checkPieceAdjacencies(Point point){
