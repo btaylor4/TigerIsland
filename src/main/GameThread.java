@@ -21,7 +21,7 @@ public class GameThread {
     NetServerMsg currentMessage = null;
 
     String gameID;
-    String ourPlayerID = TigerIsland.AIPID;
+    String ourPlayerID = MAIN.AIPID;
 
     int moveNumber;
     private boolean isMyTurn;
@@ -46,8 +46,8 @@ public class GameThread {
             isMyTurn = false;
         }
 
-        AI = new JPAI(game,Integer.parseInt(TigerIsland.AIPID));
-        Opponent = new Player(game,Integer.parseInt(TigerIsland.opponentPID));
+        AI = new JPAI(game,Integer.parseInt(MAIN.AIPID));
+        Opponent = new Player(game,Integer.parseInt(MAIN.opponentPID));
 
         AI.setOpponent(Opponent);
 
