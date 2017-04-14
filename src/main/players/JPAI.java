@@ -280,12 +280,7 @@ public class JPAI extends Player {
             projectionPossibleTilePlacement = projectTilePlacement(tileHeld, point) ;
             projectionPossibleTilePlacement.projectedLevel = game.getProjectedHexLevel(projectionPossibleTilePlacement);
 
-            System.out.println("Rotation : " + tileHeld.rotation);
-            System.out.println("checking at:" + projectionPossibleTilePlacement.volcano.row + " " + projectionPossibleTilePlacement.volcano.column);
-
             if(game.isValidTilePlacement(projectionPossibleTilePlacement) && projectionPossibleTilePlacement.projectedLevel == 1){
-                System.out.println("Decided on " + tileHeld.rotation );
-                game.printBoard();
                 return true;
             }
 
@@ -400,6 +395,7 @@ public class JPAI extends Player {
         decideBuildOption();
         selectBuildOption();
         clearDataLists();
+        game.printBoard();
     }
 
     private void decideBuildOption(){
@@ -448,7 +444,7 @@ public class JPAI extends Player {
     }
 
     private Point determineSettlementPosition(){
-        Point seeker = new Point(0, 0);
+        Point seeker = new Point(BOARD_CENTER, BOARD_CENTER);
 
         for(int displacement = 1; (displacement < BOARD_CENTER-2); displacement++){
             seeker.row = BOARD_CENTER - displacement;
