@@ -230,7 +230,7 @@ public class BryanAI extends Player {
                 {
                     buildDecision = BuildOptions.EXPAND;
                     buildPoint = mySets.settlement.findEndPoints();
-                    expansionAction = TerrainType.GRASS;
+                    terrainSelection = TerrainType.GRASS;
                     game.expandSettlement(buildPoint, expansionAction);
                     return;
                 }
@@ -248,7 +248,7 @@ public class BryanAI extends Player {
                 {
                     buildDecision = BuildOptions.EXPAND;
                     buildPoint = mySets.settlement.findEndPoints();
-                    expansionAction = TerrainType.LAKE;
+                    terrainSelection = TerrainType.LAKE;
                     game.expandSettlement(buildPoint, expansionAction);
                     return;
                 }
@@ -266,7 +266,7 @@ public class BryanAI extends Player {
                 {
                     buildDecision = BuildOptions.EXPAND;
                     buildPoint = mySets.settlement.findEndPoints();
-                    expansionAction = TerrainType.JUNGLE;
+                    terrainSelection = TerrainType.JUNGLE;
                     game.expandSettlement(buildPoint, expansionAction);
                     return;
                 }
@@ -284,7 +284,7 @@ public class BryanAI extends Player {
                 {
                     buildDecision = BuildOptions.EXPAND;
                     buildPoint = mySets.settlement.findEndPoints();
-                    expansionAction = TerrainType.ROCK;
+                    terrainSelection = TerrainType.ROCK;
                     game.expandSettlement(buildPoint, expansionAction);
                     return;
                 }
