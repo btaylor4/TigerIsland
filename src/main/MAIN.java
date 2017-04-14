@@ -35,6 +35,11 @@ public class MAIN
             {
                 challengeProtocolBegin();
 
+                if(client.message.contains("END OF CHALLENGES"))
+                {
+                    System.exit(0);
+                }
+
                 for(int i = 0; i < totalMatches; i++)
                 {
                     roundProtocolBegin();
@@ -44,60 +49,63 @@ public class MAIN
                     GameThread game1 = null;
                     GameThread game2 = null;
 
-                    if(game1 == null && !game1.gameOver)
+                    while(client.message.contains("END OF ROUND"))
                     {
-                        game1 = new GameThread(message, client);
-                        game1.processMessage(message);
-                    }
+                        message = client.getNextMessageFromServer();
 
-                    else if(game2 == null && !game2.gameOver)
-                    {
-                        game2 = new GameThread(message, client);
-                        game2.processMessage(message);
-                    }
-
-                    else
-                    {
-                        if(client.message.contains("END OF ROUND"))
+                        if(game1 == null && !game1.gameOver)
                         {
-                            break;
-                        }
-
-                        else if(client.message.contains("FORFEITED") || client.message.contains("LOST"))
-                        {
-                            break;
-                        }
-
-                        else if(client.message.contains("GAME OVER"))
-                        {
-                            if(client.message.contains(game1.gameID))
-                            {
-                                game1.gameOver = true;
-                            }
-
-                            if(client.message.contains(game2.gameID))
-                            {
-                                game2.gameOver = true;
-                            }
-                        }
-
-                        else if(!game1.gameOver && client.message.contains(game1.gameID) && !client.message.contains(AIPID))
-                        {
+                            game1 = new GameThread(message, client);
                             game1.processMessage(message);
                         }
 
-                        else if(!game2.gameOver &&  client.message.contains(game2.gameID) && !client.message.contains(AIPID))
+                        else if(game2 == null && !game2.gameOver)
                         {
+                            game2 = new GameThread(message, client);
                             game2.processMessage(message);
                         }
+
+                        else
+                        {
+                            if(client.message.contains("END OF ROUND"))
+                            {
+                                break;
+                            }
+
+                            else if(client.message.contains("FORFEITED") || client.message.contains("LOST"))
+                            {
+                                break;
+                            }
+
+                            else if(client.message.contains("GAME OVER"))
+                            {
+                                if(client.message.contains(game1.gameID))
+                                {
+                                    game1.gameOver = true;
+                                }
+
+                                if(client.message.contains(game2.gameID))
+                                {
+                                    game2.gameOver = true;
+                                }
+                            }
+
+                            else if(!game1.gameOver && client.message.contains(game1.gameID) && !client.message.contains(AIPID))
+                            {
+                                game1.processMessage(message);
+                            }
+
+                            else if(!game2.gameOver &&  client.message.contains(game2.gameID) && !client.message.contains(AIPID))
+                            {
+                                game2.processMessage(message);
+                            }
+                        }
                     }
-                }
 
-                message = client.getNextMessageFromServer();
-
-                if(client.message.contains("END OF CHALLENGES"))
-                {
-                    System.exit(0);
+                    if(client.message.contains("END OF ROUNDS"))
+                    {
+                        break;
+                    }
                 }
             }
         }
