@@ -90,12 +90,12 @@ public class MAIN
                                 }
                             }
 
-                            else if(!game1.gameOver && client.message.contains(game1.gameID) && !client.message.contains(AIPID))
+                            else if(!game1.gameOver && client.message.contains("GAME " + game1.gameID) && !client.message.contains("PLAYER " + AIPID))
                             {
                                 game1.processMessage(message);
                             }
 
-                            else if(game2 != null && !game2.gameOver &&  client.message.contains(game2.gameID) && !client.message.contains(AIPID))
+                            else if(game2 != null && !game2.gameOver && client.message.contains("GAME " + game2.gameID) && !client.message.contains("PLAYER " + AIPID))
                             {
                                 game2.processMessage(message);
                             }
