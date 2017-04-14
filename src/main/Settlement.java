@@ -340,8 +340,10 @@ public class Settlement {
             }
         }
 
-        if(endPoint == null)
-            return  testPoint;
+        if(endPoint == null) {
+            endPointToNuke = testPoint;
+            return testPoint;
+        }
 
         else
             return endPoint;
