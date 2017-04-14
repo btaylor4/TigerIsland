@@ -26,6 +26,7 @@ public class BryanAI extends Player {
     public TerrainType expansionAction;
     public HashMap<Settlement, SettlementData> setData;
     public ArrayList<SettlementData> mySettlementData;
+    public Player Opponent;
 
     public BryanAI(GameBoard gamePointer, int designator){
         super(gamePointer, designator);
@@ -39,6 +40,11 @@ public class BryanAI extends Player {
         expansionAction = TerrainType.GRASS;
         setData = new HashMap<>();
         mySettlementData = new ArrayList<>();
+    }
+
+    public void setOpponent(Player opponent)
+    {
+        this.Opponent = opponent;
     }
 
     public void setTile(Tile tile)
@@ -347,26 +353,21 @@ public class BryanAI extends Player {
         }
     }
 
-    public Tile determineTilePlacementByAI()
-    {
+    public Tile determineTilePlacementByAI() {
         Point selectedPoint;
         ProjectionPack projection;
 
         int mostMeeplesInHex = -1;
         Settlement settlementChoice = new Settlement(game);
 
-        if(!firstPlay)
-        {
-            for(Point point : game.playableHexes.values())
-            {
-                for(int i = 1; i < 7; i++)
-                {
+        if (!firstPlay) {
+            for (Point point : game.playableHexes.values()) {
+                for (int i = 1; i < 7; i++) {
                     tileHeld.setRotation(i);
                     projection = projectTilePlacement(tileHeld, point);
                     projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                    if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
-                    {
+                    if (game.isValidTilePlacement(projection) && projection.projectedLevel == 1) {
                         game.setTile(tileHeld, projection);
                         tileHeld.serverPoint = projection.volcano;
                         firstPlay = true;
@@ -374,72 +375,83 @@ public class BryanAI extends Player {
                     }
                 }
             }
-        }
-
-        else
-        {
+        } else {
             //priority list
-            for(SettlePointPair mySet : playerSettlements.values())
-            {
-                if(mySet.settlement.totoroSanctuaries == 1)
-                {
-                    int nukingRotation = determineRotationForNukingAI(mySet.settlement);
+            for (SettlePointPair oppSet : Opponent.playerSettlements.values()) {
+                if (oppSet.settlement.size > 3) {
+                    for (Point point : oppSet.settlement.occupantPositions.values()) {
+                        for (int i = 1; i < 7; i++) {
+                            tileHeld.setRotation(i);
+                            projection = projectTilePlacement(tileHeld, point);
 
-                    if(nukingRotation != 0)
-                    {
-                        tileHeld.setRotation(determineRotationForNukingAI(mySet.settlement));
-                        projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
-                        projection.projectedLevel = game.getProjectedHexLevel(projection);
+                            if (projection != null) {
+                                projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1) {
-                            game.setTile(tileHeld, projection);
-                            tileHeld.serverPoint = projection.volcano;
-                            return tileHeld;
-                        }
-
-                        else if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
-                        {
-                            tileHeld.serverPoint = projection.volcano;
-                            game.setTile(tileHeld, projection);
-                            return tileHeld;
+                                if (projection.projectedLevel > 1 && game.isValidOverlap(projection)) {
+                                    tileHeld.serverPoint = projection.volcano;
+                                    game.setTile(tileHeld, projection);
+                                    return tileHeld;
+                                }
+                            }
                         }
                     }
                 }
             }
 
-            for(SettlePointPair mySet : playerSettlements.values())
-            {
-                if(mySet.settlement.tigerPlaygrounds == 1)
-                {
+            for (SettlePointPair mySet : playerSettlements.values()) {
+                if (mySet.settlement.totoroSanctuaries == 1) {
                     int nukingRotation = determineRotationForNukingAI(mySet.settlement);
 
-                    if(nukingRotation != 0)
-                    {
+                    if (nukingRotation != 0) {
                         tileHeld.setRotation(determineRotationForNukingAI(mySet.settlement));
                         projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
-                        projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1) {
-                            game.setTile(tileHeld, projection);
-                            tileHeld.serverPoint = projection.volcano;
-                            return tileHeld;
-                        }
+                        if (projection != null) {
+                            projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        else if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
-                        {
-                            tileHeld.serverPoint = projection.volcano;
-                            game.setTile(tileHeld, projection);
-                            return tileHeld;
+                            if (game.isValidTilePlacement(projection) && projection.projectedLevel == 1) {
+                                game.setTile(tileHeld, projection);
+                                tileHeld.serverPoint = projection.volcano;
+                                return tileHeld;
+                            } else if (projection.projectedLevel > 1 && game.isValidOverlap(projection)) {
+                                tileHeld.serverPoint = projection.volcano;
+                                game.setTile(tileHeld, projection);
+                                return tileHeld;
+                            }
                         }
                     }
                 }
             }
 
-            for(SettlePointPair mySet : playerSettlements.values())
-            {
+            for (SettlePointPair mySet : playerSettlements.values()) {
+                if (mySet.settlement.tigerPlaygrounds == 1) {
+                    int nukingRotation = determineRotationForNukingAI(mySet.settlement);
+
+                    if (nukingRotation != 0) {
+                        tileHeld.setRotation(determineRotationForNukingAI(mySet.settlement));
+                        projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
+
+                        if (projection != null) {
+                            projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+                            if (game.isValidTilePlacement(projection) && projection.projectedLevel == 1) {
+                                game.setTile(tileHeld, projection);
+                                tileHeld.serverPoint = projection.volcano;
+                                return tileHeld;
+                            } else if (projection.projectedLevel > 1 && game.isValidOverlap(projection)) {
+                                tileHeld.serverPoint = projection.volcano;
+                                game.setTile(tileHeld, projection);
+                                return tileHeld;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (SettlePointPair mySet : playerSettlements.values()) {
                 //check if I can place a tile that will add to one of the adjacency lists to make expansion better
                 //and away from volcanoes
-                if(mySet != null) {
+                if (mySet != null) {
                     if (determineTilePlacementForExpansion(mySet, tileHeld.hexA.terrain))
                         return tileHeld;
 
@@ -449,57 +461,47 @@ public class BryanAI extends Player {
             }
 
             //place next to settlement that would allow for meeple placement one away
-            for(SettlePointPair mySet : playerSettlements.values())
-            {
-                if(mySet.settlement.size > mostMeeplesInHex)
-                {
+            for (SettlePointPair mySet : playerSettlements.values()) {
+                if (mySet.settlement.size > mostMeeplesInHex) {
                     mostMeeplesInHex = mySet.settlement.size;
                     settlementChoice = mySet.settlement;
                 }
             }
 
-            if(determineTilePlacementForPlacingAI(settlementChoice) != null)
-            {
+            if (determineTilePlacementForPlacingAI(settlementChoice) != null) {
                 projection = projectTilePlacement(tileHeld, determineTilePlacementForPlacingAI(settlementChoice));
-                projection.projectedLevel = game.getProjectedHexLevel(projection);
+                if (projection != null) {
+                    projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
-                {
-                    game.setTile(tileHeld, projection);
-                    tileHeld.serverPoint = projection.volcano;
-                    return tileHeld;
+                    if (game.isValidTilePlacement(projection) && projection.projectedLevel == 1) {
+                        game.setTile(tileHeld, projection);
+                        tileHeld.serverPoint = projection.volcano;
+                        return tileHeld;
+                    }
+
+                    if (projection.projectedLevel > 1 && game.isValidOverlap(projection)) {
+                        tileHeld.serverPoint = projection.volcano;
+                        game.setTile(tileHeld, projection);
+                        return tileHeld;
+                    }
                 }
-
-                if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
-                {
-                    tileHeld.serverPoint = projection.volcano;
-                    game.setTile(tileHeld, projection);
-                    return tileHeld;
-                }
-            }
-
-            else
-            {
-                for(Point point : game.playableHexes.values())
-                {
-                    for(int i = 1; i < 7; i++)
-                    {
+            } else {
+                for (Point point : game.playableHexes.values()) {
+                    for (int i = 1; i < 7; i++) {
                         tileHeld.setRotation(i);
                         projection = projectTilePlacement(tileHeld, point);
-                        projection.projectedLevel = game.getProjectedHexLevel(projection);
+                        if (projection != null) {
+                            projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                        if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
-                        {
-                            game.setTile(tileHeld, projection);
-                            tileHeld.serverPoint = projection.volcano;
-                            return tileHeld;
-                        }
-
-                        else if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
-                        {
-                            tileHeld.serverPoint = projection.volcano;
-                            game.setTile(tileHeld, projection);
-                            return tileHeld;
+                            if (game.isValidTilePlacement(projection) && projection.projectedLevel == 1) {
+                                game.setTile(tileHeld, projection);
+                                tileHeld.serverPoint = projection.volcano;
+                                return tileHeld;
+                            } else if (projection.projectedLevel > 1 && game.isValidOverlap(projection)) {
+                                tileHeld.serverPoint = projection.volcano;
+                                game.setTile(tileHeld, projection);
+                                return tileHeld;
+                            }
                         }
                     }
                 }

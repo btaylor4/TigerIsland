@@ -48,7 +48,7 @@ public class GameThread {
 
         AI = new BryanAI(game,Integer.parseInt(MAIN.AIPID));
         Opponent = new Player(game,Integer.parseInt(MAIN.opponentPID));
-
+        AI.setOpponent(Opponent);
     }
 
     public void processMessage(NetServerMsg protocol){
