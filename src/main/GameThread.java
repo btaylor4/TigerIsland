@@ -163,10 +163,15 @@ public class GameThread {
         xyzTo2DConverter = new XYZ(opponentPlacement.GetX(),opponentPlacement.GetY(),opponentPlacement.GetZ());
         twoDimensionalPoint = xyzTo2DConverter.get2DTranslation();
 
+        Opponent.tilePlacement = twoDimensionalPoint ;
         Opponent.tileHeld = tile;
-        Opponent.tileProjection = Opponent.projectTilePlacement(tile, twoDimensionalPoint);
+        Opponent.tileProjection = Opponent.projectTilePlacement(Opponent.tileHeld, Opponent.tilePlacement);
         Opponent.tileProjection.projectedLevel = game.getProjectedHexLevel(Opponent.tileProjection);
-        Opponent.placeTile();
+
+        game.setTile(Opponent.tileHeld, Opponent.tileProjection);
+
+        System.out.println("Opponent placing: " + Opponent.tilePlacement.row + " " + Opponent.tilePlacement.column + " "
+                + Opponent.tileProjection.volcano.row + " " + Opponent.tileProjection.volcano.column + " " + Opponent.tileHeld.rotation);
 
         //parse build action
         opponentPlacement = opponentsMove.GetBuildLocation();
@@ -195,20 +200,66 @@ public class GameThread {
             case BUILT:
 
                 buildOption = opponentsMove.GetSettlement();
-                Settlement selected = null ;
 
-                for (int j=0; j<SIDES_IN_HEX; j++){
-                    if (game.board[twoDimensionalPoint.row+ROW_ADDS[j]][twoDimensionalPoint.column+COLUMN_ADDS[j]].settlementPointer.owner == Opponent){
-                        selected = game.board[twoDimensionalPoint.row+ROW_ADDS[j]][twoDimensionalPoint.column+COLUMN_ADDS[j]].settlementPointer;
+                switch (buildOption)
+                {
+                    case TOTORO_SANCTUARY:
+                        for (int j=0; j<SIDES_IN_HEX; j++)
+                        {
+                            int row = twoDimensionalPoint.row + ROW_ADDS[j];
+                            int column = twoDimensionalPoint.column + COLUMN_ADDS[j];
+
+                            if(game.board[row][column] != null)
+                            {
+                                Settlement settlementChoice = game.board[row][column].settlementPointer;
+
+                                if(settlementChoice != null)
+                                {
+                                    if(settlementChoice.owner == Opponent)
+                                    {
+                                        if(game.isValidTotoroPosition(twoDimensionalPoint, settlementChoice))
+                                        {
+                                            Opponent.buildDecision = buildOption ;
+                                            Opponent.buildPoint = twoDimensionalPoint ;
+                                            Opponent.selectedSettlement = settlementChoice ;
+
+                                            Opponent.playBuildPhase();
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         break;
-                    }
+
+                    case TIGER_PLAYGROUND:
+                        for (int j=0; j<SIDES_IN_HEX; j++)
+                        {
+                            int row = twoDimensionalPoint.row + ROW_ADDS[j];
+                            int column = twoDimensionalPoint.column + COLUMN_ADDS[j];
+
+                            if(game.board[row][column] != null) {
+                                Settlement settlementChoice = game.board[row][column].settlementPointer;
+
+                                if (settlementChoice != null)
+                                {
+                                    if (settlementChoice.owner == Opponent)
+                                    {
+                                        if (game.isValidTigerPosition(twoDimensionalPoint, settlementChoice))
+                                        {
+                                            Opponent.buildDecision = buildOption;
+                                            Opponent.buildPoint = twoDimensionalPoint;
+                                            Opponent.selectedSettlement = settlementChoice;
+
+                                            Opponent.playBuildPhase();
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
                 }
-
-                Opponent.buildDecision = buildOption ;
-                Opponent.buildPoint = twoDimensionalPoint ;
-                Opponent.selectedSettlement = selected ;
-
-                Opponent.playBuildPhase();
 
                 break;
         }

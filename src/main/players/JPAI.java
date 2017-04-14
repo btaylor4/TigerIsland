@@ -212,12 +212,17 @@ public class JPAI extends Player {
     }
 
     private void flatTilePlacement(){
+        tilePlacement = null ;
+        tileProjection = null ;
+
         if(mySettlementData.isEmpty())
             setFlatTilePlacement(new Point(BOARD_CENTER, BOARD_CENTER));
         else {
-            for (SettlementData data : mySettlementData) {
-                for (Point pt : data.settle.occupantPositions.values())
+            for (SettlementData data : mySettlementData){
+                for (Point pt : data.settle.occupantPositions.values()) {
                     setFlatTilePlacement(pt);
+                    if (tilePlacement != null && tileProjection != null) return;
+                }
             }
         }
     }
@@ -270,11 +275,15 @@ public class JPAI extends Player {
 
     private boolean checkAllRotations_Flat(Point point){
         for(int i = 0 ; i < SIDES_IN_HEX; i++){
-            tileHeld.setRotation(i + 1) ;
+            tileHeld.rotation = i+1 ;
+
             projectionPossibleTilePlacement = projectTilePlacement(tileHeld, point) ;
             projectionPossibleTilePlacement.projectedLevel = game.getProjectedHexLevel(projectionPossibleTilePlacement);
-            if(game.isValidTilePlacement(projectionPossibleTilePlacement) && projectionPossibleTilePlacement.projectedLevel == 1)
+
+            if(game.isValidTilePlacement(projectionPossibleTilePlacement) && projectionPossibleTilePlacement.projectedLevel == 1){
                 return true;
+            }
+
         }
         return false ;
     }
@@ -386,6 +395,7 @@ public class JPAI extends Player {
         decideBuildOption();
         selectBuildOption();
         clearDataLists();
+        game.printBoard();
     }
 
     private void decideBuildOption(){
@@ -434,7 +444,7 @@ public class JPAI extends Player {
     }
 
     private Point determineSettlementPosition(){
-        Point seeker = new Point(0, 0);
+        Point seeker = new Point(BOARD_CENTER, BOARD_CENTER);
 
         for(int displacement = 1; (displacement < BOARD_CENTER-2); displacement++){
             seeker.row = BOARD_CENTER - displacement;
