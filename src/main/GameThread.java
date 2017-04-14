@@ -207,16 +207,19 @@ public class GameThread {
                             {
                                 Settlement settlementChoice = game.board[row][column].settlementPointer;
 
-                                if(settlementChoice.owner == Opponent)
+                                if(settlementChoice != null)
                                 {
-                                    if(game.isValidTotoroPosition(new Point(row, column), settlementChoice))
+                                    if(settlementChoice.owner == Opponent)
                                     {
-                                        Opponent.buildDecision = buildOption ;
-                                        Opponent.buildPoint = twoDimensionalPoint ;
-                                        Opponent.selectedSettlement = selected ;
+                                        if(game.isValidTotoroPosition(new Point(row, column), settlementChoice))
+                                        {
+                                            Opponent.buildDecision = buildOption ;
+                                            Opponent.buildPoint = twoDimensionalPoint ;
+                                            Opponent.selectedSettlement = selected ;
 
-                                        Opponent.playBuildPhase();
-                                        break;
+                                            Opponent.playBuildPhase();
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -229,46 +232,27 @@ public class GameThread {
                             int row = twoDimensionalPoint.row + ROW_ADDS[j];
                             int column = twoDimensionalPoint.column + COLUMN_ADDS[j];
 
-                            if(game.board[row][column] != null)
-                            {
+                            if(game.board[row][column] != null) {
                                 Settlement settlementChoice = game.board[row][column].settlementPointer;
 
-                                if(settlementChoice.owner == Opponent)
+                                if (settlementChoice != null)
                                 {
-                                    if(game.isValidTigerPosition(new Point(row, column), settlementChoice))
+                                    if (settlementChoice.owner == Opponent)
                                     {
-                                        Opponent.buildDecision = buildOption ;
-                                        Opponent.buildPoint = twoDimensionalPoint ;
-                                        Opponent.selectedSettlement = selected ;
+                                        if (game.isValidTigerPosition(new Point(row, column), settlementChoice))
+                                        {
+                                            Opponent.buildDecision = buildOption;
+                                            Opponent.buildPoint = twoDimensionalPoint;
+                                            Opponent.selectedSettlement = selected;
 
-                                        Opponent.playBuildPhase();
-                                        break;
+                                            Opponent.playBuildPhase();
+                                            break;
+                                        }
                                     }
                                 }
                             }
                         }
                         break;
-                }
-
-                for (int j=0; j<SIDES_IN_HEX; j++)
-                {
-                    int row = twoDimensionalPoint.row + ROW_ADDS[j];
-                    int column = twoDimensionalPoint.column + COLUMN_ADDS[j];
-
-                    Settlement settlementChoice = game.board[row][column].settlementPointer;
-
-                    if(settlementChoice.owner == Opponent)
-                    {
-                        if(game.isValidTotoroPosition(new Point(row, column), settlementChoice))
-                        {
-                            Opponent.buildDecision = buildOption ;
-                            Opponent.buildPoint = twoDimensionalPoint ;
-                            Opponent.selectedSettlement = selected ;
-
-                            Opponent.playBuildPhase();
-                            break;
-                        }
-                    }
                 }
 
 //                Opponent.buildDecision = buildOption ;
