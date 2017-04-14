@@ -49,17 +49,17 @@ public class MAIN
                     GameThread game1 = null;
                     GameThread game2 = null;
 
-                    while(client.message.contains("END OF ROUND"))
+                    while(!client.message.contains("END OF ROUND"))
                     {
                         message = client.getNextMessageFromServer();
 
-                        if(game1 == null && !game1.gameOver)
+                        if(game1 == null)
                         {
                             game1 = new GameThread(message, client);
                             game1.processMessage(message);
                         }
 
-                        else if(game2 == null && !game2.gameOver)
+                        else if(game2 == null && !client.message.contains("GAME " + game1.gameID))
                         {
                             game2 = new GameThread(message, client);
                             game2.processMessage(message);
@@ -90,12 +90,14 @@ public class MAIN
                                 }
                             }
 
-                            else if(!game1.gameOver && client.message.contains(game1.gameID) && !client.message.contains(AIPID))
+                            else if(!game1.gameOver && client.message.contains("GAME " + game1.gameID) && !client.message.contains("PLAYER " + AIPID)
+                                    || (client.message.contains("GAME " + game1.gameID) && client.message.contains("MAKE YOUR MOVE")))
                             {
                                 game1.processMessage(message);
                             }
 
-                            else if(!game2.gameOver &&  client.message.contains(game2.gameID) && !client.message.contains(AIPID))
+                            else if(game2 != null && !game2.gameOver && client.message.contains("GAME " + game2.gameID) && !client.message.contains("PLAYER " + AIPID)
+                                    || (client.message.contains("GAME " + game1.gameID) && client.message.contains("MAKE YOUR MOVE")))
                             {
                                 game2.processMessage(message);
                             }
