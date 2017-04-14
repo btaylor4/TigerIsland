@@ -49,7 +49,7 @@ public class MAIN
                     GameThread game1 = null;
                     GameThread game2 = null;
 
-                    while(client.message.contains("END OF ROUND"))
+                    while(!client.message.contains("END OF ROUND"))
                     {
                         message = client.getNextMessageFromServer();
 
@@ -59,7 +59,7 @@ public class MAIN
                             game1.processMessage(message);
                         }
 
-                        else if(game2 == null)
+                        else if(game2 == null && !client.message.contains(game1.gameID))
                         {
                             game2 = new GameThread(message, client);
                             game2.processMessage(message);
@@ -95,7 +95,7 @@ public class MAIN
                                 game1.processMessage(message);
                             }
 
-                            else if(!game2.gameOver &&  client.message.contains(game2.gameID) && !client.message.contains(AIPID))
+                            else if(game2 != null && !game2.gameOver &&  client.message.contains(game2.gameID) && !client.message.contains(AIPID))
                             {
                                 game2.processMessage(message);
                             }
