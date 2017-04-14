@@ -440,11 +440,13 @@ public class BryanAI extends Player {
             {
                 //check if I can place a tile that will add to one of the adjacency lists to make expansion better
                 //and away from volcanoes
-                if(determineTilePlacementForExpansion(mySet, tileHeld.hexA.terrain))
-                    return tileHeld;
+                if(mySet != null) {
+                    if (determineTilePlacementForExpansion(mySet, tileHeld.hexA.terrain))
+                        return tileHeld;
 
-                else if(determineTilePlacementForExpansion(mySet, tileHeld.hexB.terrain))
-                    return tileHeld;
+                    else if (determineTilePlacementForExpansion(mySet, tileHeld.hexB.terrain))
+                        return tileHeld;
+                }
             }
 
             //place next to settlement that would allow for meeple placement one away
@@ -524,14 +526,19 @@ public class BryanAI extends Player {
                         {
                             tileHeld.setRotation(i);
                             projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
-                            projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                            if(projection != null) {
-                                if (game.isValidTilePlacement(projection) && projection.projectedLevel == 1) {
+                            if(projection != null)
+                            {
+                                projection.projectedLevel = game.getProjectedHexLevel(projection);
+                                if (game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
+                                {
                                     tileHeld.serverPoint = projection.volcano;
                                     game.setTile(tileHeld, projection);
                                     return true;
-                                } else if (projection.projectedLevel > 1 && game.isValidOverlap(projection)) {
+                                }
+
+                                else if (projection.projectedLevel > 1 && game.isValidOverlap(projection))
+                                {
                                     tileHeld.serverPoint = projection.volcano;
                                     game.setTile(tileHeld, projection);
                                     return true;
@@ -551,14 +558,20 @@ public class BryanAI extends Player {
                         {
                             tileHeld.setRotation(i);
                             projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
-                            projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                            if(projection != null) {
-                                if (game.isValidTilePlacement(projection) && projection.projectedLevel == 1) {
+                            if(projection != null)
+                            {
+                                projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+                                if (game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
+                                {
                                     tileHeld.serverPoint = projection.volcano;
                                     game.setTile(tileHeld, projection);
                                     return true;
-                                } else if (projection.projectedLevel > 1 && game.isValidOverlap(projection)) {
+                                }
+
+                                else if (projection.projectedLevel > 1 && game.isValidOverlap(projection))
+                                {
                                     tileHeld.serverPoint = projection.volcano;
                                     game.setTile(tileHeld, projection);
                                     return true;
@@ -578,10 +591,11 @@ public class BryanAI extends Player {
                         {
                             tileHeld.setRotation(i);
                             projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
-                            projection.projectedLevel = game.getProjectedHexLevel(projection);
 
                             if(projection != null)
                             {
+                                projection.projectedLevel = game.getProjectedHexLevel(projection);
+
                                 if(game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
                                 {
                                     tileHeld.serverPoint = projection.volcano;
@@ -610,14 +624,19 @@ public class BryanAI extends Player {
                         {
                             tileHeld.setRotation(i);
                             projection = projectTilePlacement(tileHeld, mySet.settlement.endPointToNuke);
-                            projection.projectedLevel = game.getProjectedHexLevel(projection);
 
-                            if(projection != null) {
-                                if (game.isValidTilePlacement(projection) && projection.projectedLevel == 1) {
+                            if(projection != null)
+                            {
+                                projection.projectedLevel = game.getProjectedHexLevel(projection);
+                                if (game.isValidTilePlacement(projection) && projection.projectedLevel == 1)
+                                {
                                     tileHeld.serverPoint = projection.volcano;
                                     game.setTile(tileHeld, projection);
                                     return true;
-                                } else if (projection.projectedLevel > 1 && game.isValidOverlap(projection)) {
+                                }
+
+                                else if (projection.projectedLevel > 1 && game.isValidOverlap(projection))
+                                {
                                     tileHeld.serverPoint = projection.volcano;
                                     game.setTile(tileHeld, projection);
                                     return true;
