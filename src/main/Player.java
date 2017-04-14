@@ -172,8 +172,12 @@ public class Player {
     }
 
     public void placeTile(){
-        tileHeld.serverPoint = tileProjection.volcano;
+        tileHeld.serverPoint = tilePlacement;
         game.setTile(tileHeld, tileProjection);
+        System.out.println("Setting Tile At: (" + tilePlacement.row + ", " + tilePlacement.column + ") R: " + tileHeld.rotation);
+        System.out.println("Volcano r:" + tileProjection.volcano.row + " c:" + tileProjection.volcano.column);
+        System.out.println("Hex_A   r:" + tileProjection.hex_a.row + " c:" + tileProjection.hex_a.column) ;
+        System.out.println("Hex_B   r:" + tileProjection.hex_b.row + " c:" + tileProjection.hex_b.column) ;
     }
 
 

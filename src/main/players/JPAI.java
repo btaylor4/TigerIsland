@@ -212,12 +212,17 @@ public class JPAI extends Player {
     }
 
     private void flatTilePlacement(){
+        tilePlacement = null ;
+        tileProjection = null ;
+
         if(mySettlementData.isEmpty())
             setFlatTilePlacement(new Point(BOARD_CENTER, BOARD_CENTER));
         else {
-            for (SettlementData data : mySettlementData) {
-                for (Point pt : data.settle.occupantPositions.values())
+            for (SettlementData data : mySettlementData){
+                for (Point pt : data.settle.occupantPositions.values()) {
                     setFlatTilePlacement(pt);
+                    if (tilePlacement != null && tileProjection != null) return;
+                }
             }
         }
     }
@@ -270,11 +275,20 @@ public class JPAI extends Player {
 
     private boolean checkAllRotations_Flat(Point point){
         for(int i = 0 ; i < SIDES_IN_HEX; i++){
-            tileHeld.setRotation(i + 1) ;
+            tileHeld.rotation = i+1 ;
+
             projectionPossibleTilePlacement = projectTilePlacement(tileHeld, point) ;
             projectionPossibleTilePlacement.projectedLevel = game.getProjectedHexLevel(projectionPossibleTilePlacement);
-            if(game.isValidTilePlacement(projectionPossibleTilePlacement) && projectionPossibleTilePlacement.projectedLevel == 1)
+
+            System.out.println("Rotation : " + tileHeld.rotation);
+            System.out.println("checking at:" + projectionPossibleTilePlacement.volcano.row + " " + projectionPossibleTilePlacement.volcano.column);
+
+            if(game.isValidTilePlacement(projectionPossibleTilePlacement) && projectionPossibleTilePlacement.projectedLevel == 1){
+                System.out.println("Decided on " + tileHeld.rotation );
+                game.printBoard();
                 return true;
+            }
+
         }
         return false ;
     }

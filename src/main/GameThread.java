@@ -163,10 +163,15 @@ public class GameThread {
         xyzTo2DConverter = new XYZ(opponentPlacement.GetX(),opponentPlacement.GetY(),opponentPlacement.GetZ());
         twoDimensionalPoint = xyzTo2DConverter.get2DTranslation();
 
+        Opponent.tilePlacement = twoDimensionalPoint ;
         Opponent.tileHeld = tile;
-        Opponent.tileProjection = Opponent.projectTilePlacement(tile, twoDimensionalPoint);
+        Opponent.tileProjection = Opponent.projectTilePlacement(Opponent.tileHeld, Opponent.tilePlacement);
         Opponent.tileProjection.projectedLevel = game.getProjectedHexLevel(Opponent.tileProjection);
-        Opponent.placeTile();
+
+        game.setTile(Opponent.tileHeld, Opponent.tileProjection);
+
+        System.out.println("Opponent placing: " + Opponent.tilePlacement.row + " " + Opponent.tilePlacement.column + " "
+                + Opponent.tileProjection.volcano.row + " " + Opponent.tileProjection.volcano.column + " " + Opponent.tileHeld.rotation);
 
         //parse build action
         opponentPlacement = opponentsMove.GetBuildLocation();
