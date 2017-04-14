@@ -21,13 +21,13 @@ public class GameThread {
     NetServerMsg currentMessage = null;
 
     String gameID;
-    String ourPlayerID = TigerIsland.AIPID;
+    String ourPlayerID = MAIN.AIPID;
 
     int moveNumber;
     private boolean isMyTurn;
     boolean gameOver;
 
-    private JPAI AI;
+    private BryanAI AI;
     private Player Opponent;
 
     public GameThread(NetServerMsg message, NetClient c){
@@ -46,10 +46,8 @@ public class GameThread {
             isMyTurn = false;
         }
 
-        AI = new JPAI(game,Integer.parseInt(TigerIsland.AIPID));
-        Opponent = new Player(game,Integer.parseInt(TigerIsland.opponentPID));
-
-        AI.setOpponent(Opponent);
+        AI = new BryanAI(game,Integer.parseInt(MAIN.AIPID));
+        Opponent = new Player(game,Integer.parseInt(MAIN.opponentPID));
 
     }
 
@@ -87,8 +85,8 @@ public class GameThread {
         BuildOptions buildDecision;
         Point p;
 
-        AI.playTilePhase(tileFromServer);
-        Tile tile = AI.tileHeld ;
+        AI.setTile(tileFromServer);
+        Tile tile = AI.determineTilePlacementByAI() ;
 
         if(AI.hasPlayerLost()){
             msg = new NetClientMsg();
@@ -97,7 +95,7 @@ public class GameThread {
             client.Send(clientMsg);
         }
         else {
-            AI.playBuildPhase();
+            AI.determineBuildByAI();
             buildDecision = AI.buildDecision;
             p = AI.buildPoint;
             tp = AI.terrainSelection;
