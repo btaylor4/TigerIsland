@@ -141,7 +141,7 @@ public class MAIN
         client.getNextMessageFromServer();  //WELCOME TO ANOTHER EDITION OF THUNDERDOME!
         client.Send(msg.FormatAuthenticationForTournament(args[2]));
         client.getNextMessageFromServer(); //TWO SHALL ENTER, ONE SHALL LEAVE
-        client.Send(msg.FormatAuthenticationPlayer("TEAM_J", "PASS_J")); // I Am User Password
+        client.Send(msg.FormatAuthenticationPlayer("TEAM_M", "PASS_M")); // I Am User Password
         message = client.getNextMessageFromServer(); //WAIT FOR THE TOURNAMENT TO BEGIN <pid>
         AIPID = message.GetPlayerId();
     }
