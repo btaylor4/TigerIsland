@@ -193,7 +193,6 @@ public class GameThread {
             case BUILT:
 
                 buildOption = opponentsMove.GetSettlement();
-                Settlement selected = null ;
 
                 switch (buildOption)
                 {
@@ -215,7 +214,7 @@ public class GameThread {
                                         {
                                             Opponent.buildDecision = buildOption ;
                                             Opponent.buildPoint = twoDimensionalPoint ;
-                                            Opponent.selectedSettlement = selected ;
+                                            Opponent.selectedSettlement = settlementChoice ;
 
                                             Opponent.playBuildPhase();
                                             break;
@@ -243,7 +242,7 @@ public class GameThread {
                                         {
                                             Opponent.buildDecision = buildOption;
                                             Opponent.buildPoint = twoDimensionalPoint;
-                                            Opponent.selectedSettlement = selected;
+                                            Opponent.selectedSettlement = settlementChoice;
 
                                             Opponent.playBuildPhase();
                                             break;
