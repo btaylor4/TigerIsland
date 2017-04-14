@@ -1,6 +1,6 @@
 
 # TigerIsland
-This is the main branch (Working)
+## This is the main branch (Working)
 
 ##### Required arguments for the program are (in order): 
 ```Server IP address, Sever Port Number, tournament password, team name, user password ```
