@@ -53,13 +53,13 @@ public class MAIN
                     {
                         message = client.getNextMessageFromServer();
 
-                        if(game1 == null && !game1.gameOver)
+                        if(game1 == null)
                         {
                             game1 = new GameThread(message, client);
                             game1.processMessage(message);
                         }
 
-                        else if(game2 == null && !game2.gameOver)
+                        else if(game2 == null)
                         {
                             game2 = new GameThread(message, client);
                             game2.processMessage(message);
