@@ -86,7 +86,6 @@ public class BryanAI extends Player {
     public void determineBuildByAI()
     {
         updateFoundPositions();
-        getMySettlements();
         updateSettlementCounts();
         getMySettlements();
         //Priority list
