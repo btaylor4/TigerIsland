@@ -123,7 +123,7 @@ public class BryanAI extends Player {
             {
                 //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
                 //check if I can place a totoro
-                if (mySets.settlement.totoroSanctuaries == 0)
+                if (!mySets.settlement.doesSettlementcontainTotoro())
                 {
                     if(mySets.settlement.size >= 5)
                     {
@@ -171,7 +171,7 @@ public class BryanAI extends Player {
             for (SettlePointPair mySets : playerSettlements.values())
             {
                 //check if I can place a tiger
-                if (mySets.settlement.tigerPlaygrounds == 0)
+                if (!mySets.settlement.doesSettlementcontainTiger())
                 {
                     Point point = mySets.settlement.findEndPoints();
 
@@ -839,7 +839,7 @@ public class BryanAI extends Player {
         {
             for(SettlePointPair mySets : playerSettlements.values())
             {
-                if(mySets.settlement.totoroSanctuaries != 0)
+                if(mySets.settlement.doesSettlementcontainTotoro())
                     continue;
 
                 else if(mySets.settlement.size >= 5) //do we also have to check if there's a hex that we can put on?
@@ -859,7 +859,7 @@ public class BryanAI extends Player {
 
             for(SettlePointPair mySets : playerSettlements.values())
             {
-                if(mySets.settlement.tigerPlaygrounds != 0)
+                if(mySets.settlement.doesSettlementcontainTiger())
                     continue;
 
                 for(Point point : mySets.settlement.occupantPositions.values())

@@ -390,4 +390,26 @@ public class Settlement {
         rocky.remove(key);
         lakes.remove(key);
     }
+
+    public boolean doesSettlementcontainTotoro()
+    {
+        for(Point point : occupantPositions.values())
+        {
+            if(game.board[point.row][point.column].occupant == OccupantType.TOTORO)
+                return false;
+        }
+
+        return true;
+    }
+
+    public boolean doesSettlementcontainTiger()
+    {
+        for(Point point : occupantPositions.values())
+        {
+            if(game.board[point.row][point.column].occupant == OccupantType.TIGER)
+                return true;
+        }
+
+        return false;
+    }
 }
