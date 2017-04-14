@@ -59,7 +59,7 @@ public class MAIN
                             game1.processMessage(message);
                         }
 
-                        else if(game2 == null && !client.message.contains(game1.gameID))
+                        else if(game2 == null && !client.message.contains("GAME " + game1.gameID))
                         {
                             game2 = new GameThread(message, client);
                             game2.processMessage(message);
