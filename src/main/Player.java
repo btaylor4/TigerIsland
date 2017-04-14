@@ -105,7 +105,6 @@ public class Player {
         tileHeld.assignTerrain(hexAterrain, hexBterrain);
     }
 
-
     public ProjectionPack projectTilePlacement(Tile tileBeingPlaced, Point desiredPoint){
         ProjectionPack projections = new ProjectionPack(desiredPoint) ;
 
@@ -275,7 +274,7 @@ public class Player {
         return (meeples == 0 && totoro == 0) || (meeples == 0 && tigers == 0) || (tigers == 0 && totoro == 0);
     }
 
-    // im going to delete all of these
+    // using for tests
     public void setMeeples(int meeples)
     {
         this.meeples = meeples;

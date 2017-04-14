@@ -2,8 +2,10 @@ package net;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import main.enums.PlayerAction;
 import main.enums.TerrainType;
 import main.enums.BuildOptions;
+import main.enums.TokenType;
 
 public class NetServerMsg {
 

@@ -8,13 +8,6 @@ import main.ProjectionPack;
 import main.utils.XYZ;
 import main.Point;
 
-class ClientBuild
-{
-    protected Point Point;
-    protected Tile Tile;
-    protected String Action;
-    protected String Target;
-}
 public class NetClientMsg {
 
     private static String ErrorMessage = "UNABLE TO BUILD";
@@ -37,19 +30,6 @@ public class NetClientMsg {
                 "MOVE", moveNum, placeAction, FormatEnum(buildAction));
     }
 
-    public String FormatBuildAction(String action, String target, TileVector tileVector)
-    {
-        return String.format("%1$s %2$s %3$s %4$d %5$d %6$d", action, target, "AT",
-                tileVector.GetX(), tileVector.GetY(), tileVector.GetZ());
-    }
-
-    public String FormatBuildAction(String action, String target, Tile tile){
-        XYZ cubePoint = new XYZ(tile.serverPoint);
-
-        return String.format("%1$s %2$s %3$s %4$d %5$d %6$d", action, target, "AT",
-                cubePoint.x, cubePoint.y, cubePoint.z);
-    }
-
     public String FormatBuildAction(String action, String target, Point point){
         XYZ cubePoint = new XYZ(point);
 
@@ -57,42 +37,12 @@ public class NetClientMsg {
                 cubePoint.x, cubePoint.y, cubePoint.z);
     }
 
-    public String FormatBuildAction(ClientBuild cb) {
-        XYZ cubePoint = new XYZ(cb.Point);
-
-        return String.format("%1$s %2$s %3$s %4$d %5$d %6$d", cb.Action, cb.Target, "AT",
-                cubePoint.x, cubePoint.y, cubePoint.z);
-    }
-
-    public String FormatBuildActionWithTerrain(String action, String target, TileVector tileVector) {
-        return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$s", action, target, "AT",
-                tileVector.GetX(), tileVector.GetY(), tileVector.GetZ(),  tileVector.GetTerrain() );
-    }
 
     public String FormatBuildActionWithTerrain(Point point, TerrainType type) {
         XYZ cubePoint = new XYZ(point);
 
         return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$s", "EXPAND", "SETTLEMENT", "AT",
                 cubePoint.x, cubePoint.y, cubePoint.z, (type)  );
-    }
-
-    public String FormatBuildActionWithTerrain(Tile tile, TerrainType type) {
-        XYZ cubePoint = new XYZ(tile.serverPoint);
-        return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$s", "EXPAND", "SETTLEMENT", "AT",
-                cubePoint.x, cubePoint.y, cubePoint.z, (type)   );
-    }
-
-    public String FormatBuildActionWithTerrain(String action, String target, Tile tile, TerrainType type) {
-        XYZ cubePoint = new XYZ(tile.serverPoint);
-
-        return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$s", action, target, "AT",
-                cubePoint.x, cubePoint.y, cubePoint.z, (type)  );
-    }
-
-
-    public String FormatPlaceAction(String tile, TileVector tileVector) {
-        return String.format("%1$s %2$s %3$s %4$d %5$d %6$d %7$d", "PLACE", tile, "AT",
-                tileVector.GetX(), tileVector.GetY(), tileVector.GetZ(), tileVector.GetOrientation() );
     }
 
 
@@ -111,11 +61,6 @@ public class NetClientMsg {
     public String FormatUnableToBuild()
     {
         return ErrorMessage;
-    }
-
-    private XYZ ConvertToXYZ(Point point)
-    {
-        return new XYZ(point);
     }
 
 }

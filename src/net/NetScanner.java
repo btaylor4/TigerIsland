@@ -1,22 +1,9 @@
 package net;
-import java.util.*;
-import java.util.function.IntConsumer;
+import main.enums.PlayerAction;
+import main.enums.TokenType;
+import main.enums.ValueType;
 
-enum ValueType
-{
-    Int,
-    String,
-    Vector,
-    Tile,
-    StringN,
-    Float,
-    Message,
-    Result,
-    Function,
-    Action,
-    End,
-    Wait
-}
+import java.util.*;
 
 public class NetScanner {
     HashMap<String, ValueType> hm = new HashMap<String, ValueType>();
@@ -28,6 +15,12 @@ public class NetScanner {
     private ArrayList<String> actions;
 
     public NetScanner() {
+
+        InitializeTokensList();
+
+    }
+    private void InitializeTokensList()
+    {
         String[] integers = new String[]{"ROUND", "OF", "PLAY", "MOVE"};
         for (String intVal : integers) {
             hm.put(intVal, ValueType.Int);
@@ -77,11 +70,7 @@ public class NetScanner {
         for (String vecTok : waitVectors) {
             hm.put(vecTok, ValueType.Wait);
         }
-        //ArrayList<String> actions = new ArrayList<String>(
-        //      Arrays.asList( "BUILT", "FOUNDED", "EXPANDED", "BUILT"));
-
     }
-
     public void SetBuffer(String buffer) {
         Buffer = buffer.toUpperCase();
         sc = new java.util.Scanner(Buffer);
@@ -191,7 +180,7 @@ public class NetScanner {
             }
         }
     }
-    private static String ActionTerminator = "AT";
+
     private void ScanAction(java.util.Scanner sc, Token token)
     {
         if(!sc.hasNext())
@@ -207,24 +196,6 @@ public class NetScanner {
                 ScanStringN(sc, token, 1);
                 break;
         }
-        /*
-        int i = 0;
-        String tokenStr = sc.next();
-        String finalStr = tokenStr;
-
-        while(sc.hasNext() )
-        {
-            tokenStr = sc.next();
-            if(!tokenStr.equalsIgnoreCase(ActionTerminator)) {
-                finalStr += " " + tokenStr;
-            }
-            else
-            {
-                break;
-            }
-        }
-        token.Data = finalStr;
-        */
     }
     private void ScanFunction(java.util.Scanner sc, Token token)
     {
@@ -249,7 +220,7 @@ public class NetScanner {
             token.Data = sc.next();
         }
     }
-    public static int NStringTerminator = 2;
+
     private void ScanStringN(java.util.Scanner sc, Token token, int terminator)
     {
         int i =0;

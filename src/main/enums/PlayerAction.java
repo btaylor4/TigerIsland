@@ -1,4 +1,4 @@
-package net;
+package main.enums;
 
 /**
  * Created by thierry on 4/9/17.
