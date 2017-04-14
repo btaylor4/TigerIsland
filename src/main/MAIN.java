@@ -115,7 +115,7 @@ public class MAIN
 
         catch(Exception e)
         {
-
+            e.printStackTrace();
         }
     }
 
