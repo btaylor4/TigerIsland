@@ -211,7 +211,7 @@ public class GameThread {
                                 {
                                     if(settlementChoice.owner == Opponent)
                                     {
-                                        if(game.isValidTotoroPosition(new Point(row, column), settlementChoice))
+                                        if(game.isValidTotoroPosition(twoDimensionalPoint, settlementChoice))
                                         {
                                             Opponent.buildDecision = buildOption ;
                                             Opponent.buildPoint = twoDimensionalPoint ;
@@ -239,7 +239,7 @@ public class GameThread {
                                 {
                                     if (settlementChoice.owner == Opponent)
                                     {
-                                        if (game.isValidTigerPosition(new Point(row, column), settlementChoice))
+                                        if (game.isValidTigerPosition(twoDimensionalPoint, settlementChoice))
                                         {
                                             Opponent.buildDecision = buildOption;
                                             Opponent.buildPoint = twoDimensionalPoint;
