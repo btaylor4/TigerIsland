@@ -195,18 +195,81 @@ public class GameThread {
                 buildOption = opponentsMove.GetSettlement();
                 Settlement selected = null ;
 
-                for (int j=0; j<SIDES_IN_HEX; j++){
-                    if (game.board[twoDimensionalPoint.row+ROW_ADDS[j]][twoDimensionalPoint.column+COLUMN_ADDS[j]].settlementPointer.owner == Opponent){
-                        selected = game.board[twoDimensionalPoint.row+ROW_ADDS[j]][twoDimensionalPoint.column+COLUMN_ADDS[j]].settlementPointer;
+                switch (buildOption)
+                {
+                    case TOTORO_SANCTUARY:
+                        for (int j=0; j<SIDES_IN_HEX; j++)
+                        {
+                            int row = twoDimensionalPoint.row + ROW_ADDS[j];
+                            int column = twoDimensionalPoint.column + COLUMN_ADDS[j];
+
+                            Settlement settlementChoice = game.board[row][column].settlementPointer;
+
+                            if(settlementChoice.owner == Opponent)
+                            {
+                                if(game.isValidTotoroPosition(new Point(row, column), settlementChoice))
+                                {
+                                    Opponent.buildDecision = buildOption ;
+                                    Opponent.buildPoint = twoDimensionalPoint ;
+                                    Opponent.selectedSettlement = selected ;
+
+                                    Opponent.playBuildPhase();
+                                    break;
+                                }
+                            }
+                        }
                         break;
+
+                    case TIGER_PLAYGROUND:
+                        for (int j=0; j<SIDES_IN_HEX; j++)
+                        {
+                            int row = twoDimensionalPoint.row + ROW_ADDS[j];
+                            int column = twoDimensionalPoint.column + COLUMN_ADDS[j];
+
+                            Settlement settlementChoice = game.board[row][column].settlementPointer;
+
+                            if(settlementChoice.owner == Opponent)
+                            {
+                                if(game.isValidTigerPosition(new Point(row, column), settlementChoice))
+                                {
+                                    Opponent.buildDecision = buildOption ;
+                                    Opponent.buildPoint = twoDimensionalPoint ;
+                                    Opponent.selectedSettlement = selected ;
+
+                                    Opponent.playBuildPhase();
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                }
+
+                for (int j=0; j<SIDES_IN_HEX; j++)
+                {
+                    int row = twoDimensionalPoint.row + ROW_ADDS[j];
+                    int column = twoDimensionalPoint.column + COLUMN_ADDS[j];
+
+                    Settlement settlementChoice = game.board[row][column].settlementPointer;
+
+                    if(settlementChoice.owner == Opponent)
+                    {
+                        if(game.isValidTotoroPosition(new Point(row, column), settlementChoice))
+                        {
+                            Opponent.buildDecision = buildOption ;
+                            Opponent.buildPoint = twoDimensionalPoint ;
+                            Opponent.selectedSettlement = selected ;
+
+                            Opponent.playBuildPhase();
+                            break;
+                        }
                     }
                 }
 
-                Opponent.buildDecision = buildOption ;
-                Opponent.buildPoint = twoDimensionalPoint ;
-                Opponent.selectedSettlement = selected ;
-
-                Opponent.playBuildPhase();
+//                Opponent.buildDecision = buildOption ;
+//                Opponent.buildPoint = twoDimensionalPoint ;
+//                Opponent.selectedSettlement = selected ;
+//
+//                Opponent.playBuildPhase();
 
                 break;
         }
