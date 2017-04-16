@@ -28,8 +28,9 @@ public class Settlement {
     public HashMap<Integer, Point> jungles;
     public HashMap<Integer, Point> rocky;
     public HashMap<Integer, Point> volcanoes;
+    public HashMap<Integer, Point> paddys;
 
-    public int grassExpansions, lakeExpansions, jungleExpansions, rockyExpansions;
+    public int grassExpansions, lakeExpansions, jungleExpansions, rockyExpansions, paddyExpansions;
 
     private ArrayList<Point> mergingSettlements;
     public ArrayList<Point> markedForExpansion;
@@ -54,9 +55,10 @@ public class Settlement {
         lakes = new HashMap<>();
         jungles = new HashMap<>();
         rocky = new HashMap<>();
+        paddys = new HashMap<>();
         volcanoes = new HashMap<>();
 
-        grassExpansions = lakeExpansions = jungleExpansions = rockyExpansions = 0 ;
+        grassExpansions = lakeExpansions = jungleExpansions = rockyExpansions = paddyExpansions = 0 ;
 
         mergingSettlements = new ArrayList<>();
         markedForExpansion = new ArrayList<>();
@@ -117,6 +119,10 @@ public class Settlement {
                 lakes.put(hashKey, point);
                 break;
 
+            case PADDY:
+                paddys.put(hashKey, point);
+                break;
+
             default:
                 System.out.println("Error: Could not resolve adjacent terrain");
                 break;
@@ -140,6 +146,9 @@ public class Settlement {
             case LAKE:
                 return lakes.containsKey(key);
 
+            case PADDY:
+                return paddys.containsKey(key);
+
             default:
                 System.out.println("Error: Could not resolve adjacent terrain");
                 break;
@@ -152,6 +161,7 @@ public class Settlement {
         lakeExpansions = countAdjacentTerrain(lakes);
         jungleExpansions = countAdjacentTerrain(jungles);
         rockyExpansions = countAdjacentTerrain(rocky);
+        paddyExpansions = countAdjacentTerrain(paddys);
     }
 
     private int countAdjacentTerrain(HashMap<Integer,Point> adjacents){
@@ -197,6 +207,10 @@ public class Settlement {
 
             case JUNGLE:
                 expandThroughTerrain(jungles);
+                break;
+
+            case PADDY:
+                expandThroughTerrain(paddys);
                 break;
 
             case VOLCANO:  // be warned you cannot expand on volcanoes
@@ -298,6 +312,7 @@ public class Settlement {
                 grasslands.putAll(game.board[row][column].settlementPointer.grasslands);
                 lakes.putAll(game.board[row][column].settlementPointer.lakes);
                 rocky.putAll(game.board[row][column].settlementPointer.rocky);
+                paddys.putAll(game.board[row][column].settlementPointer.paddys);
                 volcanoes.putAll(game.board[row][column].settlementPointer.volcanoes);
 
                 for(Point pt : occupantPositions.values()) {
@@ -410,6 +425,7 @@ public class Settlement {
             grasslands.remove(hashKey);
             lakes.remove(hashKey);
             rocky.remove(hashKey);
+            paddys.remove(hashKey);
             volcanoes.remove(hashKey);
         }
     }
@@ -419,6 +435,7 @@ public class Settlement {
         grasslands.remove(key);
         volcanoes.remove(key);
         rocky.remove(key);
+        paddys.remove(key);
         lakes.remove(key);
     }
 

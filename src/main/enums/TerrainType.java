@@ -1,5 +1,5 @@
 package main.enums;
 
 public enum TerrainType {
-   JUNGLE, LAKE, GRASS, ROCK, VOLCANO
+   JUNGLE, LAKE, GRASS, ROCK, PADDY, VOLCANO
 }

@@ -9,8 +9,8 @@ import java.util.HashMap;
 
 public class SettlementData {
     public int size ;
-    public int grassCost, lakeCost, jungleCost, rockyCost ;
-    public int afterGrass, afterLake, afterJungle, afterRocky ;
+    public int grassCost, lakeCost, jungleCost, rockyCost, paddyCost ;
+    public int afterGrass, afterLake, afterJungle, afterRocky, afterPaddy ;
 
     public Settlement settle;
     public GameBoard game ;
