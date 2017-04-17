@@ -201,6 +201,38 @@ public class BryanAI extends Player {
         return minimumRotationValue;
     }
 
+    public boolean placeTileForTiger()
+    {
+        ProjectionPack projection;
+
+        for(int i = game.upperLimit - 2 ; i < game.lowerLimit+2; i++){
+            for(int j = game.leftLimit -2 ; j < game.rightLimit+2; j++){
+                if(game.board[i][j] != null)
+                {
+                    for(int r = 1; r < 7; r++)
+                    {
+                        tileHeld.setRotation(r);
+                        projection = projectTilePlacement(tileHeld, new Point(i, j));
+
+                        if(projection != null) {
+                            projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+                            if(projection.projectedLevel > 1 && game.isValidOverlap(projection))
+                            {
+                                game.setTile(tileHeld, projection);
+                                tileHeld.serverPoint = projection.volcano;
+                                firstPlay = true;
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     public void determineBuildByAI()
     {
         if(hasPlayerLost())
@@ -239,12 +271,21 @@ public class BryanAI extends Player {
             return;
         }
 
-        if(meeples <= 14 && tigers != 0)
+        if(meeples <= 14 && tigers != 0 && totoro != 0)
         {
             if(takeTigerPossibilites())
                 return;
 
+            else if(canPlaceTiger())
+                return;
+
+            else if(canPlaceTotoro())
+                return;
+
             else if(TigerStrategy())
+                return;
+
+            else if (chooseExpansionOption())
                 return;
 
             else
@@ -260,7 +301,7 @@ public class BryanAI extends Player {
 
                 Point PlaceOneAway = placeMeepleOneAway(settlementChoice);
 
-                if(PlaceOneAway != null && game.isValidSettlementPosition(PlaceOneAway))
+                if(PlaceOneAway != null && game.isValidSettlementPosition(PlaceOneAway) && meeples > 0)
                 {
                     Settlement freshSettlement = new Settlement(game);
                     freshSettlement.owner = this ;
@@ -273,12 +314,14 @@ public class BryanAI extends Player {
                     buildPoint = PlaceOneAway;
                     updateSettlementCounts();
                     getMySettlements();
+                    if(buildPoint.row == 97 && buildPoint.column == 109)
+                        System.err.println("One meeple away throwing it off");
                     return;
                 }
 
                 for(Point point : foundableSpots.values())
                 {
-                    if(game.isValidSettlementPosition(point) && game.isValidSettlementPosition(point))
+                    if(game.isValidSettlementPosition(point) && game.isValidSettlementPosition(point) && meeples > 0)
                     {
                         Settlement freshSettlement = new Settlement(game);
                         freshSettlement.owner = this ;
@@ -291,6 +334,9 @@ public class BryanAI extends Player {
                         buildPoint = point;
                         updateSettlementCounts();
                         getMySettlements();
+
+                        if(buildPoint.row == 97 && buildPoint.column == 109)
+                            System.err.println("Error inside when meeples < 10");
                         return;
                     }
                 }
@@ -320,6 +366,9 @@ public class BryanAI extends Player {
             else if(canPlaceTotoro())
                 return;
         }
+
+        else if(chooseBiggestValidExpansion())
+            return;
 
         for (SettlePointPair mySets : playerSettlements.values())
         {
@@ -405,7 +454,7 @@ public class BryanAI extends Player {
 
         Point PlaceOneAway = placeMeepleOneAway(settlementChoice);
 
-        if(PlaceOneAway != null && game.isValidSettlementPosition(PlaceOneAway))
+        if(PlaceOneAway != null && game.isValidSettlementPosition(PlaceOneAway) && meeples > 0)
         {
             Settlement freshSettlement = new Settlement(game);
             freshSettlement.owner = this ;
@@ -423,7 +472,7 @@ public class BryanAI extends Player {
 
         for(Point point : foundableSpots.values())
         {
-            if(game.isValidSettlementPosition(point))
+            if(game.isValidSettlementPosition(point) && meeples > 0)
             {
                 Settlement freshSettlement = new Settlement(game);
                 freshSettlement.owner = this ;
@@ -439,6 +488,146 @@ public class BryanAI extends Player {
                 return;
             }
         }
+    }
+
+    public boolean chooseExpansionOption()
+    {
+        for (SettlePointPair mySets : playerSettlements.values())
+        {
+            if (mySets.settlement.size + mySets.settlement.checkNewSettlementSize(mySets.settlement.grasslands) >= 5 && meeples > mySets.settlement.checkExpansionCost(mySets.settlement.grasslands))
+            {
+                Point point = mySets.settlement.findEndPoints();
+                Settlement test = game.board[point.row][point.column].settlementPointer;
+
+                if(point != null && game.board[point.row][point.column].settlementPointer != null && mySets.settlement.grasslands.size() > 0) {
+                    if (mySets.settlement.checkNewSettlementSize(mySets.settlement.grasslands) > 0) {
+                        buildDecision = BuildOptions.EXPAND;
+                        buildPoint = mySets.settlement.findEndPoints();
+                        terrainSelection = TerrainType.GRASS;
+                        game.expandSettlement(point, terrainSelection);
+                        getMySettlements();
+                        myExpansions.add(point);
+                        return true;
+                    }
+                }
+            }
+
+            if(mySets.settlement.size + mySets.settlement.checkNewSettlementSize(mySets.settlement.lakes) >= 5 && meeples > mySets.settlement.checkExpansionCost(mySets.settlement.lakes))
+            {
+                Point point = mySets.settlement.findEndPoints();
+
+                if(point != null && game.board[point.row][point.column].settlementPointer != null && mySets.settlement.lakes.size() > 0) {
+                    if (mySets.settlement.checkNewSettlementSize(mySets.settlement.lakes) > 0) {
+                        buildDecision = BuildOptions.EXPAND;
+                        buildPoint = mySets.settlement.findEndPoints();
+                        terrainSelection = TerrainType.LAKE;
+                        game.expandSettlement(point, terrainSelection);
+                        myExpansions.add(point);
+                        return true;
+                    }
+                }
+            }
+
+            if (mySets.settlement.size + mySets.settlement.checkNewSettlementSize(mySets.settlement.jungles) >= 5 && meeples > mySets.settlement.checkExpansionCost(mySets.settlement.jungles))
+            {
+                Point point = mySets.settlement.findEndPoints();
+
+                if(point != null && game.board[point.row][point.column].settlementPointer != null && mySets.settlement.jungles.size() > 0) {
+                    if (mySets.settlement.checkNewSettlementSize(mySets.settlement.jungles) > 0) {
+                        buildDecision = BuildOptions.EXPAND;
+                        buildPoint = mySets.settlement.findEndPoints();
+                        terrainSelection = TerrainType.JUNGLE;
+                        game.expandSettlement(point, terrainSelection);
+                        myExpansions.add(point);
+                        updateSettlementCounts();
+                        getMySettlements();
+                        return true;
+                    }
+                }
+            }
+
+            if (mySets.settlement.size + mySets.settlement.checkNewSettlementSize(mySets.settlement.rocky) >= 5 && meeples > mySets.settlement.checkExpansionCost(mySets.settlement.rocky))
+            {
+                Point point = mySets.settlement.findEndPoints();
+
+                if(point != null && game.board[point.row][point.column].settlementPointer != null && mySets.settlement.rocky.size() > 0) {
+                    if (mySets.settlement.checkNewSettlementSize(mySets.settlement.rocky) > 0) {
+                        buildDecision = BuildOptions.EXPAND;
+                        buildPoint = mySets.settlement.findEndPoints();
+                        terrainSelection = TerrainType.ROCK;
+                        game.expandSettlement(point, terrainSelection);
+                        myExpansions.add(point);
+                        updateSettlementCounts();
+                        getMySettlements();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean chooseBiggestValidExpansion()
+    {
+        int grassCost;
+        int lakeCost;
+        int jungleCost;
+        int rockCost;
+        int maxCost = Integer.MIN_VALUE;
+
+        Settlement settlementChoice;
+        TerrainType terrainChoice;
+
+        boolean foundPosition = false;
+
+        for(SettlePointPair mySets : playerSettlements.values())
+        {
+            grassCost = mySets.settlement.checkExpansionCost(mySets.settlement.grasslands);
+
+            if(grassCost > maxCost && meeples >= grassCost)
+            {
+                buildDecision = BuildOptions.EXPAND;
+                terrainSelection = TerrainType.GRASS;
+                buildPoint = mySets.settlement.findEndPoints();
+                maxCost = grassCost;
+                foundPosition = true;
+            }
+
+            lakeCost = mySets.settlement.checkExpansionCost(mySets.settlement.lakes);
+
+            if(lakeCost > maxCost && meeples >= lakeCost)
+            {
+                buildDecision = BuildOptions.EXPAND;
+                terrainSelection = TerrainType.LAKE;
+                buildPoint = mySets.settlement.findEndPoints();
+                maxCost = lakeCost;
+                foundPosition = true;
+            }
+
+            jungleCost = mySets.settlement.checkExpansionCost(mySets.settlement.jungles);
+
+            if(jungleCost > maxCost && meeples >= jungleCost)
+            {
+                buildDecision = BuildOptions.EXPAND;
+                terrainSelection = TerrainType.JUNGLE;
+                buildPoint = mySets.settlement.findEndPoints();
+                maxCost = jungleCost;
+                foundPosition = true;
+            }
+
+            rockCost = mySets.settlement.checkExpansionCost(mySets.settlement.rocky);
+
+            if(rockCost > maxCost && meeples >= rockCost)
+            {
+                buildDecision = BuildOptions.EXPAND;
+                terrainSelection = TerrainType.ROCK;
+                buildPoint = mySets.settlement.findEndPoints();
+                maxCost = rockCost;
+                foundPosition = true;
+            }
+        }
+
+        return foundPosition;
     }
 
     public boolean takeTigerPossibilites()
@@ -477,7 +666,7 @@ public class BryanAI extends Player {
 
                 if(game.board[row][column] != null)
                 {
-                    if(game.board[row][column].level >= 3 && game.isValidSettlementPosition(point))
+                    if(game.board[row][column].level >= 3 && game.isValidSettlementPosition(point) && meeples > 0)
                     {
                         Settlement freshSettlement = new Settlement(game);
                         freshSettlement.owner = this ;
@@ -491,6 +680,8 @@ public class BryanAI extends Player {
                         updateSettlementCounts();
                         getMySettlements();
                         tigerPossibilities.add(point);
+                        if(buildPoint.row == 97 && buildPoint.column == 109)
+                            System.err.println("CHECK TIGER STARTEGY");
                         return true;
                     }
                 }
@@ -538,28 +729,33 @@ public class BryanAI extends Player {
                     }
                 }
             }
-        } else {
+        }
+
+        else if(meeples <= 14 && placeTileForTiger())
+            return tileHeld;
+
+        else {
             //priority list
-//            for (SettlePointPair oppSet : Opponent.playerSettlements.values()) {
-//                if (oppSet.settlement.size > 3) {
-//                    for (Point point : oppSet.settlement.occupantPositions.values()) {
-//                        for (int i = 1; i < 7; i++) {
-//                            tileHeld.setRotation(i);
-//                            projection = projectTilePlacement(tileHeld, point);
-//
-//                            if (projection != null) {
-//                                projection.projectedLevel = game.getProjectedHexLevel(projection);
-//
-//                                if (projection.projectedLevel > 1 && game.isValidOverlap(projection)) {
-//                                    tileHeld.serverPoint = projection.volcano;
-//                                    game.setTile(tileHeld, projection);
-//                                    return tileHeld;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
+            for (SettlePointPair oppSet : Opponent.playerSettlements.values()) {
+                if (oppSet.settlement.size > 3) {
+                    for (Point point : oppSet.settlement.occupantPositions.values()) {
+                        for (int i = 1; i < 7; i++) {
+                            tileHeld.setRotation(i);
+                            projection = projectTilePlacement(tileHeld, point);
+
+                            if (projection != null) {
+                                projection.projectedLevel = game.getProjectedHexLevel(projection);
+
+                                if (projection.projectedLevel > 1 && game.isValidOverlap(projection)) {
+                                    tileHeld.serverPoint = projection.volcano;
+                                    game.setTile(tileHeld, projection);
+                                    return tileHeld;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             for (SettlePointPair mySet : playerSettlements.values()) {
                 if (mySet.settlement.doesSettlementcontainTotoro()) {
