@@ -228,6 +228,19 @@ public class Settlement {
         }
     }
 
+    public int checkNewSettlementSize(HashMap<Integer,Point> expansions)
+    {
+        int numberOfMeeplesAdded = 0;
+
+        for(Point point : expansions.values()){
+            numberOfMeeplesAdded += 1;
+        }
+
+        markedForExpansion.clear();
+
+        return numberOfMeeplesAdded;
+    }
+
     public int checkExpansionCost(HashMap<Integer,Point> expansions)
     {
         int numberOfMeeplesLost = 0;
@@ -236,12 +249,13 @@ public class Settlement {
             checkExpansion(point);
         }
 
-        for(Point target : markedForExpansion) {
+        for(Point target : markedForExpansion)
+        {
             numberOfMeeplesLost += game.board[target.row][target.column].level;
         }
 
         markedForExpansion.clear();
-        expansions.clear();
+
         return numberOfMeeplesLost;
     }
 
@@ -427,10 +441,10 @@ public class Settlement {
         for(Point point : occupantPositions.values())
         {
             if(game.board[point.row][point.column].occupant == OccupantType.TOTORO)
-                return false;
+                return true;
         }
 
-        return true;
+        return false;
     }
 
     public boolean doesSettlementcontainTiger()
