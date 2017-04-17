@@ -27,7 +27,7 @@ public class GameThread {
     private boolean isMyTurn;
     boolean gameOver;
 
-    private BryanAI AI;
+    private JPAI AI;
     private Player Opponent;
 
     public GameThread(NetServerMsg message, NetClient c){
@@ -46,7 +46,7 @@ public class GameThread {
             isMyTurn = false;
         }
 
-        AI = new BryanAI(game,Integer.parseInt(MAIN.AIPID));
+        AI = new JPAI(game,Integer.parseInt(MAIN.AIPID));
         Opponent = new Player(game,Integer.parseInt(MAIN.opponentPID));
 
         AI.setOpponent(Opponent);
@@ -99,8 +99,8 @@ public class GameThread {
         BuildOptions buildDecision;
         Point p;
 
-        AI.setTile(tileFromServer);
-        Tile tile = AI.determineTilePlacementByAI();
+        AI.playTilePhase(tileFromServer);
+        Tile tile = AI.tileHeld ;
 
         if(AI.hasPlayerLost()){
             msg = new NetClientMsg();
@@ -109,7 +109,7 @@ public class GameThread {
             client.Send(clientMsg);
         }
         else {
-            AI.determineBuildByAI();
+            AI.playBuildPhase();
             buildDecision = AI.buildDecision;
             p = AI.buildPoint;
             tp = AI.terrainSelection;
