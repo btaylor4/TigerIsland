@@ -239,7 +239,7 @@ public class BryanAI extends Player {
             return;
         }
 
-        if(meeples <= 10)
+        if(meeples <= 14 && tigers != 0)
         {
             if(takeTigerPossibilites())
                 return;
@@ -273,14 +273,12 @@ public class BryanAI extends Player {
                     buildPoint = PlaceOneAway;
                     updateSettlementCounts();
                     getMySettlements();
-                    if(buildPoint.row == 97 && buildPoint.column == 109)
-                        System.err.println("One meeple away throwing it off");
                     return;
                 }
 
                 for(Point point : foundableSpots.values())
                 {
-                    if(game.isValidSettlementPosition(point))
+                    if(game.isValidSettlementPosition(point) && game.isValidSettlementPosition(point))
                     {
                         Settlement freshSettlement = new Settlement(game);
                         freshSettlement.owner = this ;
@@ -293,22 +291,19 @@ public class BryanAI extends Player {
                         buildPoint = point;
                         updateSettlementCounts();
                         getMySettlements();
-
-                        if(buildPoint.row == 97 && buildPoint.column == 109)
-                            System.err.println("Error inside when meeples < 10");
                         return;
                     }
                 }
             }
         }
 
-        else if(TigerStrategy())
+        else if(tigers != 0 && TigerStrategy())
             return;
 
-        else if(canPlaceTiger())
+        else if(tigers != 0 && canPlaceTiger())
             return;
 
-        else if(totoro != 0)
+        else if(totoro != 0 && tigers != 0)
         {
             if(totoro != 1 && tigers == 1)
             {
@@ -423,8 +418,6 @@ public class BryanAI extends Player {
             buildPoint = PlaceOneAway;
             updateSettlementCounts();
             getMySettlements();
-            if(buildPoint.row == 97 && buildPoint.column == 109)
-                System.err.println("One meeple away throwing it off");
             return;
         }
 
@@ -443,8 +436,6 @@ public class BryanAI extends Player {
                 buildPoint = point;
                 updateSettlementCounts();
                 getMySettlements();
-                if(buildPoint.row == 97 && buildPoint.column == 109)
-                    System.err.println("WAY AT THE END?!");
                 return;
             }
         }
@@ -500,8 +491,6 @@ public class BryanAI extends Player {
                         updateSettlementCounts();
                         getMySettlements();
                         tigerPossibilities.add(point);
-                        if(buildPoint.row == 97 && buildPoint.column == 109)
-                            System.err.println("CHECK TIGER STARTEGY");
                         return true;
                     }
                 }
