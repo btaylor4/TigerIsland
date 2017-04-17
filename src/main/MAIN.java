@@ -72,7 +72,7 @@ public class MAIN
                                 break;
                             }
 
-                            else if(client.message.contains("FORFEITED") || client.message.contains("LOST"))
+                            else if(client.message.contains("FORFEITED") || client.message.contains("LOST") || client.message.contains("TIMEOUT") || client.message.contains("ILLEGAL"))
                             {
 
                             }
@@ -93,13 +93,26 @@ public class MAIN
                             else if(!game1.gameOver && client.message.contains("GAME " + game1.gameID) && !client.message.contains("PLAYER " + AIPID)
                                     || (client.message.contains("GAME " + game1.gameID) && client.message.contains("MAKE YOUR MOVE")))
                             {
-                                game1.processMessage(message);
+                                if(message.GetMessage() != null && (message.GetMessage().contains("TIMEOUT") || message.GetMessage().contains("ILLEGAL")
+                                        || message.GetMessage().contains("UNABLE") || message.GetMessage().contains("MALFROMED")))
+                                {
+                                    continue;
+                                }
+
+                                else
+                                    game1.processMessage(message);
                             }
 
                             else if(game2 != null && !game2.gameOver && client.message.contains("GAME " + game2.gameID) && !client.message.contains("PLAYER " + AIPID)
                                     || (client.message.contains("GAME " + game1.gameID) && client.message.contains("MAKE YOUR MOVE")))
                             {
-                                game2.processMessage(message);
+                                if(message.GetMessage() != null && (message.GetMessage().contains("TIMEOUT") || message.GetMessage().contains("ILLEGAL")
+                                        || message.GetMessage().contains("UNABLE") || message.GetMessage().contains("MALFROMED")))
+                                {
+                                    continue;
+                                }
+                                else
+                                    game2.processMessage(message);
                             }
                         }
                     }
