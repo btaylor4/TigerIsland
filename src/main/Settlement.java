@@ -223,7 +223,7 @@ public class Settlement {
 
         for (HexPointPair adjacent : game.board[target.row][target.column].links.values()){
             if (!checkTerrains.containsKey(adjacent.hex.key)) {
-                expandPrep(adjacent.point);
+                checkExpansion(adjacent.point);
             }
         }
     }

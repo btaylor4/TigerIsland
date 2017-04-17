@@ -239,71 +239,68 @@ public class BryanAI extends Player {
 
         if(totoro != 0)
         {
-            if(totoro != 1 && tigers == 1)
-            {
-                if(canPlaceTotoro())
-                    return;
-
-                else if(canPlaceTiger())
-                    return;
-            }
-
-            else if(canPlaceTiger())
-                return;
-
-            else if(canPlaceTotoro())
-                return;
-
-//            for (SettlePointPair mySets : playerSettlements.values())
+//            if(totoro != 1 && tigers == 1)
 //            {
-//                //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
-//                //check if I can place a totoro
-//                if (!mySets.settlement.doesSettlementcontainTotoro())
-//                {
-//                    if(mySets.settlement.size >= 5)
-//                    {
-//                        Point point = mySets.settlement.findEndPoints();
+//                if(canPlaceTotoro())
+//                    return;
 //
-//                        for (int i = 0; i < SIDES_IN_HEX; i++)
-//                        {
-//                            row = point.row + ROW_ADDS[i];
-//                            column = point.column + COLUMN_ADDS[i];
-//
-//                            if (game.board[row][column] != null)
-//                            {
-//                                if(mySets.settlement.doesSettlementcontainTotoro())
-//                                    break;
-//
-//                                else if(!game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
-//                                    continue;
-//
-//                                else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
-//                                {
-//                                    if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
-//                                    {
-//                                        point = new Point(row, column);
-//                                        break;
-//                                    }
-//
-//                                    else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
-//                                        point = new Point(row, column);
-//                                }
-//                            }
-//                        }
-//
-//                        if(game.isValidTotoroPosition(point, mySets.settlement))
-//                        {
-//                            buildDecision = BuildOptions.TOTORO_SANCTUARY;
-//                            buildPoint = point;
-//                            placeTotoro(point, mySets.settlement);
-//                            System.out.println("Totoro has been fucking placed motherfucker! Score: " + score);
-//                            updateSettlementCounts();
-//                            getMySettlements();
-//                            return;
-//                        }
-//                    }
-//                }
+//                else if(canPlaceTiger())
+//                    return;
 //            }
+//
+//            else if(canPlaceTiger())
+//                return;
+//
+//            else if(canPlaceTotoro())
+//                return;
+
+            for (SettlePointPair mySets : playerSettlements.values())
+            {
+                //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
+                //check if I can place a totoro
+                if (!mySets.settlement.doesSettlementcontainTotoro() && mySets.settlement.totoroSanctuaries == 0)
+                {
+                    if(mySets.settlement.occupantPositions.size() >= 5)
+                    {
+                        Point point = mySets.settlement.findEndPoints();
+
+                        for (int i = 0; i < SIDES_IN_HEX; i++)
+                        {
+                            row = point.row + ROW_ADDS[i];
+                            column = point.column + COLUMN_ADDS[i];
+
+                            if (game.board[row][column] != null)
+                            {
+                                if(!game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                    continue;
+
+                                else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                {
+                                    if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
+                                    {
+                                        point = new Point(row, column);
+                                        break;
+                                    }
+
+                                    else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                                        point = new Point(row, column);
+                                }
+                            }
+                        }
+
+                        if(game.isValidTotoroPosition(point, mySets.settlement))
+                        {
+                            buildDecision = BuildOptions.TOTORO_SANCTUARY;
+                            buildPoint = point;
+                            placeTotoro(point, mySets.settlement);
+                            System.out.println("Totoro has been fucking placed motherfucker! Score: " + score);
+                            updateSettlementCounts();
+                            getMySettlements();
+                            return;
+                        }
+                    }
+                }
+            }
         }
 
         if(tigers != 0)
@@ -373,13 +370,15 @@ public class BryanAI extends Player {
             if (mySets.settlement.size + mySets.settlement.checkNewSettlementSize(mySets.settlement.grasslands) > 1 && meeples > mySets.settlement.checkExpansionCost(mySets.settlement.grasslands))
             {
                 Point point = mySets.settlement.findEndPoints();
+                Settlement test = game.board[point.row][point.column].settlementPointer;
 
-                if(point != null && game.board[point.row][point.column].settlementPointer != null && !myExpansions.contains(point)) {
+                if(point != null && game.board[point.row][point.column].settlementPointer != null && mySets.settlement.grasslands.size() > 0) {
                     if (mySets.settlement.checkNewSettlementSize(mySets.settlement.grasslands) > 0) {
                         buildDecision = BuildOptions.EXPAND;
                         buildPoint = mySets.settlement.findEndPoints();
                         terrainSelection = TerrainType.GRASS;
                         game.expandSettlement(point, terrainSelection);
+                        getMySettlements();
                         myExpansions.add(point);
                         return;
                     }
@@ -390,7 +389,7 @@ public class BryanAI extends Player {
             {
                 Point point = mySets.settlement.findEndPoints();
 
-                if(point != null && game.board[point.row][point.column].settlementPointer != null && !myExpansions.contains(point)) {
+                if(point != null && game.board[point.row][point.column].settlementPointer != null && mySets.settlement.lakes.size() > 0) {
                     if (mySets.settlement.checkNewSettlementSize(mySets.settlement.lakes) > 0) {
                         buildDecision = BuildOptions.EXPAND;
                         buildPoint = mySets.settlement.findEndPoints();
@@ -406,7 +405,7 @@ public class BryanAI extends Player {
             {
                 Point point = mySets.settlement.findEndPoints();
 
-                if(point != null && game.board[point.row][point.column].settlementPointer != null && !myExpansions.contains(point)) {
+                if(point != null && game.board[point.row][point.column].settlementPointer != null && mySets.settlement.jungles.size() > 0) {
                     if (mySets.settlement.checkNewSettlementSize(mySets.settlement.jungles) > 0) {
                         buildDecision = BuildOptions.EXPAND;
                         buildPoint = mySets.settlement.findEndPoints();
@@ -424,7 +423,7 @@ public class BryanAI extends Player {
             {
                 Point point = mySets.settlement.findEndPoints();
 
-                if(point != null && game.board[point.row][point.column].settlementPointer != null && !myExpansions.contains(point)) {
+                if(point != null && game.board[point.row][point.column].settlementPointer != null && mySets.settlement.rocky.size() > 0) {
                     if (mySets.settlement.checkNewSettlementSize(mySets.settlement.rocky) > 0) {
                         buildDecision = BuildOptions.EXPAND;
                         buildPoint = mySets.settlement.findEndPoints();
