@@ -74,8 +74,7 @@ public class MAIN
 
                             else if(client.message.contains("FORFEITED") || client.message.contains("LOST"))
                             {
-                                client.getNextMessageFromServer();
-                                continue;
+
                             }
 
                             else if(client.message.contains("GAME OVER"))
