@@ -230,19 +230,21 @@ public class JPAI extends Player {
     private void setFlatTilePlacement(Point origin){
         // origin is where a settlement member is then we go around it
         Point seeker = new Point(0, 0);
+        extensionPossibleTilePlacement = BOARD_CENTER - 2 ;
         boolean found = false ;
 
         for(int displacement = 2; (displacement < BOARD_CENTER-2) && !found; displacement++){
             if(displacement > extensionPossibleTilePlacement) break ;
 
-            seeker.row = origin.row - displacement;
-            seeker.column = origin.column ;
+            seeker.row = origin.row ;
+            seeker.column = origin.column - displacement;
 
             if(checkAllRotations_Flat(seeker)){
                 found = true ;
                 if(displacement < extensionPossibleTilePlacement){
                     tileProjection = projectionPossibleTilePlacement;
                     tilePlacement = seeker;
+                    extensionPossibleTilePlacement = displacement ;
                 }
             }
 
@@ -256,6 +258,7 @@ public class JPAI extends Player {
                         if(displacement < extensionPossibleTilePlacement){
                             tileProjection = projectionPossibleTilePlacement;
                             tilePlacement = seeker;
+                            extensionPossibleTilePlacement = displacement ;
                         }
                     }
                 }
@@ -361,7 +364,7 @@ public class JPAI extends Player {
     }
 
     private boolean nukeAroundTotoro(Point pt){
-        Point seeker = new Point(pt.row-1, pt.column);
+        Point seeker = new Point(pt.row, pt.column-1);
         if(attemptValidNuke(seeker)) return true ;
 
         for(int i = 0 ; i < SIDES_IN_HEX; i++){
@@ -448,8 +451,8 @@ public class JPAI extends Player {
         Point seeker = new Point(BOARD_CENTER, BOARD_CENTER);
 
         for(int displacement = 1; (displacement < BOARD_CENTER-5); displacement++){
-            seeker.row = BOARD_CENTER - displacement;
-            seeker.column = BOARD_CENTER ;
+            seeker.row = BOARD_CENTER ;
+            seeker.column = BOARD_CENTER - displacement;
 
             for(int side = 0 ; (side < SIDES_IN_HEX) ; side++) {
                 for (int moves = 0; (moves < displacement) ; moves++) {

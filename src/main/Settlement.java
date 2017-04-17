@@ -255,7 +255,7 @@ public class Settlement {
         }
 
         markedForExpansion.clear();
-
+        checkTerrains.clear();
         return numberOfMeeplesLost;
     }
 
