@@ -104,11 +104,6 @@ public class MAIN
                             }
                         }
                     }
-
-                    if(client.message.contains("END OF ROUND"))
-                    {
-                        break;
-                    }
                 }
             }
         }
