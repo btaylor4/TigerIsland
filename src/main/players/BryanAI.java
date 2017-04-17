@@ -28,6 +28,7 @@ public class BryanAI extends Player {
     public ArrayList<SettlementData> mySettlementData;
     public Player Opponent;
     public ArrayList<Point> myExpansions;
+    public ArrayList<Point> tigerPossibilities;
 
     public BryanAI(GameBoard gamePointer, int designator){
         super(gamePointer, designator);
@@ -42,6 +43,7 @@ public class BryanAI extends Player {
         setData = new HashMap<>();
         mySettlementData = new ArrayList<>();
         myExpansions = new ArrayList<>();
+        tigerPossibilities = new ArrayList<>();
     }
 
     public boolean canPlaceTiger()
@@ -105,9 +107,9 @@ public class BryanAI extends Player {
         {
             //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
             //check if I can place a totoro
-            if (!mySets.settlement.doesSettlementcontainTotoro())
+            if (!mySets.settlement.doesSettlementcontainTotoro() && mySets.settlement.totoroSanctuaries == 0)
             {
-                if(mySets.settlement.size >= 5)
+                if(mySets.settlement.occupantPositions.size() >= 5)
                 {
                     Point point = mySets.settlement.findEndPoints();
 
@@ -118,10 +120,7 @@ public class BryanAI extends Player {
 
                         if (game.board[row][column] != null)
                         {
-                            if(mySets.settlement.doesSettlementcontainTotoro())
-                                break;
-
-                            else if(!game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
+                            if(!game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
                                 continue;
 
                             else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
@@ -204,6 +203,9 @@ public class BryanAI extends Player {
 
     public void determineBuildByAI()
     {
+        if(hasPlayerLost())
+            return;
+
         updateFoundPositions();
         getMySettlements();
         //Priority list
@@ -237,75 +239,78 @@ public class BryanAI extends Player {
             return;
         }
 
-        if(totoro != 0)
+        if(meeples <= 10)
         {
-//            if(totoro != 1 && tigers == 1)
-//            {
-//                if(canPlaceTotoro())
-//                    return;
-//
-//                else if(canPlaceTiger())
-//                    return;
-//            }
-//
-//            else if(canPlaceTiger())
-//                return;
-//
-//            else if(canPlaceTotoro())
-//                return;
+            if(takeTigerPossibilites())
+                return;
 
-            for (SettlePointPair mySets : playerSettlements.values())
+            else if(TigerStrategy())
+                return;
+
+            else
             {
-                //choose point in such away that you can nuke the settlement and only lose 1-2 pieces max
-                //check if I can place a totoro
-                if (!mySets.settlement.doesSettlementcontainTotoro() && mySets.settlement.totoroSanctuaries == 0)
+                for(SettlePointPair mySet : playerSettlements.values())
                 {
-                    if(mySets.settlement.occupantPositions.size() >= 5)
+                    if(mySet.settlement.size > mostMeeplesInHex)
                     {
-                        Point point = mySets.settlement.findEndPoints();
+                        mostMeeplesInHex = mySet.settlement.size;
+                        settlementChoice = mySet.settlement;
+                    }
+                }
 
-                        for (int i = 0; i < SIDES_IN_HEX; i++)
-                        {
-                            row = point.row + ROW_ADDS[i];
-                            column = point.column + COLUMN_ADDS[i];
+                Point PlaceOneAway = placeMeepleOneAway(settlementChoice);
 
-                            if (game.board[row][column] != null)
-                            {
-                                if(!game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
-                                    continue;
+                if(PlaceOneAway != null && game.isValidSettlementPosition(PlaceOneAway))
+                {
+                    Settlement freshSettlement = new Settlement(game);
+                    freshSettlement.owner = this ;
+                    freshSettlement.ownerNumber = designator ;
+                    freshSettlement.beginNewSettlement(PlaceOneAway);
+                    setData.put(freshSettlement, new SettlementData(freshSettlement, game));
+                    game.setSettlement(PlaceOneAway, freshSettlement);
+                    placeMeeple(PlaceOneAway, freshSettlement);
+                    buildDecision = BuildOptions.FOUND_SETTLEMENT;
+                    buildPoint = PlaceOneAway;
+                    updateSettlementCounts();
+                    getMySettlements();
+                    if(buildPoint.row == 97 && buildPoint.column == 109)
+                        System.err.println("One meeple away throwing it off");
+                    return;
+                }
 
-                                else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
-                                {
-                                    if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
-                                    {
-                                        point = new Point(row, column);
-                                        break;
-                                    }
+                for(Point point : foundableSpots.values())
+                {
+                    if(game.isValidSettlementPosition(point))
+                    {
+                        Settlement freshSettlement = new Settlement(game);
+                        freshSettlement.owner = this ;
+                        freshSettlement.ownerNumber = designator ;
+                        freshSettlement.beginNewSettlement(point);
+                        setData.put(freshSettlement, new SettlementData(freshSettlement, game));
+                        game.setSettlement(point, freshSettlement);
+                        placeMeeple(point, freshSettlement);
+                        buildDecision = BuildOptions.FOUND_SETTLEMENT;
+                        buildPoint = point;
+                        updateSettlementCounts();
+                        getMySettlements();
 
-                                    else if(game.isValidTotoroPosition(new Point(row, column), mySets.settlement))
-                                        point = new Point(row, column);
-                                }
-                            }
-                        }
-
-                        if(game.isValidTotoroPosition(point, mySets.settlement))
-                        {
-                            buildDecision = BuildOptions.TOTORO_SANCTUARY;
-                            buildPoint = point;
-                            placeTotoro(point, mySets.settlement);
-                            System.out.println("Totoro has been fucking placed motherfucker! Score: " + score);
-                            updateSettlementCounts();
-                            getMySettlements();
-                            return;
-                        }
+                        if(buildPoint.row == 97 && buildPoint.column == 109)
+                            System.err.println("Error inside when meeples < 10");
+                        return;
                     }
                 }
             }
         }
 
-        if(tigers != 0)
+        else if(TigerStrategy())
+            return;
+
+        else if(canPlaceTiger())
+            return;
+
+        else if(totoro != 0)
         {
-            if(tigers == 1 && totoro != 1)
+            if(totoro != 1 && tigers == 1)
             {
                 if(canPlaceTiger())
                     return;
@@ -319,50 +324,6 @@ public class BryanAI extends Player {
 
             else if(canPlaceTotoro())
                 return;
-
-//            for (SettlePointPair mySets : playerSettlements.values())
-//            {
-//                //check if I can place a tiger
-//                if (!mySets.settlement.doesSettlementcontainTiger())
-//                {
-//                    Point point = mySets.settlement.findEndPoints();
-//
-//                    for (int i = 0; i < SIDES_IN_HEX; i++)
-//                    {
-//                        row = point.row + ROW_ADDS[i];
-//                        column = point.column + COLUMN_ADDS[i];
-//
-//                        if (game.board[row][column] != null)
-//                        {
-//                            if(!game.isValidTigerPosition(new Point(row, column), mySets.settlement))
-//                                continue;
-//
-//                            else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
-//                            {
-//                                if(mySets.settlement.checkPieceAdjacencies(point) <= 1 && mySets.settlement.checkPieceAdjacencies(point) != 0)
-//                                {
-//                                    point = new Point(row, column);
-//                                    break;
-//                                }
-//
-//                                else if(game.isValidTigerPosition(new Point(row, column), mySets.settlement))
-//                                    point = new Point(row, column);
-//                            }
-//                        }
-//                    }
-//
-//                    if(game.isValidTigerPosition(point, mySets.settlement))
-//                    {
-//                        System.out.println("Placed TIGER!");
-//                        buildDecision = BuildOptions.TIGER_PLAYGROUND;
-//                        buildPoint = point;
-//                        placeTiger(point, mySets.settlement);
-//                        updateSettlementCounts();
-//                        getMySettlements();
-//                        return;
-//                    }
-//                }
-//            }
         }
 
         for (SettlePointPair mySets : playerSettlements.values())
@@ -462,6 +423,8 @@ public class BryanAI extends Player {
             buildPoint = PlaceOneAway;
             updateSettlementCounts();
             getMySettlements();
+            if(buildPoint.row == 97 && buildPoint.column == 109)
+                System.err.println("One meeple away throwing it off");
             return;
         }
 
@@ -480,16 +443,79 @@ public class BryanAI extends Player {
                 buildPoint = point;
                 updateSettlementCounts();
                 getMySettlements();
+                if(buildPoint.row == 97 && buildPoint.column == 109)
+                    System.err.println("WAY AT THE END?!");
                 return;
             }
         }
     }
 
+    public boolean takeTigerPossibilites()
+    {
+        for(Point point : tigerPossibilities)
+        {
+            for(int i = 0; i < SIDES_IN_HEX; i++)
+            {
+                int row = point.row + ROW_ADDS[i];
+                int column = point.column + COLUMN_ADDS[i];
+
+                if(game.board[point.row][point.column] != null && game.board[point.row][point.column].settlementPointer != null) {
+                    if (game.isValidTigerPosition(new Point(row, column), game.board[point.row][point.column].settlementPointer)) {
+                        buildDecision = BuildOptions.TIGER_PLAYGROUND;
+                        buildPoint = new Point(row, column);
+                        placeTiger(new Point(row, column), game.board[point.row][point.column].settlementPointer);
+                        updateSettlementCounts();
+                        getMySettlements();
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean TigerStrategy()
+    {
+        for(Point point : foundableSpots.values())
+        {
+            for(int i = 0; i < SIDES_IN_HEX; i++)
+            {
+                int row = point.row + ROW_ADDS[i];
+                int column = point.column + COLUMN_ADDS[i];
+
+                if(game.board[row][column] != null)
+                {
+                    if(game.board[row][column].level >= 3 && game.isValidSettlementPosition(point))
+                    {
+                        Settlement freshSettlement = new Settlement(game);
+                        freshSettlement.owner = this ;
+                        freshSettlement.ownerNumber = designator ;
+                        freshSettlement.beginNewSettlement(point);
+                        setData.put(freshSettlement, new SettlementData(freshSettlement, game));
+                        game.setSettlement(point, freshSettlement);
+                        placeMeeple(point, freshSettlement);
+                        buildDecision = BuildOptions.FOUND_SETTLEMENT;
+                        buildPoint = point;
+                        updateSettlementCounts();
+                        getMySettlements();
+                        tigerPossibilities.add(point);
+                        if(buildPoint.row == 97 && buildPoint.column == 109)
+                            System.err.println("CHECK TIGER STARTEGY");
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     public void updateFoundPositions()
     {
-        for(int i = game.upperLimit - 2 ; i < game.lowerLimit+2; i++)
+        for(int i = 0 ; i < 210; i++)
         {
-            for(int j = game.leftLimit -2 ; j < game.rightLimit+2; j++)
+            for(int j = 0; j < 210; j++)
             {
                 if(game.isValidSettlementPosition(new Point(i, j)))
                     foundableSpots.put(coordinatesToKey(i, j), new Point(i, j));
@@ -1014,8 +1040,11 @@ public class BryanAI extends Player {
     }
 
     public boolean hasPlayerLost(){ // what is this even for?
-        if (meeples != 0)
+        if (meeples > 0)
             return false;
+
+        else if (meeples <= 0 && tigers > 1 && totoro > 1)
+            return true;
 
         else
         {
@@ -1024,7 +1053,7 @@ public class BryanAI extends Player {
                 if(mySets.settlement.doesSettlementcontainTotoro())
                     continue;
 
-                else if(mySets.settlement.size >= 5) //do we also have to check if there's a hex that we can put on?
+                else if(mySets.settlement.occupantPositions.size() >= 5) //do we also have to check if there's a hex that we can put on?
                 {
                     for(Point point : mySets.settlement.occupantPositions.values())
                     {
