@@ -345,6 +345,7 @@ public class JPAI extends Player {
             totoroPosition = findTheTotoro(set);
             if (totoroPosition.row != 0 && totoroPosition.column != 0) {
                 nukeSucceeded = nukeAroundTotoro(totoroPosition);
+                if(nukeSucceeded) break;
             }
         }
 
@@ -446,7 +447,7 @@ public class JPAI extends Player {
     private Point determineSettlementPosition(){
         Point seeker = new Point(BOARD_CENTER, BOARD_CENTER);
 
-        for(int displacement = 1; (displacement < BOARD_CENTER-2); displacement++){
+        for(int displacement = 1; (displacement < BOARD_CENTER-5); displacement++){
             seeker.row = BOARD_CENTER - displacement;
             seeker.column = BOARD_CENTER ;
 
