@@ -265,4 +265,9 @@ public class GameThread {
         }
     }
 
+    public void sendScores () throws IOException {
+        NetClientMsg msg = new NetClientMsg();
+        String clientMsg = msg.FormatSendOutcome(gameID,MAIN.AIPID,AI.score,MAIN.opponentPID,Opponent.score);
+        client.Send(clientMsg);
+    }
 }

@@ -58,6 +58,10 @@ public class NetClientMsg {
                 "AT", cubePoint.x, cubePoint.y, cubePoint.z, tile.rotation);
     }
 
+    public String FormatSendOutcome(String gameID, String PID, int AIscore, String opponentID, int opponentScore){
+        return String.format("%1$s %2$s %3$s %4$s %5$s %6$d %7$s %8$s %9$d","GAME",gameID, "OVER","PLAYER",PID, AIscore, "PLAYER",opponentID,opponentScore);
+    }
+
     public String FormatUnableToBuild()
     {
         return ErrorMessage;

@@ -83,11 +83,15 @@ public class MAIN
                                 if(client.message.contains(game1.gameID))
                                 {
                                     game1.gameOver = true;
-                                }
-
-                                if(client.message.contains(game2.gameID))
+                                    if (client.message.contains("OVER SEND OUTCOME")){
+                                        game1.sendScores();
+                                    }
+                                } else if(client.message.contains(game2.gameID))
                                 {
                                     game2.gameOver = true;
+                                    if (client.message.contains("OVER SEND OUTCOME")){
+                                        game2.sendScores();
+                                    }
                                 }
                             }
 
