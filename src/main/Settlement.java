@@ -119,6 +119,7 @@ public class Settlement {
 
             default:
                 System.out.println("Error: Could not resolve adjacent terrain");
+                MAIN.log.println("Error: Could not resolve adjacent terrain");
                 break;
         }
     }
@@ -142,6 +143,7 @@ public class Settlement {
 
             default:
                 System.out.println("Error: Could not resolve adjacent terrain");
+                MAIN.log.println("Error: Could not resolve adjacent terrain");
                 break;
         }
         return false;
@@ -201,6 +203,7 @@ public class Settlement {
 
             case VOLCANO:  // be warned you cannot expand on volcanoes
                 expandThroughTerrain(volcanoes);
+                MAIN.log.println("ILLEGAL: trying to expand on volcanoes");
                 break;
         }
     }

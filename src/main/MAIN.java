@@ -5,6 +5,7 @@ import net.NetClientMsg;
 import net.NetServerMsg;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Created by Bryan on 4/13/17.
@@ -25,10 +26,12 @@ public class MAIN
     static NetClientMsg msg = new NetClientMsg();
     static NetServerMsg message = new NetServerMsg();
 
+    public static PrintWriter log;
     public static void main(String[] args)
     {
         try
         {
+            log = new PrintWriter("log.txt","UTC-8");
             TournamentAndAuthenticationProtocol(args);
 
             while(!client.message.equals("END OF CHALLENGES"))
@@ -124,6 +127,7 @@ public class MAIN
         {
             e.printStackTrace();
         }
+        log.close();
     }
 
     private static void matchProtocolBegin() throws IOException {
