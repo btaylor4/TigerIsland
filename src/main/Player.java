@@ -14,8 +14,11 @@ public class Player {
 
     public int score;
     public int meeples;
+    public int shangrila;
     public int totoro;
     public int tigers;
+
+    protected Point shangrilaPoint;
 
     protected Tile tileHeld ;
     protected Point tilePlacement ;
@@ -34,9 +37,12 @@ public class Player {
     public Player(GameBoard game, int designator) {
         this.designator = designator ;
         score = 0;
-        meeples = 20;
+        meeples = 19;
+        shangrila = 1;
         totoro = 3;
         tigers = 2;
+
+        shangrilaPoint = null;
 
         this.game = game;
         this.tileHeld = null;
@@ -206,6 +212,10 @@ public class Player {
 
     private void placeBuildDecision(){
         switch(buildDecision){
+            case FOUND_SHANGRILA:
+                foundNewSettlement(buildPoint);
+                break;
+
             case FOUND_SETTLEMENT:
                 foundNewSettlement(buildPoint);
                 System.out.println("New settlement at: " + buildPoint.row + " " + buildPoint.column);
@@ -237,7 +247,11 @@ public class Player {
         freshSettlement.ownerNumber = designator ;
 
         game.setSettlement(selectedPoint, freshSettlement);
-        placeMeeple(selectedPoint, freshSettlement);
+        if(shangrila != 0){
+            placeShangrila(selectedPoint,freshSettlement);
+        } else {
+            placeMeeple(selectedPoint, freshSettlement);
+        }
     }
 
     private void expandSettlementMeeple(Point settlementPoint, TerrainType terrainChoice){
@@ -251,6 +265,15 @@ public class Player {
         int level = game.board[selectedPoint.row][selectedPoint.column].level ;
         score += (level * level) ;
         meeples -= level ;
+    }
+
+    public void placeShangrila(Point selectedPoint, Settlement settlement){
+        playerSettlements.put(game.board[selectedPoint.row][selectedPoint.column].key,
+                new SettlePointPair(settlement,selectedPoint));
+        game.setPiece(selectedPoint, OccupantType.SHANGRILA, settlement);
+        score += 1;
+        shangrilaPoint = selectedPoint;
+        shangrila--;
     }
 
     public void placeTotoro(Point selectedPoint, Settlement settlement) {
@@ -271,7 +294,7 @@ public class Player {
 
 
     public boolean isOutOfPieces(){
-        return (meeples == 0 && totoro == 0) || (meeples == 0 && tigers == 0) || (tigers == 0 && totoro == 0);
+        return (meeples == 0 && totoro == 0 && shangrila == 0) || (meeples == 0 && tigers == 0 && shangrila == 0) || (tigers == 0 && totoro == 0);
     }
 
     // using for tests
