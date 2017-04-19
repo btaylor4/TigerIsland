@@ -67,6 +67,10 @@ public class SettlementData {
         helper = gatherExpansionCosts(settle.rocky) ;
         rockyCost = helper.cost ;
         afterRocky = helper.size;
+
+        helper = gatherExpansionCosts(settle.paddys);
+        paddyCost = helper.cost;
+        afterPaddy = helper.size;
     }
 
     private SizeCostPair gatherExpansionCosts(HashMap<Integer,Point> adjacents){
