@@ -26,12 +26,12 @@ public class MAIN
     static NetClientMsg msg = new NetClientMsg();
     static NetServerMsg message = new NetServerMsg();
 
-    public static PrintWriter log;
+//    public static PrintWriter log;
     public static void main(String[] args)
     {
         try
         {
-            log = new PrintWriter("log.txt","UTC-8");
+//            log = new PrintWriter("log.txt","UTC-8");
             TournamentAndAuthenticationProtocol(args);
 
             while(!client.message.equals("END OF CHALLENGES"))
@@ -127,7 +127,7 @@ public class MAIN
         {
             e.printStackTrace();
         }
-        log.close();
+        //log.close();
     }
 
     private static void matchProtocolBegin() throws IOException {

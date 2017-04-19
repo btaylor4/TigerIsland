@@ -294,7 +294,7 @@ public class NetScanner {
                 if(sc.hasNextInt()) {
                     int score = sc.nextInt();
                     System.out.println(score);
-                    MAIN.log.println(score);
+                    //MAIN.log.println(score);
 
                     playerResult.put(pid, score);
                 }

@@ -74,13 +74,13 @@ public class GameThread {
                     replicateOpponentMove();
                 } catch (Exception e) {
                     System.err.println(protocol.GetMessage());
-                    MAIN.log.println(protocol.GetMessage());
+//                    MAIN.log.println(protocol.GetMessage());
                 }
             }
             else
             {
                 System.err.println("BAD MESSAGE:" + protocol.GetMessage());
-                MAIN.log.println("BAD MESSAGE:" + protocol.GetMessage());
+//                MAIN.log.println("BAD MESSAGE:" + protocol.GetMessage());
             }
         }
     }
@@ -145,7 +145,7 @@ public class GameThread {
 
                 default:
                     System.err.print("Error, invalid AI build option") ;
-                    MAIN.log.println("Error, invalid AI build option");
+//                    MAIN.log.println("Error, invalid AI build option");
                     break;
             }
         }
@@ -186,8 +186,8 @@ public class GameThread {
 
         System.out.println("Opponent placing: " + Opponent.tilePlacement.row + " " + Opponent.tilePlacement.column + " "
                 + Opponent.tileProjection.volcano.row + " " + Opponent.tileProjection.volcano.column + " " + Opponent.tileHeld.rotation);
-        MAIN.log.println("Opponent placing: " + Opponent.tilePlacement.row + " " + Opponent.tilePlacement.column + " "
-                + Opponent.tileProjection.volcano.row + " " + Opponent.tileProjection.volcano.column + " " + Opponent.tileHeld.rotation);
+//        MAIN.log.println("Opponent placing: " + Opponent.tilePlacement.row + " " + Opponent.tilePlacement.column + " "
+//                + Opponent.tileProjection.volcano.row + " " + Opponent.tileProjection.volcano.column + " " + Opponent.tileHeld.rotation);
 
         //parse build action
         opponentPlacement = opponentsMove.GetBuildLocation();
