@@ -441,6 +441,7 @@ public class JPAI extends Player {
 
             default:
                 System.out.println("Invalid choice");
+//                MAIN.log.println("Invalid choice");
         }
     }
 
@@ -464,6 +465,7 @@ public class JPAI extends Player {
         }
 
         System.out.println("Settlement position not found!");
+//        MAIN.log.println("Settlement position not found!");
         return seeker ;
     }
 

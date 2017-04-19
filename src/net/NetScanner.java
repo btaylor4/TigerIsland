@@ -1,4 +1,5 @@
 package net;
+import main.MAIN;
 import main.enums.PlayerAction;
 import main.enums.TokenType;
 import main.enums.ValueType;
@@ -293,6 +294,7 @@ public class NetScanner {
                 if(sc.hasNextInt()) {
                     int score = sc.nextInt();
                     System.out.println(score);
+                    //MAIN.log.println(score);
 
                     playerResult.put(pid, score);
                 }

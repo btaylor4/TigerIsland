@@ -141,6 +141,7 @@ public class Player {
 
             default:
                 System.out.println("Something just fucked up");
+                //MAIN.log.println("Something just fucked up");
                 break;
         }
 
@@ -177,6 +178,11 @@ public class Player {
         System.out.println("Volcano r:" + tileProjection.volcano.row + " c:" + tileProjection.volcano.column);
         System.out.println("Hex_A   r:" + tileProjection.hex_a.row + " c:" + tileProjection.hex_a.column) ;
         System.out.println("Hex_B   r:" + tileProjection.hex_b.row + " c:" + tileProjection.hex_b.column) ;
+
+//        MAIN.log.println("Setting Tile At: (" + tilePlacement.row + ", " + tilePlacement.column + ") R: " + tileHeld.rotation);
+//        MAIN.log.println("Volcano r:" + tileProjection.volcano.row + " c:" + tileProjection.volcano.column);
+//        MAIN.log.println("Hex_A   r:" + tileProjection.hex_a.row + " c:" + tileProjection.hex_a.column);
+//        MAIN.log.println("Hex_B   r:" + tileProjection.hex_b.row + " c:" + tileProjection.hex_b.column);
     }
 
 
@@ -209,24 +215,29 @@ public class Player {
             case FOUND_SETTLEMENT:
                 foundNewSettlement(buildPoint);
                 System.out.println("New settlement at: " + buildPoint.row + " " + buildPoint.column);
+//                MAIN.log.println("New settlement at: " + buildPoint.row + " " + buildPoint.column);
                 break;
 
             case EXPAND:
                 System.out.println("Expanding " + terrainSelection + " at: " + buildPoint.row + " " + buildPoint.column);
                 expandSettlementMeeple(buildPoint, terrainSelection);
+//                MAIN.log.println("Expanding " + terrainSelection + " at: " + buildPoint.row + " " + buildPoint.column);
                 break;
 
             case TOTORO_SANCTUARY:
                 System.out.println("Totoro at: " + buildPoint.row + " " + buildPoint.column + " " + selectedSettlement);
                 placeTotoro(buildPoint, selectedSettlement);
+//                MAIN.log.println("Totoro at: " + buildPoint.row + " " + buildPoint.column + " " + selectedSettlement);
                 break;
 
             case TIGER_PLAYGROUND:
                 System.out.println("Tiger at: " + buildPoint.row + " " + buildPoint.column + " " + selectedSettlement);
                 placeTiger(buildPoint, selectedSettlement);
+//                MAIN.log.println("Tiger at: " + buildPoint.row + " " + buildPoint.column + " " + selectedSettlement);
                 break;
 
             default: // lets hope this never happens
+//                MAIN.log.println("*******HIT DEFAULT CASE IN placeBuildDecision*********");
                 break;
         }
     }
