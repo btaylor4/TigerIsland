@@ -183,9 +183,6 @@ public class JPAI extends Player {
         if(!nukeTargets.isEmpty()){
             tilePlayStrat = TileOptions.OFFENSIVE ;
         }
-        else if(!settlementsWithTotoro.isEmpty()){
-            tilePlayStrat = TileOptions.SELFNUKE ;
-        }
         else{
             tilePlayStrat = TileOptions.FLATBUILD ;
         }

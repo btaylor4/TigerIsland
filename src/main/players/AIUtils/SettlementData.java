@@ -75,6 +75,7 @@ public class SettlementData {
 
         for(Point point : adjacents.values()){
             nonFloodAdjacencies.put(game.board[point.row][point.column].key, point);
+            processAdjacentLevel(point);
             returned = recursiveGather(point) ;
             value.size += returned.size;
             value.cost += returned.cost ;
@@ -86,10 +87,7 @@ public class SettlementData {
 
     private SizeCostPair recursiveGather(Point target) {
         SizeCostPair value = new SizeCostPair(1, game.board[target.row][target.column].level) ;
-
         countedTerrain.put(game.board[target.row][target.column].key, 1) ;
-
-        processAdjacentLevel(target);
 
         SizeCostPair returned ;
 
